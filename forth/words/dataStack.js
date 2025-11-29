@@ -81,7 +81,7 @@ export const dataStack = {
         this.checkStackUnderflow(rollAmount);
         const targetIndex = this.dataStack.length - 1 - rollAmount;
         const target = this.dataStack.splice(targetIndex, 1);
-        this.dataStack.push(target);
+        this.dataStack.push(target[0]);
     },
 
     '2drop': function() {
