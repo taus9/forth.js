@@ -123,17 +123,13 @@ export class Fvm {
     }
 
     attemptMathOperation(type) {
-        // empty stack error
-        if (this.dataStack.length === 0) {
+        // Need at least 2 operands to perform a math operation...duh...
+        if (this.dataStack.length < 2) {
             this.status = types.StatusTypes.ERROR;
+            this.dataStack = []; // clear the stack after error
             throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
         
-        if (this.dataStack.length === 1) {
-            this.dataStack.pop();
-            return;
-        }
-
         // perform operation on stack
         const topVar = this.dataStack.pop();
         const bottomVar = this.dataStack.pop();
