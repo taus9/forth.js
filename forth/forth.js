@@ -80,7 +80,7 @@ export class Fvm {
             case types.MathTypes.MUL:
                 return var1 * var2;
             case types. MathTypes.DIV:
-                if (var1 === 0 || var2 === 0) {
+                if (var2 === 0) {
                     throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
                 }
                 return var1 / var2;
