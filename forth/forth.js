@@ -88,6 +88,8 @@ export class Fvm {
                 return Math.pow(var2, var1);
             case types.MathTypes.MODULUS:
                 return var1 % var2;
+            default:
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_WORD);
         }
     }
 
