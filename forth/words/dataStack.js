@@ -79,7 +79,9 @@ export const dataStack = {
         this.checkStackUnderflow(0);
         const rollAmount = this.dataStack.pop();
         this.checkStackUnderflow(rollAmount);
-        
+        const targetIndex = this.dataStack.length - 1 - rollAmount;
+        const target = this.dataStack.splice(targetIndex, 1);
+        this.dataStack.push(target);
     },
 
     '2drop': function() {
