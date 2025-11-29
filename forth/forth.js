@@ -64,7 +64,8 @@ export class Fvm {
             return new words.MathWord(word, type)
         }
         
-        if (word in this.words) {
+        if (Object.hasOwn(this.words, word)) {
+            // say this three times fast...
             return new words.Word(word, this.words[word])
         }
 
