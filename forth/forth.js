@@ -141,6 +141,7 @@ export class Fvm {
     checkStackUnderflow(equalToOrLessThan) {
         if (this.dataStack.length <= equalToOrLessThan) {
             this.status = types.StatusTypes.ERROR;
+            this.dataStack = [];
             throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
     }
