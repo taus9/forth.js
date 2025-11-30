@@ -22,45 +22,45 @@ export const dataStack = {
     },
 
     'drop': function(){
-        this.checkStackUnderflow(0);
+        this.checkStackUnderflow(1);
         this.dataStack.pop();
     },
 
     'dup': function() {
-        this.checkStackUnderflow(0);
+        this.checkStackUnderflow(1);
         const w = this.dataStack[this.dataStack.length - 1];
         this.dataStack.push(w);      
     },
 
     'nip': function() {
-        this.checkStackUnderflow(1);
+        this.checkStackUnderflow(2);
         const w2 = this.dataStack.pop();
         this.dataStack.pop(); // w1
         this.dataStack.push(w2);
     },
 
     'over': function() {
-        this.checkStackUnderflow(1);
+        this.checkStackUnderflow(2);
         const w1 = this.dataStack[this.dataStack.length - 2];
         this.dataStack.push(w1);
     },
 
     'tuck': function() {
-        this.checkStackUnderflow(1);
+        this.checkStackUnderflow(2);
         const w2 = this.dataStack.pop();
         const w1 = this.dataStack.pop();
         this.dataStack.push(w2, w1, w2);
     },
 
     'swap': function() {
-        this.checkStackUnderflow(1);
+        this.checkStackUnderflow(2);
         const w2 = this.dataStack.pop();
         const w1 = this.dataStack.pop();
         this.dataStack.push(w2, w1);
     },
 
     'pick': function() {
-        this.checkStackUnderflow(0);
+        this.checkStackUnderflow(1);
         const topNumber = this.dataStack.pop();
         this.checkStackUnderflow(topNumber);
         const pickedNumber = this.dataStack[(this.dataStack.length - 1) - topNumber];
@@ -68,7 +68,7 @@ export const dataStack = {
     },
 
     'rot': function() {
-        this.checkStackUnderflow(2);
+        this.checkStackUnderflow(3);
         const w3 = this.dataStack.pop();
         const w2 = this.dataStack.pop();
         const w1 = this.dataStack.pop();
@@ -76,7 +76,7 @@ export const dataStack = {
     },
 
     '-rot': function() {
-        this.checkStackUnderflow(2);
+        this.checkStackUnderflow(3);
         const w3 = this.dataStack.pop();
         const w2 = this.dataStack.pop();
         const w1 = this.dataStack.pop();
@@ -84,7 +84,7 @@ export const dataStack = {
     },
 
     '?dup': function() {
-        this.checkStackUnderflow(0);
+        this.checkStackUnderflow(1);
         const topNumber = this.dataStack[this.dataStack.length - 1];
         if (topNumber) {
             this.dataStack.push(topNumber);
@@ -92,7 +92,7 @@ export const dataStack = {
     },
 
     'roll': function() {
-        this.checkStackUnderflow(0);
+        this.checkStackUnderflow(1);
         const rollAmount = this.dataStack.pop();
         this.checkStackUnderflow(rollAmount);
         const targetIndex = this.dataStack.length - 1 - rollAmount;
@@ -101,13 +101,13 @@ export const dataStack = {
     },
 
     '2drop': function() {
-        this.checkStackUnderflow(1);
+        this.checkStackUnderflow(2);
         this.dataStack.pop(); // w2
         this.dataStack.pop(); // w1
     },
 
     '2nip': function() {
-        this.checkStackUnderflow(3);
+        this.checkStackUnderflow(4);
         const w4 = this.dataStack.pop();
         const w3 = this.dataStack.pop();
         this.dataStack.pop(); // w2
@@ -116,14 +116,14 @@ export const dataStack = {
     },
 
     '2dup': function() {
-        this.checkStackUnderflow(1);
+        this.checkStackUnderflow(2);
         const w2 = this.dataStack.pop();
         const w1 = this.dataStack.pop();
         this.dataStack.push(w1, w2, w1, w2);
     },
 
     '2over': function() {
-        this.checkStackUnderflow(3);
+        this.checkStackUnderflow(4);
         const len = this.dataStack.length
         const w1 = this.dataStack[len - 4];
         const w2 = this.dataStack[len - 3];
@@ -131,7 +131,7 @@ export const dataStack = {
     },
 
     '2tuck': function() {
-        this.checkStackUnderflow(3);
+        this.checkStackUnderflow(4);
         const w4 = this.dataStack.pop();
         const w3 = this.dataStack.pop();
         const w2 = this.dataStack.pop();
@@ -142,7 +142,7 @@ export const dataStack = {
     },
 
     '2swap': function() {
-        this.checkStackUnderflow(3);
+        this.checkStackUnderflow(4);
         const w4 = this.dataStack.pop();
         const w3 = this.dataStack.pop();
         const w2 = this.dataStack.pop();
@@ -153,7 +153,7 @@ export const dataStack = {
     },
 
     '2rot': function() {
-        this.checkStackUnderflow(5);
+        this.checkStackUnderflow(6);
         const w6 = this.dataStack.pop();
         const w5 = this.dataStack.pop();
         const w4 = this.dataStack.pop();
