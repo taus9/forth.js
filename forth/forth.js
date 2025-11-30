@@ -151,6 +151,9 @@ export class Fvm {
                 return types.MathTypes.DIV;
             case '%':
                 return types.MathTypes.MODULUS;
+            default:
+                this.dataStack = [];
+                throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD);
         }
     }
 
