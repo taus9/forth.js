@@ -51,30 +51,26 @@ export class FvmTestSuite {
         this.fvm.execute('10 3 %');
         this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,8,1], '10 3 % should push 1');
 
-/*
         this.put('--- Stack manipulation ---');
-        this.put('Resetting fvm and pushing [1,2,3] to the stack\n');
-        
-        this.fvm.reset();
-        this.fvm.execute('3 2 1');
 
         this.fvm.execute('dup');
-        expectArrayEqual(this.fvm.dataStack, [1,2,3,3], 'dup duplicates top element');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,8,1,1], 'dup duplicates top element');
 
         this.fvm.execute('drop');
-        expectArrayEqual(this.fvm.dataStack, [1,2,3], 'drop removes top element');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,8,1], 'drop removes top element');
 
         this.fvm.execute('swap');
-        expectArrayEqual(this.fvm.dataStack, [1,3,2], 'swap swaps top two elements');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,1,8], 'swap swaps top two elements');
 
         this.fvm.execute('over');
-        expectArrayEqual(this.fvm.dataStack, [1,3,2,3], 'over copies second element to top');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,1,8,1], 'over copies second element to top');
 
         this.fvm.execute('nip');
-        expectArrayEqual(this.fvm.dataStack, [1,3,3], 'nip removes second-to-top element');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,1,1], 'nip removes second-to-top element');
 
         this.fvm.execute('tuck');
-        expectArrayEqual(this.fvm.dataStack, [1,3,3,3], 'tuck inserts second element under top');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,1,1,1], 'tuck inserts second element under top');
+/*
 
     // pick
     vm.dataStack = [10,20,30,1]; // 1 pick = push 2nd element from top (20)
