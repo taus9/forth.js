@@ -13,6 +13,13 @@ export class Fvm {
         this.output = '';
         this.words = {...words.core, ...words.dataStack}
     }
+    
+    reset() {
+      this.output = '';
+      this.dataStack = [];
+      this.status = types.StatusTypes.OK;
+      this.state = types.ForthState.INTERPRET;
+    }
 
     execute(text) {
         this.output = '';
