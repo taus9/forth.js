@@ -4,9 +4,9 @@ import { ErrorTypes } from '../forth/errors/errors.js';
 import * as forth from '../forth/forth.js';
 
 const fvm = new forth.Fvm();
-
 const textbox = document.querySelector('input');
 textbox.onkeyup = handleEvent;
+put("forth.js virtual machince created");
 
 
 function handleEvent(e) {
@@ -43,3 +43,6 @@ function put(text) {
     const prompt = document.getElementById('prompt');
     prompt.scrollTop = prompt.scrollHeight;
 }
+
+
+
