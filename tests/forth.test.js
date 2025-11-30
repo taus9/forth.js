@@ -29,25 +29,25 @@ export class FvmTestSuite {
     }
     
     runTestSuite() {
-        put('--- Number and Math Words ---\n');
+        this.put('--- Number and Math Words ---\n');
         
         this.fvm.execute('3 4 +');
-        expectArrayEqual(vm.dataStack, [7], '3 4 + should push 7');
+        this.expectArrayEqual(this.fvm.dataStack, [7], '3 4 + should push 7');
     
         this.fvm.execute('10 2 -');
-        expectArrayEqual(vm.dataStack, [8], '10 2 - should push 8');
+        this.expectArrayEqual(this.fvm.dataStack, [8], '10 2 - should push 8');
     
         this.fvm.execute('2 3 *');
-        expectArrayEqual(vm.dataStack, [6], '2 3 * should push 6');
+        this.expectArrayEqual(this.fvm.dataStack, [6], '2 3 * should push 6');
 
         this.fvm.execute('8 2 /');
-        expectArrayEqual(vm.dataStack, [4], '8 2 / should push 4');
+        this.expectArrayEqual(this.fvm.dataStack, [4], '8 2 / should push 4');
 
         this.fvm.execute('2 3 **');
-        expectArrayEqual(vm.dataStack, [8], '2 3 ** should push 8');
+        this.expectArrayEqual(this.fvm.dataStack, [8], '2 3 ** should push 8');
     
         this.fvm.execute('10 3 %');
-        expectArrayEqual(vm.dataStack, [1], '10 3 % should push 1');
+        this.expectArrayEqual(this.fvm.dataStack, [1], '10 3 % should push 1');
 /*
     // --- Stack manipulation ---
 
@@ -121,12 +121,5 @@ export class FvmTestSuite {
     }
 */
 
+    }
 }
-
-
-const runTestSuite = (vm, put) => {
-
-
-
-    console.log('All tests passed!');
-};

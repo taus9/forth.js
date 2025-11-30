@@ -1,6 +1,6 @@
 "use strict";
 
-import { runTestSuite } from '../tests/forth.test.js';
+import { FvmTestSuite } from '../tests/forth.test.js';
 import { ErrorTypes } from '../forth/errors/errors.js';
 import * as forth from '../forth/forth.js';
 
@@ -87,6 +87,8 @@ runTestButton.addEventListener('click', async () => {
         fvm.reset();
         clear();
         put("Running Forth.js test suite");
+        const fts = new FvmTestSuite(fvm, put);
+        fts.runTestSuite();
     } 
 });
 
