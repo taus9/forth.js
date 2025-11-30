@@ -4,12 +4,19 @@ import { ErrorTypes } from '../forth/errors/errors.js';
 import * as forth from '../forth/forth.js';
 
 const fvm = new forth.Fvm();
-const textbox = document.querySelector('input');
-textbox.onkeyup = handleEvent;
-put("forth.js virtual machince created");
+const textbox = document.getElementById('textbox');
+const runTestButton = document.getElementById('run-tests-btn');
+const resetButton = document.getElementById('reset-btn');
 
+const put = text => {
+    const output = document.getElementById('output');
+    output.innerHTML += '-> ' + text + '<br>';
+    
+    const prompt = document.getElementById('prompt');
+    prompt.scrollTop = prompt.scrollHeight;
+};
 
-function handleEvent(e) {
+textbox.addEventListener('keyup', e => {
     if (e.code === 'Enter') {
         const text = textbox.value;
         textbox.value = '';
@@ -34,15 +41,12 @@ function handleEvent(e) {
 
         put(`${text}&nbsp;${fvm.output}&nbsp;&nbsp;${fvm.status}`);
     }
-}
+});
 
-function put(text) {
-    const output = document.getElementById('output');
-    output.innerHTML += '-> ' + text + '<br>';
-    
-    const prompt = document.getElementById('prompt');
-    prompt.scrollTop = prompt.scrollHeight;
-}
+
+put("forth.js virtual machince created");
+
+
 
 
 
