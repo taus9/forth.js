@@ -70,27 +70,32 @@ export class FvmTestSuite {
 
         this.fvm.execute('tuck');
         this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,1,1,1], 'tuck inserts second element under top');
+
+        this.put('pushing 3 on to the stack');
+        this.fvm.execute('3 .s');
+        this.put(`${this.fvm.output}\n`);
+                
+        this.fvm.execute('pick');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,1,1,1,4], 'pick - duplicate correct item from the stack to the top.');
+        
+        this.fvm.execute('roll');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,4,1,1,1,6], 'roll - x0 x1 .. xn n – x1 .. xn x0');
+
+        this.put('pushing 0 on to the stack');
+        this.fvm.execute('0 .s');
+        this.put(`${this.fvm.output}\n`);
+
+        this.fvm.execute('?dup');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,4,1,1,1,6,0], '?dup does nothing for zero');
+
+        this.put('pushing 5 on to the stack');
+        this.fvm.execute('5 .s');
+        this.put(`${this.fvm.output}\n`);
+
+        this.fvm.execute('?dup');
+        this.expectArrayEqual(this.fvm.dataStack, [8,4,1,1,1,6,0,5,5], '?dup shift stack and dup for non-zero');
+
 /*
-
-    // pick
-    vm.dataStack = [10,20,30,1]; // 1 pick = push 2nd element from top (20)
-    runForth(vm, 'pick');
-    expectArrayEqual(vm.dataStack, [10,20,30,1,20], 'pick works correctly');
-
-    // roll
-    vm.dataStack = [1,2,3,4,2]; // roll top 2 = move 3rd from top to top
-    runForth(vm, 'roll');
-    expectArrayEqual(vm.dataStack, [1,2,4,3], 'roll works correctly');
-
-    // ?dup
-    vm.dataStack = [0];
-    runForth(vm, '?dup');
-    expectArrayEqual(vm.dataStack, [0], '?dup does nothing for zero');
-
-    vm.dataStack = [5];
-    runForth(vm, '?dup');
-    expectArrayEqual(vm.dataStack, [5,5], '?dup duplicates non-zero');
-
     // --- 2-operations ---
     vm.dataStack = [1,2];
     runForth(vm, '2dup');
