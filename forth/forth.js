@@ -114,7 +114,7 @@ export class Fvm {
             case types.MathTypes.POWER:
                 return Math.pow(var2, var1);
             case types.MathTypes.MODULUS:
-                return var1 % var2;
+                return var2 % var1;
             default:
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_WORD);
         }
