@@ -1,120 +1,118 @@
 import { Fvm } from '../forth.js';
 import * as types from '../types/types.js';
 
-function expectEqual(actual, expected, message) {
-if (actual !== expected) {
-throw new Error(`Assertion Failed: ${message}\nExpected: ${expected}, got: ${actual}`);
-}
-}
+const expectEqual = (actual, expected, message) => {
+    if (actual !== expected) {
+      throw new Error(`Assertion Failed: ${message}\nExpected: ${expected}, got: ${actual}`);
+    }
+};
 
-function expectArrayEqual(actual, expected, message) {
-const equal = actual.length === expected.length && actual.every((v,i) => v === expected[i]);
-if (!equal) {
-throw new Error(`Assertion Failed: ${message}\nExpected: [${expected}], got: [${actual}]`);
-}
-}
+const expectArrayEqual = (actual, expected, message) => {
+    const equal = actual.length === expected.length && actual.every((v,i) => v === expected[i]);
+    if (!equal) {
+      throw new Error(`Assertion Failed: ${message}\nExpected: [${expected}], got: [${actual}]`);
+    }
+};
 
 // Helper to execute a string in the Forth VM
-function runForth(vm, code) {
-try {
-vm.execute(code);
-} catch(e) {
-return e;
-}
-}
+const runForth = (vm, code) => {
+    try {
+        vm.execute(code);
+    } catch(e) {
+        return e;
+    }
+};
 
-// ======== TESTS ========
+const runTest = vm => {
 
-const vm = new Fvm();
+    // --- Number and Math Words ---
+    runForth(vm, '3 4 +');
+    expectArrayEqual(vm.dataStack, [7], '3 4 + should push 7');
 
-// --- Number and Math Words ---
-runForth(vm, '3 4 +');
-expectArrayEqual(vm.dataStack, [7], '3 4 + should push 7');
+    runForth(vm, '10 2 -');
+    expectArrayEqual(vm.dataStack, [8], '10 2 - should push 8');
 
-runForth(vm, '10 2 -');
-expectArrayEqual(vm.dataStack, [8], '10 2 - should push 8');
+    runForth(vm, '2 3 *');
+    expectArrayEqual(vm.dataStack, [6], '2 3 * should push 6');
 
-runForth(vm, '2 3 *');
-expectArrayEqual(vm.dataStack, [6], '2 3 * should push 6');
+    runForth(vm, '8 2 /');
+    expectArrayEqual(vm.dataStack, [4], '8 2 / should push 4');
 
-runForth(vm, '8 2 /');
-expectArrayEqual(vm.dataStack, [4], '8 2 / should push 4');
+    runForth(vm, '2 3 **');
+    expectArrayEqual(vm.dataStack, [8], '2 3 ** should push 8');
 
-runForth(vm, '2 3 **');
-expectArrayEqual(vm.dataStack, [8], '2 3 ** should push 8');
+    runForth(vm, '10 3 %');
+    expectArrayEqual(vm.dataStack, [1], '10 3 % should push 1');
 
-runForth(vm, '10 3 %');
-expectArrayEqual(vm.dataStack, [1], '10 3 % should push 1');
+    // --- Stack manipulation ---
 
-// --- Stack manipulation ---
+    // reset stack
+    vm.dataStack = [1,2,3];
 
-// reset stack
-vm.dataStack = [1,2,3];
+    // dup
+    runForth(vm, 'dup');
+    expectArrayEqual(vm.dataStack, [1,2,3,3], 'dup duplicates top element');
 
-// dup
-runForth(vm, 'dup');
-expectArrayEqual(vm.dataStack, [1,2,3,3], 'dup duplicates top element');
+    // drop
+    runForth(vm, 'drop');
+    expectArrayEqual(vm.dataStack, [1,2,3], 'drop removes top element');
 
-// drop
-runForth(vm, 'drop');
-expectArrayEqual(vm.dataStack, [1,2,3], 'drop removes top element');
+    // swap
+    runForth(vm, 'swap');
+    expectArrayEqual(vm.dataStack, [1,3,2], 'swap swaps top two elements');
 
-// swap
-runForth(vm, 'swap');
-expectArrayEqual(vm.dataStack, [1,3,2], 'swap swaps top two elements');
+    // over
+    runForth(vm, 'over');
+    expectArrayEqual(vm.dataStack, [1,3,2,3], 'over copies second element to top');
 
-// over
-runForth(vm, 'over');
-expectArrayEqual(vm.dataStack, [1,3,2,3], 'over copies second element to top');
+    // nip
+    runForth(vm, 'nip');
+    expectArrayEqual(vm.dataStack, [1,3,3], 'nip removes second-to-top element');
 
-// nip
-runForth(vm, 'nip');
-expectArrayEqual(vm.dataStack, [1,3,3], 'nip removes second-to-top element');
+    // tuck
+    runForth(vm, 'tuck');
+    expectArrayEqual(vm.dataStack, [1,3,3,3], 'tuck inserts second element under top');
 
-// tuck
-runForth(vm, 'tuck');
-expectArrayEqual(vm.dataStack, [1,3,3,3], 'tuck inserts second element under top');
+    // pick
+    vm.dataStack = [10,20,30,1]; // 1 pick = push 2nd element from top (20)
+    runForth(vm, 'pick');
+    expectArrayEqual(vm.dataStack, [10,20,30,1,20], 'pick works correctly');
 
-// pick
-vm.dataStack = [10,20,30,1]; // 1 pick = push 2nd element from top (20)
-runForth(vm, 'pick');
-expectArrayEqual(vm.dataStack, [10,20,30,1,20], 'pick works correctly');
+    // roll
+    vm.dataStack = [1,2,3,4,2]; // roll top 2 = move 3rd from top to top
+    runForth(vm, 'roll');
+    expectArrayEqual(vm.dataStack, [1,2,4,3], 'roll works correctly');
 
-// roll
-vm.dataStack = [1,2,3,4,2]; // roll top 2 = move 3rd from top to top
-runForth(vm, 'roll');
-expectArrayEqual(vm.dataStack, [1,2,4,3], 'roll works correctly');
+    // ?dup
+    vm.dataStack = [0];
+    runForth(vm, '?dup');
+    expectArrayEqual(vm.dataStack, [0], '?dup does nothing for zero');
 
-// ?dup
-vm.dataStack = [0];
-runForth(vm, '?dup');
-expectArrayEqual(vm.dataStack, [0], '?dup does nothing for zero');
+    vm.dataStack = [5];
+    runForth(vm, '?dup');
+    expectArrayEqual(vm.dataStack, [5,5], '?dup duplicates non-zero');
 
-vm.dataStack = [5];
-runForth(vm, '?dup');
-expectArrayEqual(vm.dataStack, [5,5], '?dup duplicates non-zero');
+    // --- 2-operations ---
+    vm.dataStack = [1,2];
+    runForth(vm, '2dup');
+    expectArrayEqual(vm.dataStack, [1,2,1,2], '2dup duplicates top two elements');
 
-// --- 2-operations ---
-vm.dataStack = [1,2];
-runForth(vm, '2dup');
-expectArrayEqual(vm.dataStack, [1,2,1,2], '2dup duplicates top two elements');
+    vm.dataStack = [1,2,3,4];
+    runForth(vm, '2swap');
+    expectArrayEqual(vm.dataStack, [3,4,1,2], '2swap swaps top two pairs');
 
-vm.dataStack = [1,2,3,4];
-runForth(vm, '2swap');
-expectArrayEqual(vm.dataStack, [3,4,1,2], '2swap swaps top two pairs');
+    vm.dataStack = [1,2,3,4,5,6];
+    runForth(vm, '2rot');
+    expectArrayEqual(vm.dataStack, [3,4,5,6,1,2], '2rot rotates top two pairs');
 
-vm.dataStack = [1,2,3,4,5,6];
-runForth(vm, '2rot');
-expectArrayEqual(vm.dataStack, [3,4,5,6,1,2], '2rot rotates top two pairs');
+    // --- Stack underflow errors ---
+    vm.dataStack = [];
+    let err = runForth(vm, 'drop');
+    expectEqual(err.name, 'StackError', 'drop on empty stack throws StackError');
 
-// --- Stack underflow errors ---
-vm.dataStack = [];
-let err = runForth(vm, 'drop');
-expectEqual(err.name, 'StackError', 'drop on empty stack throws StackError');
+    vm.dataStack = [];
+    err = runForth(vm, '+');
+    expectEqual(err.name, 'StackError', 'math op with <2 items throws StackError');
 
-vm.dataStack = [];
-err = runForth(vm, '+');
-expectEqual(err.name, 'StackError', 'math op with <2 items throws StackError');
-
-console.log('All tests passed!');
-
+    console.log('All tests passed!');
+};
