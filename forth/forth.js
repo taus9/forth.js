@@ -110,7 +110,7 @@ export class Fvm {
                 if (var1 === 0) {
                     throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
                 }
-                return var2 / var1;
+                return Math.floor(var2 / var1);
             case types.MathTypes.POWER:
                 return Math.pow(var2, var1);
             case types.MathTypes.MODULUS:
