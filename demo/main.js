@@ -83,7 +83,7 @@ textbox.addEventListener('keyup', e => {
 runTestButton.addEventListener('click', async () => {
     const confirmed = await confirmDialog("Running the test suite will reset the FVM.");
     if (confirmed) {
-        //fvm.reset(); // or whatever your reset logic is
+        fvm.reset();
         clear();
         put("Running Forth.js test suite");
     } 
@@ -92,7 +92,7 @@ runTestButton.addEventListener('click', async () => {
 resetButton.addEventListener('click', async () => {
     const confirmed = await confirmDialog("Are you sure you want to reset the FVM?");
     if (confirmed) {
-        //fvm.reset(); // or whatever your reset logic is
+        fvm.reset();
         clear();
         put("FVM has been reset");
     }    
