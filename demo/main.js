@@ -43,10 +43,15 @@ textbox.addEventListener('keyup', e => {
     }
 });
 
+runTestButton.addEventListener('click', () => {
+
+});
+
+resetButton.addEventListener('click', () => {
+    
+});
+
+
 
 put("forth.js virtual machince created");
-
-
-
-
 
