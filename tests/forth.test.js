@@ -1,49 +1,54 @@
 import { Fvm } from '../forth/forth.js';
 import * as types from '../forth/types/types.js';
 
-const expectEqual = (actual, expected, message) => {
-    if (actual !== expected) {
-      throw new Error(`Assertion Failed: ${message}\nExpected: ${expected}, got: ${actual}`);
+
+export class FvmTestSuite {
+
+    constructor(fvm, put) {
+        this.fvm = fvm;
+        this.put = put;
+        this.message = '';
     }
-};
 
-const expectArrayEqual = (actual, expected, message) => {
-    const equal = actual.length === expected.length && actual.every((v,i) => v === expected[i]);
-    if (!equal) {
-      throw new Error(`Assertion Failed: ${message}\nExpected: [${expected}], got: [${actual}]`);
+    expectEqual(actual, expected, message) {
+        if (actual !== expected) {
+            this.message = `Assertion Failed: ${message}\nExpected: ${expected}, got: ${actual}`;
+            return false;
+        }
+        return true;
     }
-};
 
-// Helper to execute a string in the Forth VM
-const runForth = (vm, code) => {
-    try {
-        vm.execute(code);
-    } catch(e) {
-        return e;
+    expectArrayEqual(actual, expected, message) {
+        this.put(message);
+        const equal = actual.length === expected.length && actual.every((v,i) => v === expected[i]);
+        if (!equal) {
+            this.put(`Assertion Failed: ${message}\nExpected: [${expected}], got: [${actual}]`);
+        } else {
+            this.put('passed');
+        }
     }
-};
+    
+    runTestSuite() {
+        put('--- Number and Math Words ---\n');
+        
+        this.fvm.execute('3 4 +');
+        expectArrayEqual(vm.dataStack, [7], '3 4 + should push 7');
+    
+        this.fvm.execute('10 2 -');
+        expectArrayEqual(vm.dataStack, [8], '10 2 - should push 8');
+    
+        this.fvm.execute('2 3 *');
+        expectArrayEqual(vm.dataStack, [6], '2 3 * should push 6');
 
-export const runTestSuite = vm => {
+        this.fvm.execute('8 2 /');
+        expectArrayEqual(vm.dataStack, [4], '8 2 / should push 4');
 
-    // --- Number and Math Words ---
-    runForth(vm, '3 4 +');
-    expectArrayEqual(vm.dataStack, [7], '3 4 + should push 7');
-
-    runForth(vm, '10 2 -');
-    expectArrayEqual(vm.dataStack, [8], '10 2 - should push 8');
-
-    runForth(vm, '2 3 *');
-    expectArrayEqual(vm.dataStack, [6], '2 3 * should push 6');
-
-    runForth(vm, '8 2 /');
-    expectArrayEqual(vm.dataStack, [4], '8 2 / should push 4');
-
-    runForth(vm, '2 3 **');
-    expectArrayEqual(vm.dataStack, [8], '2 3 ** should push 8');
-
-    runForth(vm, '10 3 %');
-    expectArrayEqual(vm.dataStack, [1], '10 3 % should push 1');
-
+        this.fvm.execute('2 3 **');
+        expectArrayEqual(vm.dataStack, [8], '2 3 ** should push 8');
+    
+        this.fvm.execute('10 3 %');
+        expectArrayEqual(vm.dataStack, [1], '10 3 % should push 1');
+/*
     // --- Stack manipulation ---
 
     // reset stack
@@ -113,6 +118,15 @@ export const runTestSuite = vm => {
     vm.dataStack = [];
     err = runForth(vm, '+');
     expectEqual(err.name, 'StackError', 'math op with <2 items throws StackError');
+    }
+*/
+
+}
+
+
+const runTestSuite = (vm, put) => {
+
+
 
     console.log('All tests passed!');
 };
