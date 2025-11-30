@@ -1,3 +1,19 @@
+/* 
+  All functions must check for stack underflow before attempting the operation.
+  Forth words do not partially execute and then fail. They check the stack 
+  first, and if there aren’t enough items, they throw an error immediately.
+
+  Example:
+    the 'dup' word needs at least one item on the stack to properly perform it's
+    function, so you would call 'this.checkStackUnderflow(1)'. If the check
+    fails then an error is thrown in the Fvm class and execution is stopped.
+    
+    '2rot' requires at least 6 items on the stack so you would call
+    'this.checkStackUnderflow(6)'.
+    
+    ect.
+*/
+
 export const dataStack = {
     '.s': function() {
         const stackString = this.stackToString();
