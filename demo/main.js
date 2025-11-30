@@ -1,5 +1,6 @@
 "use strict";
 
+import { runTestSuite } from '../tests/forth.test.js';
 import { ErrorTypes } from '../forth/errors/errors.js';
 import * as forth from '../forth/forth.js';
 

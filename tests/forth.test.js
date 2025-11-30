@@ -1,5 +1,5 @@
-import { Fvm } from '../forth.js';
-import * as types from '../types/types.js';
+import { Fvm } from '../forth/forth.js';
+import * as types from '../forth/types/types.js';
 
 const expectEqual = (actual, expected, message) => {
     if (actual !== expected) {
