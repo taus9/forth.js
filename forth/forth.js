@@ -14,37 +14,63 @@ export class Fvm {
         this.words = {...words.core, ...words.dataStack}
     }
 
-    // main logic function of program
     execute(text) {
-        const wordStream = text.split(' ').filter(word => word !== '');
         this.output = '';
+        let i = 0;
 
-        for (let word of wordStream) {
-            const w = this.parseWord(word);
+        const skipWhitespace = () => {
+            while (i < text.length && /\s/.test(text[i])) i++;
+        };
 
-            this.checkForComment(w);
+        const isCommentStart = () =>
+            text[i] === '(' &&
+            i + 1 < text.length &&
+            /\s/.test(text[i + 1]);
+
+        const skipComment = () => {
+            i += 2; // skip '(' and the space after it
+            while (i < text.length && text[i] !== ')') i++;
+            if (text[i] === ')') i++; // skip ')'
+        };
+
+        const readToken = () => {
+            const start = i;
+            while (i < text.length && !/\s/.test(text[i])) i++;
+            return text.slice(start, i);
+        };
+
+        while (i < text.length) {
+            skipWhitespace();
+            if (i >= text.length) break;
+
+            if (isCommentStart()) {
+                skipComment();
+                continue;
+            }
+
+            const token = readToken();
+            const w = this.parseWord(token);
 
             if (this.state === types.ForthState.INTERPRET) {
+                
                 if (w instanceof words.InvalidWord) {
-                    this.status = types.StatusTypes.ERROR;
-                    throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD, w.rawText)
+                    throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD, w.rawText);
                 }
-    
+
                 if (w instanceof words.NumberWord) {
                     this.dataStack.push(w.value);
                     continue;
                 }
-    
+
                 if (w instanceof words.MathWord) {
-                    this.attemptMathOperation(w.type)
+                    this.attemptMathOperation(w.type);
                     continue;
                 }
-    
+
                 if (w instanceof words.Word) {
                     w.callback.call(this);
                 }
             }
-            
         }
 
         this.status = types.StatusTypes.OK;
