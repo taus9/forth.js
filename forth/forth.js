@@ -54,6 +54,7 @@ export class Fvm {
             if (this.state === types.ForthState.INTERPRET) {
                 
                 if (w instanceof words.InvalidWord) {
+                    this.dataStack = [];
                     throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD, w.rawText);
                 }
 
@@ -108,6 +109,7 @@ export class Fvm {
                 return var1 * var2;
             case types.MathTypes.DIV:
                 if (var1 === 0) {
+                    this.dataStack = [];
                     throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
                 }
                 return Math.trunc(var2 / var1);
@@ -116,6 +118,7 @@ export class Fvm {
             case types.MathTypes.MODULUS:
                 return var2 % var1;
             default:
+                this.dataStack = [];
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_WORD);
         }
     }
