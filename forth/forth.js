@@ -173,10 +173,10 @@ export class Fvm {
         this.dataStack.push(newVar);
     }
 
-    checkStackUnderflow(equalToOrLessThan) {
-        if (this.dataStack.length <= equalToOrLessThan) {
-            this.status = types.StatusTypes.ERROR;
+    checkStackUnderflow(requiredStackLength) {
+        if (this.dataStack.length < requiredStackLength) {
             this.dataStack = [];
+            this.status = types.StatusTypes.ERROR;
             throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
     }
