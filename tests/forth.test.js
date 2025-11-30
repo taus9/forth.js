@@ -23,7 +23,7 @@ const runForth = (vm, code) => {
     }
 };
 
-const runTest = vm => {
+export const runTest = vm => {
 
     // --- Number and Math Words ---
     runForth(vm, '3 4 +');
