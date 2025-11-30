@@ -15,6 +15,12 @@
 */
 
 export const dataStack = {
+    '.': function() {
+        this.checkStackUnderflow(1);
+        const w1 = this.dataStack.pop();
+        this.output = `${w1}`;
+    },
+    
     '.s': function() {
         const stackString = this.stackToString();
         const stackCount = this.dataStack.length;
