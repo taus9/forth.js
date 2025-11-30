@@ -22,9 +22,11 @@ export class FvmTestSuite {
         this.put(message);
         const equal = actual.length === expected.length && actual.every((v,i) => v === expected[i]);
         if (!equal) {
-            this.put(`Assertion Failed: ${message}\nExpected: [${expected}], got: [${actual}]`);
+            this.put(`Assertion Failed: ${message}\nExpected: [${expected}], got: [${actual}]\n`);
         } else {
             this.put('passed');
+            this.fvm.execute('.s');
+            this.put(`${this.fvm.output}\n`);
         }
     }
     
@@ -35,48 +37,44 @@ export class FvmTestSuite {
         this.expectArrayEqual(this.fvm.dataStack, [7], '3 4 + should push 7');
     
         this.fvm.execute('10 2 -');
-        this.expectArrayEqual(this.fvm.dataStack, [8], '10 2 - should push 8');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8], '10 2 - should push 8');
     
         this.fvm.execute('2 3 *');
-        this.expectArrayEqual(this.fvm.dataStack, [6], '2 3 * should push 6');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6], '2 3 * should push 6');
 
         this.fvm.execute('8 2 /');
-        this.expectArrayEqual(this.fvm.dataStack, [4], '8 2 / should push 4');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4], '8 2 / should push 4');
 
         this.fvm.execute('2 3 **');
-        this.expectArrayEqual(this.fvm.dataStack, [8], '2 3 ** should push 8');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,8], '2 3 ** should push 8');
     
         this.fvm.execute('10 3 %');
-        this.expectArrayEqual(this.fvm.dataStack, [1], '10 3 % should push 1');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,6,4,8,1], '10 3 % should push 1');
+
 /*
-    // --- Stack manipulation ---
+        this.put('--- Stack manipulation ---');
+        this.put('Resetting fvm and pushing [1,2,3] to the stack\n');
+        
+        this.fvm.reset();
+        this.fvm.execute('3 2 1');
 
-    // reset stack
-    vm.dataStack = [1,2,3];
+        this.fvm.execute('dup');
+        expectArrayEqual(this.fvm.dataStack, [1,2,3,3], 'dup duplicates top element');
 
-    // dup
-    runForth(vm, 'dup');
-    expectArrayEqual(vm.dataStack, [1,2,3,3], 'dup duplicates top element');
+        this.fvm.execute('drop');
+        expectArrayEqual(this.fvm.dataStack, [1,2,3], 'drop removes top element');
 
-    // drop
-    runForth(vm, 'drop');
-    expectArrayEqual(vm.dataStack, [1,2,3], 'drop removes top element');
+        this.fvm.execute('swap');
+        expectArrayEqual(this.fvm.dataStack, [1,3,2], 'swap swaps top two elements');
 
-    // swap
-    runForth(vm, 'swap');
-    expectArrayEqual(vm.dataStack, [1,3,2], 'swap swaps top two elements');
+        this.fvm.execute('over');
+        expectArrayEqual(this.fvm.dataStack, [1,3,2,3], 'over copies second element to top');
 
-    // over
-    runForth(vm, 'over');
-    expectArrayEqual(vm.dataStack, [1,3,2,3], 'over copies second element to top');
+        this.fvm.execute('nip');
+        expectArrayEqual(this.fvm.dataStack, [1,3,3], 'nip removes second-to-top element');
 
-    // nip
-    runForth(vm, 'nip');
-    expectArrayEqual(vm.dataStack, [1,3,3], 'nip removes second-to-top element');
-
-    // tuck
-    runForth(vm, 'tuck');
-    expectArrayEqual(vm.dataStack, [1,3,3,3], 'tuck inserts second element under top');
+        this.fvm.execute('tuck');
+        expectArrayEqual(this.fvm.dataStack, [1,3,3,3], 'tuck inserts second element under top');
 
     // pick
     vm.dataStack = [10,20,30,1]; // 1 pick = push 2nd element from top (20)
