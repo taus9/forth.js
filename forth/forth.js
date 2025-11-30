@@ -176,10 +176,6 @@ export class Fvm {
     }
 
     stackToString() {
-        let ret = '';
-        this.dataStack.forEach(n => {
-            ret += n + ' '
-        })
-        return ret.trim();
+        return this.dataStack.join(' ');
     }
 }
