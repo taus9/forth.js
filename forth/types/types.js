@@ -16,6 +16,5 @@ export const StatusTypes = {
 
 export const ForthState = {
     INTERPRET: 0,
-    COMMENT: 1,
     COMPILE: 2
 }

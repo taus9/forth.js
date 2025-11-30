@@ -175,12 +175,6 @@ export class Fvm {
         }
     }
 
-    checkForComment(word) {
-        if (word.rawText === '(' || word.rawText === ')') {
-            word.callback.call(this)
-        }
-    }
-
     stackToString() {
         let ret = '';
         this.dataStack.forEach(n => {
