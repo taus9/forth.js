@@ -7,7 +7,8 @@
 ## Features
 
 * Implements a **basic Forth virtual machine** with:
-  * Stack operations: `dup`, `drop`, `swap`, `over`, `nip`, `tuck`, ect. Full list can be found [here](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack)  * Arithmetic operations: `+`, `-`, `*`, `/`, `**`, `%`
+  * Stack operations: `dup`, `drop`, `swap`, `over`, `nip`, `tuck`, ect. Full list can be found [here](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack)  
+  * Arithmetic operations: `+`, `-`, `*`, `/`, `**`, `%`
   * Number literals and parsing
   * Comment handling aligned with gforth conventions
 
@@ -43,6 +44,6 @@
 
 ## License
 
-MIT License © Christopher R. Martinez
+ISC License © Christopher R. Martinez
 
 
