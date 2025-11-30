@@ -111,7 +111,7 @@ export class Fvm {
             case types.MathTypes.ADD:
                 return var1 + var2;
             case types.MathTypes.SUB:
-                return var1 - var2;
+                return var2 - var1;
             case types.MathTypes.MUL:
                 return var1 * var2;
             case types.MathTypes.DIV:
