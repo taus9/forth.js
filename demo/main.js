@@ -35,7 +35,10 @@ const put = text => {
 
 const updateStackVisualization = () => {
     const stackViz = document.getElementById('stack-visualization');
+    const stackTitle = document.getElementById('stack-header-title');
     const stack = fvm.dataStack;
+    
+    stackTitle.textContent = `Stack - <${stack.length}>`;
 
     if (stack.length === 0) {
         stackViz.innerHTML = '<div class="stack-empty">empty</div>';
