@@ -94,6 +94,15 @@ export class FvmTestSuite {
 
         this.fvm.execute('?dup');
         this.expectArrayEqual(this.fvm.dataStack, [7,8,4,1,1,1,6,0,5,5], '?dup dups for non-zero');
+        
+        this.fvm.execute('rot');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,4,1,1,1,6,5,5,0], 'rot: w1 w2 w3 – w2 w3 w1');
+        
+        this.fvm.execute('-rot');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,4,1,1,1,6,0,5,5], '-rot: w1 w2 w3 – w3 w1 w2');
+        
+        //this.fvm.execute('2drop');
+        //this.exepectArrayEqual(this.fvm.dataStack        
 
 /*
     // --- 2-operations ---
