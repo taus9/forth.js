@@ -10,6 +10,17 @@ const textbox = document.getElementById('textbox');
 const runTestButton = document.getElementById('run-tests-btn');
 const resetButton = document.getElementById('reset-btn');
 
+// Example buttons handler
+document.querySelectorAll('.example-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const code = btn.getAttribute('data-code');
+        textbox.value = code;
+        // Focus and simulate Enter key
+        textbox.focus();
+        textbox.dispatchEvent(new KeyboardEvent('keyup', { code: 'Enter' }));
+    });
+});
+
 const put = text => {
     const output = document.getElementById('output');
     const line = document.createElement('div');

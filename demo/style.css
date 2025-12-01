@@ -8,12 +8,71 @@ body {
     height: 100vh;
     background: #111;
     font-family: monospace;
+    gap: 20px;
+}
+
+/* Sidebar */
+.examples-sidebar {
+    width: 200px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 20px;
+    overflow-y: auto;
+    color: #bbb;
+    max-height: 80vh;
+}
+
+.examples-sidebar h3 {
+    margin: 0 0 15px 0;
+    color: #e6e6e6;
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.examples-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.examples-sidebar li {
+    margin-bottom: 8px;
+}
+
+.example-btn {
+    width: 100%;
+    padding: 8px;
+    font-size: 0.8em;
+    font-family: monospace;
+    background: #333;
+    color: #ccc;
+    border: 1px solid #555;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+.example-btn:hover {
+    background: #444;
+    color: #fff;
+    border-color: #666;
+    transform: translateX(2px);
+}
+
+.example-btn:active {
+    background: #555;
 }
 
 /* Terminal container */
 .terminal-container {
     width: 60vw;
     max-width: 900px;
+    height: 80vh;
     background: #000;
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0,0,0,0.6);
@@ -28,6 +87,7 @@ body {
     padding: 10px 12px;
     display: flex;
     align-items: center;
+    border-bottom: 1px solid #333;
 }
 
 /* Title left side */
@@ -64,7 +124,7 @@ body {
 /* Output area */
 #prompt {
     background-color: #000;
-    height: 50vh;
+    flex: 1;
     padding: 10px;
     overflow-y: auto;
     color: #e6e6e6;
