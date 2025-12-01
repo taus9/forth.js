@@ -4,8 +4,8 @@
  * Tests: underflow, undefined words, division by zero, unterminated comments, extreme values, etc.
  */
 
-import { Fvm } from '../forth/forth.js';
-import * as errors from '../forth/errors/errors.js';
+import { Fvm } from '../src/forth.js';
+import * as errors from '../src/errors/errors.js';
 
 export class ErrorTestSuite {
   constructor(put) {

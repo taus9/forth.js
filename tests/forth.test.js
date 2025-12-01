@@ -1,5 +1,5 @@
-import { Fvm } from '../forth/forth.js';
-import * as types from '../forth/types/types.js';
+import { Fvm } from '../src/forth.js';
+import * as types from '../src/types/types.js';
 
 
 export class FvmTestSuite {

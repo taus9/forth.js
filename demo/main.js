@@ -2,8 +2,8 @@
 
 import { StackTestSuite } from '../tests/stack.test.js';
 import { ErrorTestSuite } from '../tests/errors.test.js';
-import { ErrorTypes } from '../forth/errors/errors.js';
-import * as forth from '../forth/forth.js';
+import { ErrorTypes } from '../src/errors/errors.js';
+import * as forth from '../src/forth.js';
 
 const fvm = new forth.Fvm();
 const textbox = document.getElementById('textbox');
