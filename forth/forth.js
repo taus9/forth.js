@@ -11,6 +11,8 @@ export class Fvm {
         this.status = types.StatusTypes.OK;
         this.state = types.ForthState.INTERPRET;
         this.output = '';
+        // Merge word definitions: dataStack words override core words if names collide.
+        // Always use 'this' inside word callbacks to access VM state (stack, status, etc).
         this.words = {...words.core, ...words.dataStack}
     }
     

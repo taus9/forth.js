@@ -7,10 +7,10 @@
 ## Features
 
 * Implements a **basic Forth virtual machine** with:
-  * Stack operations: `dup`, `drop`, `swap`, `over`, `nip`, `tuck`, ect. Full list can be found [here](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack)  
+  * Stack operations: `dup`, `drop`, `swap`, `over`, `nip`, `tuck`, ect. Full list can be found [here](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack).
   * Arithmetic operations: `+`, `-`, `*`, `/`, `**`, `%`
   * Number literals and parsing
-  * Comment handling aligned with gforth conventions
+  * Comment handling
 
 * Robust error handling:
   * `StackError` for underflow
@@ -37,8 +37,36 @@
 
 * Add **colon definitions (`:` ... `;`)** to define new words
 * Implement **control flow words** (`IF`, `ELSE`, `THEN`, loops)
-* Add **unit tests** for all built-in words and error cases
 * Support **return stack** for recursion and more advanced Forth features
+
+---
+
+## Architecture & Development
+
+### Word Definition & `this` Binding
+
+Words are plain JavaScript functions stored in objects (see `forth/words/core.js` and `forth/words/dataStack.js`). When a word is executed, its callback is invoked with `this` bound to the `Fvm` instance:
+
+```javascript
+// Inside a word callback, 'this' is the Fvm instance
+const myWord = {
+  myWordName: function() {
+    this.dataStack.push(42);  // Push to the VM's stack
+  }
+};
+```
+
+**Important:** Always use `this` to access the VM state (stack, status, etc.) rather than closing over a VM reference. This ensures consistency if the VM is reset or if multiple instances exist.
+
+### Word Merging Order
+
+The `Fvm` constructor merges words from multiple sources:
+
+```javascript
+this.words = {...words.core, ...words.dataStack}
+```
+
+Words from `words.dataStack` override any identically-named words from `words.core`. If you add a new word module, ensure it is exported from `forth/words/index.js` and merged in the desired order.
 
 ---
 
