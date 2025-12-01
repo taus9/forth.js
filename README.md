@@ -14,7 +14,7 @@
 
 * Robust error handling:
   * `StackError` for underflow
-  * `ParseError` for invalid words
+  * `ParseError` for undefined words
   * `OperationError` for invalid math operations
 
 * Extensible design:

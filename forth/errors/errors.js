@@ -5,7 +5,7 @@ export const ErrorTypes = {
 };
 
 export const ErrorMessages = {
-    INVALID_WORD: 'Invalid word',
+    UNDEFINED_WORD: 'Undefined word',
     STACK_UNDERFLOW: 'Stack underflow',
     DIV_BY_ZERO: 'Divide by zero'
 }

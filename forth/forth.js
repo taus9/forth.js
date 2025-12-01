@@ -62,7 +62,7 @@ export class Fvm {
                 
                 if (w instanceof words.InvalidWord) {
                     this.dataStack = [];
-                    throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD, w.rawText);
+                    throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, w.rawText);
                 }
 
                 if (w instanceof words.NumberWord) {
@@ -126,7 +126,7 @@ export class Fvm {
                 return var2 % var1;
             default:
                 this.dataStack = [];
-                throw new errors.OperationError(errors.ErrorMessages.INVALID_WORD);
+                throw new errors.OperationError(errors.ErrorMessages.UNDEFINED_WORD);
         }
     }
 
@@ -160,7 +160,7 @@ export class Fvm {
                 return types.MathTypes.MODULUS;
             default:
                 this.dataStack = [];
-                throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD);
+                throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD);
         }
     }
 
