@@ -11,8 +11,10 @@ const resetButton = document.getElementById('reset-btn');
 
 const put = text => {
     const output = document.getElementById('output');
-    output.innerHTML += '-> ' + text + '<br>';
-    
+    const line = document.createElement('div');
+    line.textContent = '-> ' + text;
+    output.appendChild(line);
+
     const prompt = document.getElementById('prompt');
     prompt.scrollTop = prompt.scrollHeight;
 };
@@ -77,7 +79,7 @@ textbox.addEventListener('keyup', e => {
             return;
         }
 
-        put(`${text}&nbsp;${fvm.output}&nbsp;&nbsp;${fvm.status}`);
+        put(`${text} ${fvm.output}  ${fvm.status}`);
     }
 });
 
