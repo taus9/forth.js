@@ -1,24 +1,18 @@
-#!/usr/bin/env node
-/**
- * Node-compatible test runner for forth.js
- * Imports FvmTestSuite and runs tests with stdout output.
- */
+import { spawnSync } from 'child_process';
 
-import { Fvm } from '../forth/forth.js';
-import { FvmTestSuite } from '../tests/forth.test.js';
+// This runner executes the detailed test scripts sequentially so `npm test`
+// runs all suites.
+const tests = ['tests/errors.test.mjs', 'tests/stack.test.mjs'];
+let failed = false;
 
-const fvm = new Fvm();
-const output = [];
+for (const t of tests) {
+	console.log(`\n--- Running ${t} ---\n`);
+	const res = spawnSync('node', [t], { stdio: 'inherit' });
+	if (res.status !== 0) {
+		failed = true;
+		console.error(`${t} failed with exit code ${res.status}`);
+	}
+}
 
-const put = (text) => {
-  output.push(text);
-  console.log(text);
-};
+process.exit(failed ? 1 : 0);
 
-// Run the test suite
-console.log('\n========== forth.js Test Suite ==========\n');
-const suite = new FvmTestSuite(fvm, put);
-suite.runTestSuite();
-
-console.log('\n========== Tests Complete ==========\n');
-console.log(`Total lines of output: ${output.length}`);
