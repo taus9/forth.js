@@ -92,8 +92,8 @@ export const dataStack = {
     '?dup': function() {
         this.checkStackUnderflow(1);
         const topNumber = this.dataStack[this.dataStack.length - 1];
-        if (topNumber) {
-            this.dataStack.push(topNumber);
+        if (topNumber !== 0) {
+            this.dataStack.push(topNumber);   
         }
     },
 
