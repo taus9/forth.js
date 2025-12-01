@@ -177,7 +177,12 @@ export class Fvm {
         const bottomVar = this.dataStack.pop();
         const newVar = this.operate(topVar, bottomVar, type);
 
-        this.dataStack.push(newVar);
+        // Clamp very large numbers and Infinity to 0
+        // Use MAX_SAFE_INTEGER as threshold for "very large"
+        const result = 
+            Math.abs(newVar) <= Number.MAX_SAFE_INTEGER ? newVar : 0;
+            //(Number.isFinite(newVar) && Math.abs(newVar) <= Number.MAX_SAFE_INTEGER) ? newVar : 0;
+        this.dataStack.push(result);
     }
 
     checkStackUnderflow(requiredStackLength) {

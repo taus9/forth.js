@@ -214,14 +214,13 @@ export class ErrorTestSuite {
     this.put('');
     this.put('--- Extreme Values ---');
 
-    this.test('Large exponent: 2 100 ** produces Infinity or very large number', () => {
+    this.test('Large exponent: 2 100 ** produces 0 (clamped from overflow)', () => {
       const fvm = new Fvm();
       fvm.execute('2 100 **');
       const result = fvm.dataStack[0];
-      if (typeof result !== 'number') {
-        throw new Error(`Expected a number, got ${typeof result}`);
+      if (result !== 0) {
+        throw new Error(`Expected 0 (overflow clamped), got ${result}`);
       }
-      // Result should be a valid JavaScript number (Infinity is acceptable)
     });
 
     this.test('Zero to zero power: 0 0 ** = 1 (JavaScript behavior)', () => {
