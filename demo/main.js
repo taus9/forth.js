@@ -1,6 +1,7 @@
 "use strict";
 
-import { FvmTestSuite } from '../tests/forth.test.js';
+import { StackTestSuite } from '../tests/stack.test.mjs';
+import { ErrorTestSuite } from '../tests/errors.test.mjs';
 import { ErrorTypes } from '../forth/errors/errors.js';
 import * as forth from '../forth/forth.js';
 
@@ -89,8 +90,10 @@ runTestButton.addEventListener('click', async () => {
         fvm.reset();
         clear();
         put("Running Forth.js test suite");
-        const fts = new FvmTestSuite(fvm, put);
-        fts.runTestSuite();
+        const ets = new ErrorTestSuite(put);
+        ets.run();
+        const sts = new StackTestSuite(put);
+        sts.run();
     } 
 });
 
@@ -102,8 +105,6 @@ resetButton.addEventListener('click', async () => {
         put("FVM has been reset");
     }    
 });
-
-
 
 put("forth.js virtual machince created");
 
