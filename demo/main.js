@@ -29,11 +29,26 @@ const put = text => {
 
     const prompt = document.getElementById('prompt');
     prompt.scrollTop = prompt.scrollHeight;
+
+    updateStackVisualization();
+};
+
+const updateStackVisualization = () => {
+    const stackViz = document.getElementById('stack-visualization');
+    const stack = fvm.dataStack;
+
+    if (stack.length === 0) {
+        stackViz.innerHTML = '<div class="stack-empty">empty</div>';
+        return;
+    }
+
+    stackViz.innerHTML = stack.map(value => `<div class="stack-item">${value}</div>`).join('');
 };
 
 const clear = () => {
     const output = document.getElementById('output');
     output.innerHTML = '';
+    updateStackVisualization();
 };
 
 const confirmDialog = message => {
