@@ -104,22 +104,28 @@ export class FvmTestSuite {
         this.fvm.execute('-rot');
         this.expectDataStackEqual([7,8,4,1,1,1,6,0,5,5], '-rot: w1 w2 w3 – w3 w1 w2');
         
-        //this.fvm.execute('2drop');
-        //this.exepectArrayEqual(this.fvm.dataStack        
+        this.fvm.execute('2drop');
+        this.expectDataStackEqual([7,8,4,1,1,1,6,0], '2drop: removes top 2 elements');
+        
+        this.fvm.execute('2nip');
+        this.expectDataStackEqual([7,8,4,1,6,0], '2nip: removes 2 elements below the top 2 on stack');
+        
+        this.fvm.execute('2rot');
+        this.expectDataStackEqual([4,1,6,0,7,8], '2rot rotates top two pairs');
+        
+        this.fvm.execute('2swap');
+        this.expectDataStackEqual([4,1,7,8,6,0], '2swap swaps top two pairs');
+        
+        this.fvm.execute('2tuck');
+        this.expectDataStackEqual([4,1,6,0,7,8,6,0], '2tuck: w1 w2 w3 w4 – w3 w4 w1 w2 w3 w4');    
+        
+        this.fvm.execute('2over');
+        this.expectDataStackEqual([4,1,6,0,7,8,6,0,7,8], '2over: w1 w2 w3 w4 – w1 w2 w3 w4 w1 w2');
+        
+        this.fvm.execute('2dup');
+        this.expectDataStackEqual([4,1,6,0,7,8,6,0,7,8,7,8], '2dup: w1 w2 – w1 w2 w1 w2');
 
 /*
-    // --- 2-operations ---
-    vm.dataStack = [1,2];
-    runForth(vm, '2dup');
-    expectDataStackEqual(vm.dataStack, [1,2,1,2], '2dup duplicates top two elements');
-
-    vm.dataStack = [1,2,3,4];
-    runForth(vm, '2swap');
-    expectDataStackEqual(vm.dataStack, [3,4,1,2], '2swap swaps top two pairs');
-
-    vm.dataStack = [1,2,3,4,5,6];
-    runForth(vm, '2rot');
-    expectDataStackEqual(vm.dataStack, [3,4,5,6,1,2], '2rot rotates top two pairs');
 
     // --- Stack underflow errors ---
     vm.dataStack = [];
