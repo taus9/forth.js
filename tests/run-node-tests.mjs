@@ -2,7 +2,7 @@ import { spawnSync } from 'child_process';
 
 // This runner executes the detailed test scripts sequentially so `npm test`
 // runs all suites.
-const tests = ['tests/errors.test.mjs', 'tests/stack.test.mjs'];
+const tests = ['tests/errors.test.js', 'tests/stack.test.js'];
 let failed = false;
 
 for (const t of tests) {
