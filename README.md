@@ -50,6 +50,19 @@ this.words = {...words.core, ...words.dataStack}
 
 Words from `words.dataStack` override any identically-named words from `words.core`. If you add a new word module, ensure it is exported from `forth/words/index.js` and merged in the desired order.
 
+### Integer Clamping
+
+Forth.js clamps arithmetic results that exceed safe integer bounds to `0`. This design choice reflects gForth behavior and prevents silent overflow to `Infinity`:
+
+- Any operation result with absolute value > `Number.MAX_SAFE_INTEGER` (9007199254740991) is set to `0`
+- Normal results within the safe integer range pass through unchanged
+
+**Examples:**
+- `2 3 **` → `8` (normal)
+- `2 100 **` → `0` (exceeds safe bounds, clamped)
+
+This approach prevents programs from accidentally working with very large exponents and keeps the VM semantics closer to traditional fixed-width Forth implementations.
+
 ### Potential Extensions
 
 * Add **colon definitions (`:` ... `;`)** to define new words
