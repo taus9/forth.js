@@ -1,5 +1,7 @@
 # Forth.js — A Minimal Forth Interpreter in JavaScript
 
+![Tests](https://github.com/taus9/forth.js/actions/workflows/test.yml/badge.svg)
+
 **Forth.js** is a small, lightweight interpreter for the Forth programming language written in modern JavaScript and designed to be run in-browser. You can checkout the [live demo](https://taus9.github.io/forth.js/demo/). 
 
 ---
