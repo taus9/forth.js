@@ -1,7 +1,7 @@
 "use strict";
 
-import { StackTestSuite } from '../tests/stack.test.mjs';
-import { ErrorTestSuite } from '../tests/errors.test.mjs';
+import { StackTestSuite } from '../tests/stack.test.js';
+import { ErrorTestSuite } from '../tests/errors.test.js';
 import { ErrorTypes } from '../forth/errors/errors.js';
 import * as forth from '../forth/forth.js';
 
