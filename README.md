@@ -1,6 +1,6 @@
 # Forth.js — A Minimal Forth Interpreter in JavaScript
 
-**Forth.js** is a small, lightweight interpreter for the Forth programming language written in modern JavaScript and designed to be run in-browser.
+**Forth.js** is a small, lightweight interpreter for the Forth programming language written in modern JavaScript and designed to be run in-browser. You can checkout the [live demo](https://taus9.github.io/forth.js/demo/). 
 
 ---
 
@@ -20,24 +20,6 @@
 * Extensible design:
   * Core words are modular and easy to extend
   * Supports easy addition of new Forth words
-
----
-
-## Key Learnings & Skills Demonstrated
-
-* Designing and implementing a **stack-based virtual machine**
-* Writing **token parsers and interpreters**
-* Managing **error handling** in a low-level runtime
-* Working with **modular JavaScript** and clean project structure
-* Understanding **Forth language semantics** (stack ops, arithmetic, comments)
-
----
-
-## Potential Extensions
-
-* Add **colon definitions (`:` ... `;`)** to define new words
-* Implement **control flow words** (`IF`, `ELSE`, `THEN`, loops)
-* Support **return stack** for recursion and more advanced Forth features
 
 ---
 
@@ -68,11 +50,11 @@ this.words = {...words.core, ...words.dataStack}
 
 Words from `words.dataStack` override any identically-named words from `words.core`. If you add a new word module, ensure it is exported from `forth/words/index.js` and merged in the desired order.
 
----
+### Potential Extensions
 
-## Demo
-
-https://taus9.github.io/forth.js/demo/index.html
+* Add **colon definitions (`:` ... `;`)** to define new words
+* Implement **control flow words** (`IF`, `ELSE`, `THEN`, loops)
+* Support **return stack** for recursion and more advanced Forth features
 
 ---
 
