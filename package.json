@@ -1,0 +1,23 @@
+{
+  "name": "forth.js",
+  "version": "1.0.0",
+  "description": "A minimal Forth interpreter in JavaScript for the browser",
+  "type": "module",
+  "main": "forth/forth.js",
+  "scripts": {
+    "start": "python3 -m http.server 8000 --bind 127.0.0.1",
+    "test": "node tests/run-node-tests.mjs"
+  },
+  "keywords": [
+    "forth",
+    "interpreter",
+    "stack-based",
+    "virtual-machine"
+  ],
+  "author": "Christopher R. Martinez",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/taus9/forth.js.git"
+  }
+}
