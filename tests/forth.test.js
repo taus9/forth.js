@@ -29,7 +29,8 @@ export class FvmTestSuite {
         } else {
             this.put('passed');
             this.fvm.execute('.s');
-            this.put(`${this.fvm.output}\n`);
+            this.put(`${this.fvm.output}`);
+            this.put('');
         }
     }
     
@@ -76,8 +77,9 @@ export class FvmTestSuite {
 
         this.put('pushing 3 on to the stack');
         this.fvm.execute('3 .s');
-        this.put(`${this.fvm.output}\n`);
-                
+        this.put(`${this.fvm.output}`);
+        this.put('');
+
         this.fvm.execute('pick');
         this.expectDataStackEqual([7,8,6,4,1,1,1,4], 'pick - duplicate correct item from the stack to the top.');
         
@@ -86,14 +88,16 @@ export class FvmTestSuite {
 
         this.put('pushing 0 on to the stack');
         this.fvm.execute('0 .s');
-        this.put(`${this.fvm.output}\n`);
+        this.put(`${this.fvm.output}`);
+        this.put('');
 
         this.fvm.execute('?dup');
         this.expectDataStackEqual([7,8,4,1,1,1,6,0], '?dup does nothing for zero');
 
         this.put('pushing 5 on to the stack');
         this.fvm.execute('5 .s');
-        this.put(`${this.fvm.output}\n`);
+        this.put(`${this.fvm.output}`);
+        this.put('');
 
         this.fvm.execute('?dup');
         this.expectDataStackEqual([7,8,4,1,1,1,6,0,5,5], '?dup dups for non-zero');
