@@ -30,12 +30,10 @@ export class Fvm {
         };
 
         const isCommentStart = () =>
-            text[i] === '(' &&
-            i + 1 < text.length &&
-            /\s/.test(text[i + 1]);
+            text[i] === '('
 
         const skipComment = () => {
-            i += 2; // skip '(' and the space after it
+            i++; // skip '('
             while (i < text.length && text[i] !== ')') i++;
             if (text[i] === ')') i++; // skip ')'
         };
