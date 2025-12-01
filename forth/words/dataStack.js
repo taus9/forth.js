@@ -26,46 +26,47 @@ export const dataStack = {
         const stackCount = this.dataStack.length;
         this.output = `<${stackCount}> ${stackString}`;
     },
-
-    'drop': function(){
+    
+    
+    'drop': function(){ // tested
         this.checkStackUnderflow(1);
         this.dataStack.pop();
     },
 
-    'dup': function() {
+    'dup': function() { // tested
         this.checkStackUnderflow(1);
         const w = this.dataStack[this.dataStack.length - 1];
         this.dataStack.push(w);      
     },
 
-    'nip': function() {
+    'nip': function() { // tested
         this.checkStackUnderflow(2);
         const w2 = this.dataStack.pop();
         this.dataStack.pop(); // w1
         this.dataStack.push(w2);
     },
 
-    'over': function() {
+    'over': function() { // tested
         this.checkStackUnderflow(2);
         const w1 = this.dataStack[this.dataStack.length - 2];
         this.dataStack.push(w1);
     },
 
-    'tuck': function() {
+    'tuck': function() { // tested
         this.checkStackUnderflow(2);
         const w2 = this.dataStack.pop();
         const w1 = this.dataStack.pop();
         this.dataStack.push(w2, w1, w2);
     },
 
-    'swap': function() {
+    'swap': function() { // tested
         this.checkStackUnderflow(2);
         const w2 = this.dataStack.pop();
         const w1 = this.dataStack.pop();
         this.dataStack.push(w2, w1);
     },
 
-    'pick': function() {
+    'pick': function() { // tested
         this.checkStackUnderflow(1);
         const topNumber = this.dataStack.pop();
         this.checkStackUnderflow(topNumber);
@@ -73,7 +74,7 @@ export const dataStack = {
         this.dataStack.push(pickedNumber);
     },
 
-    'rot': function() {
+    'rot': function() { // tested
         this.checkStackUnderflow(3);
         const w3 = this.dataStack.pop();
         const w2 = this.dataStack.pop();
@@ -81,7 +82,7 @@ export const dataStack = {
         this.dataStack.push(w2, w3, w1);
     },
 
-    '-rot': function() {
+    '-rot': function() { // tested
         this.checkStackUnderflow(3);
         const w3 = this.dataStack.pop();
         const w2 = this.dataStack.pop();
@@ -89,7 +90,7 @@ export const dataStack = {
         this.dataStack.push(w3, w1, w2);
     },
 
-    '?dup': function() {
+    '?dup': function() { // tested
         this.checkStackUnderflow(1);
         const topNumber = this.dataStack[this.dataStack.length - 1];
         if (topNumber !== 0) {
@@ -97,7 +98,7 @@ export const dataStack = {
         }
     },
 
-    'roll': function() {
+    'roll': function() { // tested
         this.checkStackUnderflow(1);
         const rollAmount = this.dataStack.pop();
         this.checkStackUnderflow(rollAmount);
@@ -106,13 +107,13 @@ export const dataStack = {
         this.dataStack.push(target[0]);
     },
 
-    '2drop': function() {
+    '2drop': function() { // tested
         this.checkStackUnderflow(2);
         this.dataStack.pop(); // w2
         this.dataStack.pop(); // w1
     },
 
-    '2nip': function() {
+    '2nip': function() { // tested
         this.checkStackUnderflow(4);
         const w4 = this.dataStack.pop();
         const w3 = this.dataStack.pop();
@@ -121,14 +122,14 @@ export const dataStack = {
         this.dataStack.push(w3, w4);
     },
 
-    '2dup': function() {
+    '2dup': function() { //tested
         this.checkStackUnderflow(2);
         const w2 = this.dataStack.pop();
         const w1 = this.dataStack.pop();
         this.dataStack.push(w1, w2, w1, w2);
     },
 
-    '2over': function() {
+    '2over': function() { // tested
         this.checkStackUnderflow(4);
         const len = this.dataStack.length
         const w1 = this.dataStack[len - 4];
@@ -136,7 +137,7 @@ export const dataStack = {
         this.dataStack.push(w1, w2);
     },
 
-    '2tuck': function() {
+    '2tuck': function() { // tested
         this.checkStackUnderflow(4);
         const w4 = this.dataStack.pop();
         const w3 = this.dataStack.pop();
@@ -147,7 +148,7 @@ export const dataStack = {
         );
     },
 
-    '2swap': function() {
+    '2swap': function() { // tested
         this.checkStackUnderflow(4);
         const w4 = this.dataStack.pop();
         const w3 = this.dataStack.pop();
@@ -158,7 +159,7 @@ export const dataStack = {
         );
     },
 
-    '2rot': function() {
+    '2rot': function() { // tested
         this.checkStackUnderflow(6);
         const w6 = this.dataStack.pop();
         const w5 = this.dataStack.pop();
