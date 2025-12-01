@@ -117,7 +117,7 @@ export class Fvm {
                     this.dataStack = [];
                     throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
                 }
-                return Math.trunc(var2 / var1);
+                return Math.floor(var2 / var1);
             case types.MathTypes.POWER:
                 return Math.pow(var2, var1);
             case types.MathTypes.MODULUS:
