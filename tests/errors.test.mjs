@@ -1,0 +1,296 @@
+#!/usr/bin/env node
+/**
+ * Error case and edge case tests for forth.js
+ * Tests: underflow, undefined words, division by zero, unterminated comments, extreme values, etc.
+ */
+
+import { Fvm } from '../forth/forth.js';
+import * as errors from '../forth/errors/errors.js';
+
+class ErrorTestSuite {
+  constructor() {
+    this.passed = 0;
+    this.failed = 0;
+  }
+
+  test(name, fn) {
+    try {
+      fn();
+      console.log(`✓ ${name}`);
+      this.passed++;
+    } catch (err) {
+      console.log(`✗ ${name}`);
+      console.log(`  ${err.message}`);
+      this.failed++;
+    }
+  }
+
+  expectError(fn, expectedErrorType, expectedMessage = null) {
+
+    try {
+      fn();
+      throw new Error(`Expected ${expectedErrorType} but no error was thrown`);
+    } catch (err) {
+      if (err.name !== expectedErrorType) {
+        throw new Error(
+          `Expected error type ${expectedErrorType}, got ${err.name}: ${err.message}`
+        );
+      }
+      if (expectedMessage && !err.message.includes(expectedMessage)) {
+        throw new Error(
+          `Expected message containing "${expectedMessage}", got "${err.message}"`
+        );
+      }
+    }
+  }
+
+  run() {
+    console.log('\n========== Error Case Tests ==========\n');
+
+    // --- Underflow tests ---
+    console.log('--- Stack Underflow ---');
+
+    this.test('drop on empty stack throws StackError', () => {
+      const fvm = new Fvm();
+      this.expectError(
+        () => fvm.execute('drop'),
+        errors.ErrorTypes.STACK,
+        'Stack underflow'
+      );
+    });
+
+    this.test('+ with only one item throws StackError', () => {
+      const fvm = new Fvm();
+      this.expectError(
+        () => fvm.execute('5 +'),
+        errors.ErrorTypes.STACK,
+        'Stack underflow'
+      );
+    });
+
+    this.test('* on empty stack throws StackError', () => {
+      const fvm = new Fvm();
+      this.expectError(
+        () => fvm.execute('*'),
+        errors.ErrorTypes.STACK,
+        'Stack underflow'
+      );
+    });
+
+    this.test('swap with one item throws StackError', () => {
+      const fvm = new Fvm();
+      this.expectError(
+        () => fvm.execute('3 swap'),
+        errors.ErrorTypes.STACK,
+        'Stack underflow'
+      );
+    });
+
+    this.test('dup on empty stack throws StackError', () => {
+      const fvm = new Fvm();
+      this.expectError(
+        () => fvm.execute('dup'),
+        errors.ErrorTypes.STACK,
+        'Stack underflow'
+      );
+    });
+
+    this.test('Stack is cleared after underflow error', () => {
+      const fvm = new Fvm();
+      try {
+        fvm.execute('1 2 3 drop drop drop drop');  // underflow on last drop
+      } catch (err) {
+        // Expected error on underflow
+      }
+      // After error, stack should be cleared
+      if (fvm.dataStack.length !== 0) {
+        throw new Error(`Stack not cleared after underflow error; length: ${fvm.dataStack.length}`);
+      }
+    });
+
+    // --- Undefined word tests ---
+    console.log('\n--- Undefined Words ---');
+
+    this.test('Unknown word throws ParseError', () => {
+      const fvm = new Fvm();
+      this.expectError(
+        () => fvm.execute('unknownword'),
+        errors.ErrorTypes.PARSE,
+        'Undefined word'
+      );
+    });
+
+    this.test('Typo in word name throws ParseError', () => {
+      const fvm = new Fvm();
+      this.expectError(
+        () => fvm.execute('drup'),  // typo for 'drop'
+        errors.ErrorTypes.PARSE,
+        'Undefined word'
+      );
+    });
+
+    this.test('Stack is cleared after undefined word error', () => {
+      const fvm = new Fvm();
+      fvm.dataStack = [100, 200];
+      try {
+        fvm.execute('unknownword');
+      } catch (err) {
+        // Expected
+      }
+      if (fvm.dataStack.length !== 0) {
+        throw new Error(`Stack not cleared after undefined word error`);
+      }
+    });
+
+    // --- Division tests ---
+    console.log('\n--- Division Edge Cases ---');
+
+    this.test('Division by zero throws OperationError', () => {
+      const fvm = new Fvm();
+      this.expectError(
+        () => fvm.execute('5 0 /'),
+        errors.ErrorTypes.OPERATION,
+        'Divide by zero'
+      );
+    });
+
+    this.test('Stack is cleared after division by zero', () => {
+      const fvm = new Fvm();
+      fvm.dataStack = [10, 0];
+      try {
+        fvm.execute('/');
+      } catch (err) {
+        // Expected
+      }
+      if (fvm.dataStack.length !== 0) {
+        throw new Error(`Stack not cleared after division by zero`);
+      }
+    });
+
+    this.test('Division with floored semantics: 7 2 / = 3', () => {
+      const fvm = new Fvm();
+      fvm.execute('7 2 /');
+      if (fvm.dataStack[0] !== 3) {
+        throw new Error(`Expected 3, got ${fvm.dataStack[0]}`);
+      }
+    });
+
+    this.test('Negative division with floored semantics: -7 2 / = -4', () => {
+      const fvm = new Fvm();
+      fvm.execute('-7 2 /');
+      if (fvm.dataStack[0] !== -4) {
+        throw new Error(`Expected -4, got ${fvm.dataStack[0]}`);
+      }
+    });
+
+    // --- Comment tests ---
+    console.log('\n--- Comments ---');
+
+    this.test('Comment with space: ( this is a comment ) works', () => {
+      const fvm = new Fvm();
+      fvm.execute('5 ( this is a comment ) 3 +');
+      if (fvm.dataStack[0] !== 8) {
+        throw new Error(`Expected 8, got ${fvm.dataStack[0]}`);
+      }
+    });
+
+    this.test('Comment without closing paren (unterminated) consumed to EOF', () => {
+      const fvm = new Fvm();
+      fvm.execute('5 ( unterminated comment');
+      if (fvm.dataStack[0] !== 5) {
+        throw new Error(`Expected 5 on stack, got ${fvm.dataStack[0]}`);
+      }
+    });
+
+
+    // --- Extreme values ---
+    console.log('\n--- Extreme Values ---');
+
+    this.test('Large exponent: 2 100 ** produces Infinity or very large number', () => {
+      const fvm = new Fvm();
+      fvm.execute('2 100 **');
+      const result = fvm.dataStack[0];
+      if (typeof result !== 'number') {
+        throw new Error(`Expected a number, got ${typeof result}`);
+      }
+      // Result should be a valid JavaScript number (Infinity is acceptable)
+    });
+
+    this.test('Zero to zero power: 0 0 ** = 1 (JavaScript behavior)', () => {
+      const fvm = new Fvm();
+      fvm.execute('0 0 **');
+      if (fvm.dataStack[0] !== 1) {
+        throw new Error(`Expected 1, got ${fvm.dataStack[0]}`);
+      }
+    });
+
+    this.test('Negative base with exponent: -2 3 ** = -8', () => {
+      const fvm = new Fvm();
+      fvm.execute('-2 3 **');
+      if (fvm.dataStack[0] !== -8) {
+        throw new Error(`Expected -8, got ${fvm.dataStack[0]}`);
+      }
+    });
+
+    this.test('Modulus: 10 3 % = 1', () => {
+      const fvm = new Fvm();
+      fvm.execute('10 3 %');
+      if (fvm.dataStack[0] !== 1) {
+        throw new Error(`Expected 1, got ${fvm.dataStack[0]}`);
+      }
+    });
+
+    this.test('Negative modulus: -10 3 % = -1 (JavaScript %)', () => {
+      const fvm = new Fvm();
+      fvm.execute('-10 3 %');
+      // JavaScript % operator: -10 % 3 = -1 (sign matches dividend)
+      const result = fvm.dataStack[0];
+      if (result !== -1) {
+        throw new Error(`Expected -1, got ${result}`);
+      }
+    });
+
+    // --- Multiple errors ---
+    console.log('\n--- Multiple Operations & Recovery ---');
+
+    this.test('After error, new execution works (state reset)', () => {
+      const fvm = new Fvm();
+      try {
+        fvm.execute('unknownword');
+      } catch (e) {
+        // Expected
+      }
+      // After error, stack is cleared and state is reset
+      fvm.execute('5 3 +');
+      if (fvm.dataStack[0] !== 8) {
+        throw new Error(`Expected 8 after error recovery, got ${fvm.dataStack[0]}`);
+      }
+    });
+
+    this.test('Reset clears stack and state', () => {
+      const fvm = new Fvm();
+      fvm.execute('1 2 3');
+      fvm.reset();
+      if (fvm.dataStack.length !== 0) {
+        throw new Error(`Stack not cleared by reset`);
+      }
+      if (fvm.status !== 'ok') {
+        throw new Error(`Status not reset to 'ok', got: ${fvm.status}`);
+      }
+    });
+
+    // --- Print summary ---
+    console.log(`\n========== Test Summary ==========`);
+    console.log(`Passed: ${this.passed}`);
+    console.log(`Failed: ${this.failed}`);
+    console.log(`Total:  ${this.passed + this.failed}\n`);
+
+    return this.failed === 0;
+  }
+}
+
+// Run the test suite
+const suite = new ErrorTestSuite();
+const allPassed = suite.run();
+
+process.exit(allPassed ? 0 : 1);
