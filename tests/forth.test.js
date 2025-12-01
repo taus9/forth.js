@@ -93,7 +93,7 @@ export class FvmTestSuite {
         this.put(`${this.fvm.output}\n`);
 
         this.fvm.execute('?dup');
-        this.expectArrayEqual(this.fvm.dataStack, [8,4,1,1,1,6,0,5,5], '?dup shift stack and dup for non-zero');
+        this.expectArrayEqual(this.fvm.dataStack, [7,8,4,1,1,1,6,0,5,5], '?dup dups for non-zero');
 
 /*
     // --- 2-operations ---
