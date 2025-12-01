@@ -2,20 +2,25 @@
 import { Fvm } from '../forth/forth.js';
 import * as errors from '../forth/errors/errors.js';
 
-class StackTestSuite {
-  constructor() {
+export class StackTestSuite {
+  constructor(put) {
+    this.put = put ?? this.consolePut;
     this.passed = 0;
     this.failed = 0;
+  }
+
+  consolePut(message) {
+    console.log(message);
   }
 
   test(name, fn) {
     try {
       fn();
-      console.log(`✓ ${name}`);
+      this.put(`✓ ${name}`);
       this.passed++;
     } catch (err) {
-      console.log(`✗ ${name}`);
-      console.log(`  ${err.message}`);
+      this.put(`✗ ${name}`);
+      this.put(`  ${err.message}`);
       this.failed++;
     }
   }
@@ -37,7 +42,9 @@ class StackTestSuite {
   }
 
   run() {
-    console.log('\n=== dataStack words test suite ===\n');
+    this.put('');
+    this.put('=== dataStack words test suite ===');
+    this.put('');
 
     // '.' and '.s'
     this.test("'.' outputs top element to fvm.output", () => {
@@ -216,11 +223,17 @@ class StackTestSuite {
     });
 
     // Summary
-    console.log(`\nPassed: ${this.passed}, Failed: ${this.failed}`);
+    this.put('');
+    this.put(`Passed: ${this.passed}, Failed: ${this.failed}`);
     return this.failed === 0;
   }
 }
 
 const suite = new StackTestSuite();
 const ok = suite.run();
-process.exit(ok ? 0 : 1);
+
+try {
+    process.exit(ok ? 0 : 1);
+} catch (e) {
+    // In browser environments, process may not be defined
+}

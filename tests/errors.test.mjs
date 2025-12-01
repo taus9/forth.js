@@ -7,20 +7,25 @@
 import { Fvm } from '../forth/forth.js';
 import * as errors from '../forth/errors/errors.js';
 
-class ErrorTestSuite {
-  constructor() {
+export class ErrorTestSuite {
+  constructor(put) {
+    this.put = put ?? this.consolePut;
     this.passed = 0;
     this.failed = 0;
+  }
+
+  consolePut(message) {
+    console.log(message);
   }
 
   test(name, fn) {
     try {
       fn();
-      console.log(`✓ ${name}`);
+      this.put(`✓ ${name}`);
       this.passed++;
     } catch (err) {
-      console.log(`✗ ${name}`);
-      console.log(`  ${err.message}`);
+      this.put(`✗ ${name}`);
+      this.put(`  ${err.message}`);
       this.failed++;
     }
   }
@@ -45,10 +50,12 @@ class ErrorTestSuite {
   }
 
   run() {
-    console.log('\n========== Error Case Tests ==========\n');
+    this.put('');
+    this.put('========== Error Case Tests ==========');
+    this.put('');
 
     // --- Underflow tests ---
-    console.log('--- Stack Underflow ---');
+    this.put('--- Stack Underflow ---');
 
     this.test('drop on empty stack throws StackError', () => {
       const fvm = new Fvm();
@@ -204,7 +211,8 @@ class ErrorTestSuite {
 
 
     // --- Extreme values ---
-    console.log('\n--- Extreme Values ---');
+    this.put('');
+    this.put('--- Extreme Values ---');
 
     this.test('Large exponent: 2 100 ** produces Infinity or very large number', () => {
       const fvm = new Fvm();
@@ -251,7 +259,8 @@ class ErrorTestSuite {
     });
 
     // --- Multiple errors ---
-    console.log('\n--- Multiple Operations & Recovery ---');
+    this.put('');
+    this.put('--- Multiple Operations & Recovery ---');
 
     this.test('After error, new execution works (state reset)', () => {
       const fvm = new Fvm();
@@ -280,11 +289,11 @@ class ErrorTestSuite {
     });
 
     // --- Print summary ---
-    console.log(`\n========== Test Summary ==========`);
-    console.log(`Passed: ${this.passed}`);
-    console.log(`Failed: ${this.failed}`);
-    console.log(`Total:  ${this.passed + this.failed}\n`);
-
+    this.put('');
+    this.put(`========== Test Summary ==========`);
+    this.put(`Passed: ${this.passed}`);
+    this.put(`Failed: ${this.failed}`);
+    this.put(`Total:  ${this.passed + this.failed}\n`);
     return this.failed === 0;
   }
 }
@@ -293,4 +302,8 @@ class ErrorTestSuite {
 const suite = new ErrorTestSuite();
 const allPassed = suite.run();
 
-process.exit(allPassed ? 0 : 1);
+try {
+    process.exit(allPassed ? 0 : 1);
+} catch (e) {
+    // In browser environments, process may not be defined
+}
