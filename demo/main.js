@@ -4,6 +4,7 @@ import { StackTestSuite } from '../tests/stack.test.js';
 import { ErrorTestSuite } from '../tests/errors.test.js';
 import { ErrorTypes } from '../src/errors/errors.js';
 import * as forth from '../src/forth.js';
+import { CompileTestSuite } from '../tests/compile.test.js';
 
 const fvm = new forth.Fvm();
 const textbox = document.getElementById('textbox');
@@ -123,6 +124,8 @@ runTestButton.addEventListener('click', async () => {
         ets.run();
         const sts = new StackTestSuite(put);
         sts.run();
+        const cts = new CompileTestSuite(put);
+        cts.run();
     } 
 });
 
