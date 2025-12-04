@@ -116,7 +116,8 @@ export class ErrorTestSuite {
     });
 
     // --- Undefined word tests ---
-    console.log('\n--- Undefined Words ---');
+    this.put('');
+    this.put('--- Undefined Words ---');
 
     this.test('Unknown word throws ParseError', () => {
       const fvm = new Fvm();
@@ -150,7 +151,8 @@ export class ErrorTestSuite {
     });
 
     // --- Division tests ---
-    console.log('\n--- Division Edge Cases ---');
+    this.put('');
+    this.put('--- Division Edge Cases ---');
 
     this.test('Division by zero throws OperationError', () => {
       const fvm = new Fvm();
@@ -191,7 +193,8 @@ export class ErrorTestSuite {
     });
 
     // --- Comment tests ---
-    console.log('\n--- Comments ---');
+    this.put('');
+    this.put('--- Comments ---');
 
     this.test('Comment with space: ( this is a comment ) works', () => {
       const fvm = new Fvm();
@@ -214,42 +217,44 @@ export class ErrorTestSuite {
     this.put('');
     this.put('--- Extreme Values ---');
 
-    this.test('Large exponent: 2 100 ** produces 0 (clamped from overflow)', () => {
-      const fvm = new Fvm();
-      fvm.execute('2 100 **');
-      const result = fvm.dataStack[0];
-      if (result !== 0) {
-        throw new Error(`Expected 0 (overflow clamped), got ${result}`);
-      }
-    });
+    // the ** word has been removed because it is not
+    // apart of the ANS Forth dicitionary 
+    // this.test('Large exponent: 2 100 ** produces 0 (clamped from overflow)', () => {
+    //   const fvm = new Fvm();
+    //   fvm.execute('2 100 **');
+    //   const result = fvm.dataStack[0];
+    //   if (result !== 0) {
+    //     throw new Error(`Expected 0 (overflow clamped), got ${result}`);
+    //   }
+    // });
 
-    this.test('Zero to zero power: 0 0 ** = 1 (JavaScript behavior)', () => {
+    // this.test('Zero to zero power: 0 0 ** = 1 (JavaScript behavior)', () => {
+    //   const fvm = new Fvm();
+    //   fvm.execute('0 0 **');
+    //   if (fvm.dataStack[0] !== 1) {
+    //     throw new Error(`Expected 1, got ${fvm.dataStack[0]}`);
+    //   }
+    // });
+
+    // this.test('Negative base with exponent: -2 3 ** = -8', () => {
+    //   const fvm = new Fvm();
+    //   fvm.execute('-2 3 **');
+    //   if (fvm.dataStack[0] !== -8) {
+    //     throw new Error(`Expected -8, got ${fvm.dataStack[0]}`);
+    //   }
+    // });
+
+    this.test('Modulus: 10 3 MOD = 1', () => {
       const fvm = new Fvm();
-      fvm.execute('0 0 **');
+      fvm.execute('10 3 MOD');
       if (fvm.dataStack[0] !== 1) {
         throw new Error(`Expected 1, got ${fvm.dataStack[0]}`);
       }
     });
 
-    this.test('Negative base with exponent: -2 3 ** = -8', () => {
+    this.test('Negative modulus: -10 3 MOD = -1 (JavaScript %)', () => {
       const fvm = new Fvm();
-      fvm.execute('-2 3 **');
-      if (fvm.dataStack[0] !== -8) {
-        throw new Error(`Expected -8, got ${fvm.dataStack[0]}`);
-      }
-    });
-
-    this.test('Modulus: 10 3 % = 1', () => {
-      const fvm = new Fvm();
-      fvm.execute('10 3 %');
-      if (fvm.dataStack[0] !== 1) {
-        throw new Error(`Expected 1, got ${fvm.dataStack[0]}`);
-      }
-    });
-
-    this.test('Negative modulus: -10 3 % = -1 (JavaScript %)', () => {
-      const fvm = new Fvm();
-      fvm.execute('-10 3 %');
+      fvm.execute('-10 3 MOD');
       // JavaScript % operator: -10 % 3 = -1 (sign matches dividend)
       const result = fvm.dataStack[0];
       if (result !== -1) {
