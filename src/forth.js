@@ -179,7 +179,8 @@ export class Fvm {
     }
 
     parseWord(text) {
-        let word = text.trim();
+        // Forth words are case-insensitive
+        let word = text.trim().toLowerCase();
         let val = Number(word);
         
         // Order is important here, in order to be able
