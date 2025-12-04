@@ -112,4 +112,83 @@ export const core = {
         const n3 = Math.max(n1, n2);
         this.dataStack.push(n3);
     },
+    // https://forth-standard.org/standard/core/DROP
+    'DROP': function(){ // tested
+        this.checkStackUnderflow(1);
+        this.dataStack.pop();
+    },
+    // https://forth-standard.org/standard/core/DUP
+    'DUP': function() { // tested
+        this.checkStackUnderflow(1);
+        const w = this.dataStack[this.dataStack.length - 1];
+        this.dataStack.push(w);      
+    },
+    // https://forth-standard.org/standard/core/OVER
+    'OVER': function() { // tested
+        this.checkStackUnderflow(2);
+        const w1 = this.dataStack[this.dataStack.length - 2];
+        this.dataStack.push(w1);
+    },
+    // https://forth-standard.org/standard/core/SWAP
+    'SWAP': function() { // tested
+        this.checkStackUnderflow(2);
+        const w2 = this.dataStack.pop();
+        const w1 = this.dataStack.pop();
+        this.dataStack.push(w2, w1);
+    },
+    // https://forth-standard.org/standard/core/ROT
+    'ROT': function() { // tested
+        this.checkStackUnderflow(3);
+        const w3 = this.dataStack.pop();
+        const w2 = this.dataStack.pop();
+        const w1 = this.dataStack.pop();
+        this.dataStack.push(w2, w3, w1);
+    },
+    // https://forth-standard.org/standard/core/qDUP
+    '?DUP': function() { // tested
+        this.checkStackUnderflow(1);
+        const topNumber = this.dataStack[this.dataStack.length - 1];
+        if (topNumber !== 0) {
+            this.dataStack.push(topNumber);   
+        }
+    },
+    // https://forth-standard.org/standard/core/TwoDROP
+    '2DROP': function() { // tested
+        this.checkStackUnderflow(2);
+        this.dataStack.pop(); // w2
+        this.dataStack.pop(); // w1
+    },
+    // https://forth-standard.org/standard/core/TwoDUP
+    '2DUP': function() { //tested
+        this.checkStackUnderflow(2);
+        const w2 = this.dataStack.pop();
+        const w1 = this.dataStack.pop();
+        this.dataStack.push(w1, w2, w1, w2);
+    },
+    // https://forth-standard.org/standard/core/TwoOVER
+    '2OVER': function() { // tested
+        this.checkStackUnderflow(4);
+        const len = this.dataStack.length
+        const w1 = this.dataStack[len - 4];
+        const w2 = this.dataStack[len - 3];
+        this.dataStack.push(w1, w2);
+    },
+    // https://forth-standard.org/standard/core/TwoSWAP
+    '2SWAP': function() { // tested
+        this.checkStackUnderflow(4);
+        const w4 = this.dataStack.pop();
+        const w3 = this.dataStack.pop();
+        const w2 = this.dataStack.pop();
+        const w1 = this.dataStack.pop();
+        this.dataStack.push (
+            w3, w4, w1, w2
+        );
+    },
+    // https://forth-standard.org/standard/core/d
+    '.': function() {
+        this.checkStackUnderflow(1);
+        const w1 = this.dataStack.pop();
+        this.output = `${w1}`;
+    },
+
 }

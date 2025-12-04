@@ -15,28 +15,11 @@
 */
 
 export const dataStack = {
-    '.': function() {
-        this.checkStackUnderflow(1);
-        const w1 = this.dataStack.pop();
-        this.output = `${w1}`;
-    },
     
     '.S': function() {
         const stackString = this.stackToString();
         const stackCount = this.dataStack.length;
         this.output = `<${stackCount}> ${stackString}`;
-    },
-    
-    
-    'drop': function(){ // tested
-        this.checkStackUnderflow(1);
-        this.dataStack.pop();
-    },
-
-    'dup': function() { // tested
-        this.checkStackUnderflow(1);
-        const w = this.dataStack[this.dataStack.length - 1];
-        this.dataStack.push(w);      
     },
 
     'nip': function() { // tested
@@ -46,11 +29,6 @@ export const dataStack = {
         this.dataStack.push(w2);
     },
 
-    'over': function() { // tested
-        this.checkStackUnderflow(2);
-        const w1 = this.dataStack[this.dataStack.length - 2];
-        this.dataStack.push(w1);
-    },
 
     'tuck': function() { // tested
         this.checkStackUnderflow(2);
@@ -59,12 +37,6 @@ export const dataStack = {
         this.dataStack.push(w2, w1, w2);
     },
 
-    'swap': function() { // tested
-        this.checkStackUnderflow(2);
-        const w2 = this.dataStack.pop();
-        const w1 = this.dataStack.pop();
-        this.dataStack.push(w2, w1);
-    },
 
     'pick': function() { // tested
         this.checkStackUnderflow(1);
@@ -74,13 +46,7 @@ export const dataStack = {
         this.dataStack.push(pickedNumber);
     },
 
-    'rot': function() { // tested
-        this.checkStackUnderflow(3);
-        const w3 = this.dataStack.pop();
-        const w2 = this.dataStack.pop();
-        const w1 = this.dataStack.pop();
-        this.dataStack.push(w2, w3, w1);
-    },
+
 
     '-rot': function() { // tested
         this.checkStackUnderflow(3);
@@ -90,13 +56,6 @@ export const dataStack = {
         this.dataStack.push(w3, w1, w2);
     },
 
-    '?dup': function() { // tested
-        this.checkStackUnderflow(1);
-        const topNumber = this.dataStack[this.dataStack.length - 1];
-        if (topNumber !== 0) {
-            this.dataStack.push(topNumber);   
-        }
-    },
 
     'roll': function() { // tested
         this.checkStackUnderflow(1);
@@ -107,11 +66,7 @@ export const dataStack = {
         this.dataStack.push(target[0]);
     },
 
-    '2drop': function() { // tested
-        this.checkStackUnderflow(2);
-        this.dataStack.pop(); // w2
-        this.dataStack.pop(); // w1
-    },
+
 
     '2nip': function() { // tested
         this.checkStackUnderflow(4);
@@ -122,20 +77,7 @@ export const dataStack = {
         this.dataStack.push(w3, w4);
     },
 
-    '2dup': function() { //tested
-        this.checkStackUnderflow(2);
-        const w2 = this.dataStack.pop();
-        const w1 = this.dataStack.pop();
-        this.dataStack.push(w1, w2, w1, w2);
-    },
 
-    '2over': function() { // tested
-        this.checkStackUnderflow(4);
-        const len = this.dataStack.length
-        const w1 = this.dataStack[len - 4];
-        const w2 = this.dataStack[len - 3];
-        this.dataStack.push(w1, w2);
-    },
 
     '2tuck': function() { // tested
         this.checkStackUnderflow(4);
@@ -148,16 +90,6 @@ export const dataStack = {
         );
     },
 
-    '2swap': function() { // tested
-        this.checkStackUnderflow(4);
-        const w4 = this.dataStack.pop();
-        const w3 = this.dataStack.pop();
-        const w2 = this.dataStack.pop();
-        const w1 = this.dataStack.pop();
-        this.dataStack.push (
-            w3, w4, w1, w2
-        );
-    },
 
     '2rot': function() { // tested
         this.checkStackUnderflow(6);
