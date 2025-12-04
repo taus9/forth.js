@@ -10,8 +10,9 @@ export const ErrorMessages = {
     DIV_BY_ZERO: 'Divide by zero',
     NESTED_DEFINITION: 'Nested definition',
     NAME_EXPECTED: 'Word name expected',
-    INVALID_WORD_NAME: 'Invalid word name'
-}
+    INVALID_WORD_NAME: 'Invalid word name',
+    COMPILE_ONLY_WORD: 'Word only allowed in compile mode'
+};
 
 export class ParseError extends Error {
     constructor(message, rawText = '') {

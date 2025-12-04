@@ -95,6 +95,21 @@ export class Fvm {
                 continue;
             }
 
+            if (token === ';') {
+                if (this.state !== types.ForthState.COMPILE) {
+                    this.dataStack = [];
+                    throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, token);
+                }
+                this.words[this.compilingWord] = function() {
+                   const code = this.compilationBuffer.join(' ');
+                   this.execute(code); 
+                }
+                this.compilingWord = '';
+                this.compilationBuffer = [];
+                this.state = types.ForthState.INTERPRET;
+                continue;
+            }
+
             if (this.state === types.ForthState.INTERPRET) {
                 const word = this.parseWord(token);
                 if (word instanceof words.InvalidWord) {
