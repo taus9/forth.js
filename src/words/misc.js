@@ -14,15 +14,13 @@
     ect.
 */
 
-export const dataStack = {
-    
+export const misc = {    
     // Tools Ext
     '.S': function() {
         const stackString = this.stackToString();
         const stackCount = this.dataStack.length;
         this.output = `<${stackCount}> ${stackString}`;
     },
-
     // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
     '-ROT': function() { // tested
         this.checkStackUnderflow(3);
@@ -31,8 +29,6 @@ export const dataStack = {
         const w1 = this.dataStack.pop();
         this.dataStack.push(w3, w1, w2);
     },
-
-
 
     // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
     '2NIP': function() { // tested
@@ -43,8 +39,6 @@ export const dataStack = {
         this.dataStack.pop(); // w1
         this.dataStack.push(w3, w4);
     },
-
-
     // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
     '2TUCK': function() { // tested
         this.checkStackUnderflow(4);
@@ -56,7 +50,6 @@ export const dataStack = {
             w3, w4, w1, w2, w3, w4
         );
     },
-
     // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
     '2ROT': function() { // tested
         this.checkStackUnderflow(6);

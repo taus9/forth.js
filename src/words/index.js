@@ -1,10 +1,10 @@
 import { core } from "./core.js";
-import { dataStack } from "./dataStack.js";
+import { misc } from "./misc.js";
 import { Word, MathWord, NumberWord, InvalidWord} from "./words.js";
 
 export {
     core,
-    dataStack,
+    misc as dataStack,
     Word,
     MathWord,
     NumberWord,
