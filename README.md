@@ -11,7 +11,7 @@
 * Implements a **basic Forth virtual machine** with:
   * Stack operations: `dup`, `drop`, `swap`, `over`, `nip`, `tuck`, ect. Full list can be found [here](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack).
   * Arithmetic operations: `+`, `-`, `*`, `/`, `**`, `%`
-  * Colon definitions: Define custom words with `: ... ;`
+  * Colon definitions: Define or redefine words with `: ... ;`
   * Number literals and parsing
   * Comment handling
 
