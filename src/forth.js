@@ -65,7 +65,7 @@ export class Fvm {
                 continue;
             }
 
-            const token = readToken();
+            const token = readToken().toUpperCase();
             tokens.push(token);
         }
         return tokens;
@@ -174,7 +174,7 @@ export class Fvm {
 
     parseWord(text) {
         // Forth words are case-insensitive
-        let word = text.trim().toLowerCase();
+        let word = text.trim().toUpperCase();
         let val = Number(word);
         
         // Order is important here, in order to be able
