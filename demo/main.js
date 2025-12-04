@@ -6,6 +6,12 @@ import { ErrorTypes } from '../src/errors/errors.js';
 import * as forth from '../src/forth.js';
 import { CompileTestSuite } from '../tests/compile.test.js';
 
+// Detect localhost and show dev mode banner
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    const banner = document.getElementById('dev-mode-banner');
+    if (banner) banner.style.display = 'flex';
+}
+
 const fvm = new forth.Fvm();
 const textbox = document.getElementById('textbox');
 const runTestButton = document.getElementById('run-tests-btn');
