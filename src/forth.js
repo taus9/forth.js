@@ -15,7 +15,7 @@ export class Fvm {
         this.compilationBuffer = [];
         // Merge word definitions: dataStack words override core words if names collide.
         // Always use 'this' inside word callbacks to access VM state (stack, status, etc).
-        this.words = {...words.core, ...words.dataStack}
+        this.words = {...words.core, ...words.coreExt, ...words.misc}
     }
     
 
