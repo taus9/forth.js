@@ -11,16 +11,20 @@ export class Fvm {
         this.status = types.StatusTypes.OK;
         this.state = types.ForthState.INTERPRET;
         this.output = '';
+        this.compilingWord = '';
+        this.compilationBuffer = [];
         // Merge word definitions: dataStack words override core words if names collide.
         // Always use 'this' inside word callbacks to access VM state (stack, status, etc).
         this.words = {...words.core, ...words.dataStack}
     }
     
     reset() {
-      this.output = '';
-      this.dataStack = [];
-      this.status = types.StatusTypes.OK;
-      this.state = types.ForthState.INTERPRET;
+        this.output = '';
+        this.dataStack = [];
+        this.compilingWord = '';
+        this.compilationBuffer = [];
+        this.status = types.StatusTypes.OK;
+        this.state = types.ForthState.INTERPRET;
     }
 
     tokenize(text) {
@@ -70,6 +74,27 @@ export class Fvm {
         while (tokenIndex < tokens.length) {
             const token = tokens[tokenIndex++];
 
+            // Start of a new word definition
+            if (token === ':') {
+                if (this.state === types.ForthState.COMPILE) {
+                    this.dataStack = [];
+                    throw new errors.ParseError(errors.ErrorMessages.NESTED_DEFINITION);
+                }
+                if (tokenIndex >= tokens.length) {
+                    this.dataStack = [];
+                    throw new errors.ParseError(errors.ErrorMessages.NAME_EXPECTED);
+                }
+                const wordName = tokens[tokenIndex++];
+                if (!this.isValidWordName(wordName)) {
+                    this.dataStack = [];
+                    throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
+                }
+                this.compilingWord = wordName;
+                this.compilationBuffer = [];
+                this.state = types.ForthState.COMPILE;
+                continue;
+            }
+
             if (this.state === types.ForthState.INTERPRET) {
                 const word = this.parseWord(token);
                 if (word instanceof words.InvalidWord) {
@@ -93,8 +118,19 @@ export class Fvm {
             }
         }
 
-        this.status = types.StatusTypes.OK;
-        this.state = types.ForthState.INTERPRET;
+        if (this.state === types.ForthState.INTERPRET) {
+            this.status = types.StatusTypes.OK;
+        } else {
+            this.status = types.StatusTypes.COMPILED;
+        }
+    }
+
+    isValidWordName(name) {
+        // in ANS Forth ":" and ";" are valid word names and can be redefined
+        if (name === ":" || name === ";") {
+            return false;
+        }
+        return true;
     }
 
     parseWord(text) {
