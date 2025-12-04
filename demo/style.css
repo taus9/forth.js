@@ -58,14 +58,15 @@ body {
 
 /* Sidebar */
 .examples-sidebar {
-    width: 200px;
+    width: 240px;
     background: #1a1a1a;
     border: 1px solid #333;
     border-radius: 10px;
     padding: 20px;
     overflow-y: auto;
     color: #bbb;
-    max-height: 80vh;
+    height: 80vh;
+    box-sizing: border-box;
 }
 
 .examples-sidebar h3 {
@@ -74,6 +75,12 @@ body {
     font-size: 0.95em;
     text-transform: uppercase;
     letter-spacing: 1px;
+}
+
+.examples-sidebar h3:not(:first-of-type) {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #333;
 }
 
 .examples-sidebar ul {
