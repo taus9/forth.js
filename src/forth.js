@@ -18,6 +18,7 @@ export class Fvm {
         this.words = {...words.core, ...words.dataStack}
     }
     
+
     reset() {
         this.output = '';
         this.dataStack = [];
@@ -25,6 +26,10 @@ export class Fvm {
         this.compilationBuffer = [];
         this.status = types.StatusTypes.OK;
         this.state = types.ForthState.INTERPRET;
+    }
+
+    resetWords() {
+        this.words = {...words.core, ...words.dataStack};
     }
 
     tokenize(text) {
