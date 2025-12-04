@@ -102,6 +102,7 @@ textbox.addEventListener('keyup', e => {
             fvm.execute(text);
         } 
         catch (e) {
+            put(`${text}`);
             if (e.name === ErrorTypes.STACK || e.name === ErrorTypes.OPERATION) {
                 put(`Error: ${e.message}`)
                 return
