@@ -11,6 +11,7 @@ export const MathTypes = {
 
 export const StatusTypes = {
     OK: 'ok',
+    COMPILED: 'compiled',
     ERROR: '?'
 };
 
