@@ -105,11 +105,15 @@ export class Fvm {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, token);
                 }
-                // Capture the buffer value NOW (not reference to this.compilationBuffer)
+
+                if (this.isWordRedefined(this.compilingWord)) {
+                    this.output = `redefined ${this.compilingWord}`;
+                }
                 const code = this.compilationBuffer.join(' ');
                 this.words[this.compilingWord] = function() {
                    this.execute(code); 
                 }
+                
                 this.compilingWord = '';
                 this.compilationBuffer = [];
                 this.state = types.ForthState.INTERPRET;
@@ -132,19 +136,20 @@ export class Fvm {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.rawText);
                 }
-
+                
                 if (word instanceof words.NumberWord) {
                     this.dataStack.push(word.value);
                     continue;
                 }
-
+                
                 if (word instanceof words.MathWord) {
                     this.attemptMathOperation(word.type);
                     continue;
                 }
-
+                
                 if (word instanceof words.Word) {
                     word.callback.call(this);
+                    continue;
                 }
             }
         }
@@ -164,10 +169,26 @@ export class Fvm {
         return true;
     }
 
+    // needed so we can output 'redefined' to the console
+    isWordRedefined(word) {
+        return ( 
+            Object.hasOwn(this.words, word) ||
+            !isNaN(Number(word)) ||
+            this.isMathOperator(word)
+        );
+    }
+
     parseWord(text) {
         let word = text.trim();
         let val = Number(word);
         
+        // Order is important here, in order to be able
+        // to redefine words like "+", "dup", "123", etc.
+        if (Object.hasOwn(this.words, word)) {
+            // say this three times fast...
+            return new words.Word(word, this.words[word])
+        }
+
         if (!isNaN(val)) {
             return new words.NumberWord(word, val)
         }
@@ -177,11 +198,6 @@ export class Fvm {
             return new words.MathWord(word, type)
         }
         
-        if (Object.hasOwn(this.words, word)) {
-            // say this three times fast...
-            return new words.Word(word, this.words[word])
-        }
-
         return new words.InvalidWord(word);
     }
 
