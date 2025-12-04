@@ -64,8 +64,8 @@ export class Fvm {
                 skipComment();
                 continue;
             }
-
-            const token = readToken();
+            // Forth words are case-insensitive
+            const token = readToken().toLowerCase();
             tokens.push(token);
         }
         return tokens;
