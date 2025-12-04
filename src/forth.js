@@ -100,8 +100,9 @@ export class Fvm {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, token);
                 }
+                // Capture the buffer value NOW (not reference to this.compilationBuffer)
+                const code = this.compilationBuffer.join(' ');
                 this.words[this.compilingWord] = function() {
-                   const code = this.compilationBuffer.join(' ');
                    this.execute(code); 
                 }
                 this.compilingWord = '';
