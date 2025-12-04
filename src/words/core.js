@@ -1,3 +1,57 @@
-import { ForthState } from "../types/types.js";
+import * as errors from '../errors/errors.js';
 
-export const core = {};
+export const core = {
+    // https://forth-standard.org/standard/core/Times
+    '*': function() {
+        this.checkStackUnderflow(2);
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        // TODO: handle overflow and unsigned ints
+        const n3 = n1 * n2;
+        this.dataStack.push(n3);
+    },
+    // https://forth-standard.org/standard/core/Plus
+    '+': function() {
+        this.checkStackUnderflow(2);
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        // TODO: handle overflow and unsigned ints
+        const n3 = n1 + n2;
+        this.dataStack.push(n3);
+    },
+    // https://forth-standard.org/standard/core/Minus
+    '-': function() {
+        this.checkStackUnderflow(2);
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        // TODO: handle overflow and unsigned ints
+        const n3 = n1 - n2;
+        this.dataStack.push(n3);
+    },
+    // https://forth-standard.org/standard/core/Div
+    '/': function() {
+        this.checkStackUnderflow(2);
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        if (n2 === 0) {
+            this.reset();
+            throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
+        }
+        // TODO: handle overflow and unsigned ints
+        const n3 = Math.floor(n1 / n2);
+        this.dataStack.push(n3);
+    },
+    // https://forth-standard.org/standard/core/MOD
+    'MOD': function() {
+        this.checkStackUnderflow(2);
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        if (n2 === 0) {
+            this.reset();
+            throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
+        }
+        // TODO: handle overflow and unsigned ints
+        const n3 = n1 % n2;
+        this.dataStack.push(n3);
+    },
+};

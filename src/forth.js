@@ -142,11 +142,6 @@ export class Fvm {
                     continue;
                 }
                 
-                if (word instanceof words.MathWord) {
-                    this.attemptMathOperation(word.type);
-                    continue;
-                }
-                
                 if (word instanceof words.Word) {
                     word.callback.call(this);
                     continue;
@@ -173,8 +168,7 @@ export class Fvm {
     isWordRedefined(word) {
         return ( 
             Object.hasOwn(this.words, word) ||
-            !isNaN(Number(word)) ||
-            this.isMathOperator(word)
+            !isNaN(Number(word))
         );
     }
 
@@ -193,91 +187,8 @@ export class Fvm {
         if (!isNaN(val)) {
             return new words.NumberWord(word, val)
         }
-    
-        if (this.isMathOperator(word)) {
-            const type = this.getMathOperatorType(word)
-            return new words.MathWord(word, type)
-        }
-        
+            
         return new words.InvalidWord(word);
-    }
-
-    operate(var1, var2, type) {
-        switch (type) {
-            case types.MathTypes.ADD:
-                return var1 + var2;
-            case types.MathTypes.SUB:
-                return var2 - var1;
-            case types.MathTypes.MUL:
-                return var1 * var2;
-            case types.MathTypes.DIV:
-                if (var1 === 0) {
-                    this.reset();
-                    throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
-                }
-                return Math.floor(var2 / var1);
-            case types.MathTypes.POWER:
-                return Math.pow(var2, var1);
-            case types.MathTypes.MODULUS:
-                return var2 % var1;
-            default:
-                this.reset();
-                throw new errors.OperationError(errors.ErrorMessages.UNDEFINED_WORD);
-        }
-    }
-
-    isMathOperator(word) {
-        switch (word) {
-            case '+': 
-            case '-':
-            case '*': 
-            case '**': 
-            case '/': 
-            case '%':
-                return true;
-           default:
-                return false;
-        }
-    }
-
-    getMathOperatorType(word) {
-        switch (word) {
-            case '+':
-                return types.MathTypes.ADD;
-            case '-':
-                return types.MathTypes.SUB;
-            case '*':
-                return types.MathTypes.MUL;
-            case '**':
-                return types.MathTypes.POWER
-            case '/':
-                return types.MathTypes.DIV;
-            case '%':
-                return types.MathTypes.MODULUS;
-            default:
-                this.reset();
-                throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD);
-        }
-    }
-
-    attemptMathOperation(type) {
-        // Need at least 2 operands to perform a math operation...duh...
-        if (this.dataStack.length < 2) {
-            this.reset();
-            throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
-        }
-        
-        // perform operation on stack
-        const topVar = this.dataStack.pop();
-        const bottomVar = this.dataStack.pop();
-        const newVar = this.operate(topVar, bottomVar, type);
-
-        // Clamp very large numbers and Infinity to 0
-        // Use MAX_SAFE_INTEGER as threshold for "very large"
-        const result = 
-            Math.abs(newVar) <= Number.MAX_SAFE_INTEGER ? newVar : 0;
-            //(Number.isFinite(newVar) && Math.abs(newVar) <= Number.MAX_SAFE_INTEGER) ? newVar : 0;
-        this.dataStack.push(result);
     }
 
     checkStackUnderflow(requiredStackLength) {
