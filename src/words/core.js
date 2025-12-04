@@ -74,5 +74,19 @@ export const core = {
         const n = this.dataStack.pop();
         const u = Math.abs(n);
         this.dataStack.push(u);
-    }
-};
+    },
+    // https://forth-standard.org/standard/core/OneMinus
+    '1-': function() {
+        this.checkStackUnderflow(1);
+        const n1 = this.dataStack.pop();
+        const n2 = n1 - 1;
+        this.dataStack.push(n2);
+    },
+    // https://forth-standard.org/standard/core/OnePlus
+    '1+': function() {
+        this.checkStackUnderflow(1);
+        const n1 = this.dataStack.pop();
+        const n2 = n1 + 1;
+        this.dataStack.push(n2);
+    },
+}

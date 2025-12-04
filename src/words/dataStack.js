@@ -21,7 +21,7 @@ export const dataStack = {
         this.output = `${w1}`;
     },
     
-    '.s': function() {
+    '.S': function() {
         const stackString = this.stackToString();
         const stackCount = this.dataStack.length;
         this.output = `<${stackCount}> ${stackString}`;
