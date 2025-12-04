@@ -14,7 +14,7 @@ export const ErrorMessages = {
 }
 
 export class ParseError extends Error {
-    constructor(message, rawText) {
+    constructor(message, rawText = '') {
         super(message);
         this.name = ErrorTypes.PARSE;
         this.rawText = rawText;
