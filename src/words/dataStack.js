@@ -16,39 +16,15 @@
 
 export const dataStack = {
     
+    // Tools Ext
     '.S': function() {
         const stackString = this.stackToString();
         const stackCount = this.dataStack.length;
         this.output = `<${stackCount}> ${stackString}`;
     },
 
-    'nip': function() { // tested
-        this.checkStackUnderflow(2);
-        const w2 = this.dataStack.pop();
-        this.dataStack.pop(); // w1
-        this.dataStack.push(w2);
-    },
-
-
-    'tuck': function() { // tested
-        this.checkStackUnderflow(2);
-        const w2 = this.dataStack.pop();
-        const w1 = this.dataStack.pop();
-        this.dataStack.push(w2, w1, w2);
-    },
-
-
-    'pick': function() { // tested
-        this.checkStackUnderflow(1);
-        const topNumber = this.dataStack.pop();
-        this.checkStackUnderflow(topNumber);
-        const pickedNumber = this.dataStack[(this.dataStack.length - 1) - topNumber];
-        this.dataStack.push(pickedNumber);
-    },
-
-
-
-    '-rot': function() { // tested
+    // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
+    '-ROT': function() { // tested
         this.checkStackUnderflow(3);
         const w3 = this.dataStack.pop();
         const w2 = this.dataStack.pop();
@@ -57,18 +33,9 @@ export const dataStack = {
     },
 
 
-    'roll': function() { // tested
-        this.checkStackUnderflow(1);
-        const rollAmount = this.dataStack.pop();
-        this.checkStackUnderflow(rollAmount);
-        const targetIndex = this.dataStack.length - 1 - rollAmount;
-        const target = this.dataStack.splice(targetIndex, 1);
-        this.dataStack.push(target[0]);
-    },
 
-
-
-    '2nip': function() { // tested
+    // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
+    '2NIP': function() { // tested
         this.checkStackUnderflow(4);
         const w4 = this.dataStack.pop();
         const w3 = this.dataStack.pop();
@@ -78,8 +45,8 @@ export const dataStack = {
     },
 
 
-
-    '2tuck': function() { // tested
+    // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
+    '2TUCK': function() { // tested
         this.checkStackUnderflow(4);
         const w4 = this.dataStack.pop();
         const w3 = this.dataStack.pop();
@@ -90,8 +57,8 @@ export const dataStack = {
         );
     },
 
-
-    '2rot': function() { // tested
+    // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
+    '2ROT': function() { // tested
         this.checkStackUnderflow(6);
         const w6 = this.dataStack.pop();
         const w5 = this.dataStack.pop();
