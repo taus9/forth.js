@@ -41,6 +41,20 @@ export const core = {
         const n3 = Math.floor(n1 / n2);
         this.dataStack.push(n3);
     },
+    // https://forth-standard.org/standard/core/DivMOD
+    '/MOD': function() {
+        this.checkStackUnderflow(2);
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        if (n2 === 0) {
+            this.reset();
+            throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
+        }
+        const n3 = n1 % n2;
+        const n4 = Math.floor(n1 / n2);
+        this.dataStack.push(n3);
+        this.dataStack.push(n4);
+    },
     // https://forth-standard.org/standard/core/MOD
     'MOD': function() {
         this.checkStackUnderflow(2);
@@ -54,4 +68,11 @@ export const core = {
         const n3 = n1 % n2;
         this.dataStack.push(n3);
     },
+    // https://forth-standard.org/standard/core/ABS
+    'ABS': function() {
+        this.checkStackUnderflow(1);
+        const n = this.dataStack.pop();
+        const u = Math.abs(n);
+        this.dataStack.push(u);
+    }
 };
