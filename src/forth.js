@@ -77,16 +77,16 @@ export class Fvm {
             // Start of a new word definition
             if (token === ':') {
                 if (this.state === types.ForthState.COMPILE) {
-                    this.dataStack = [];
+                    this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.NESTED_DEFINITION);
                 }
                 if (tokenIndex >= tokens.length) {
-                    this.dataStack = [];
+                    this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.NAME_EXPECTED);
                 }
                 const wordName = tokens[tokenIndex++];
                 if (!this.isValidWordName(wordName)) {
-                    this.dataStack = [];
+                    this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
                 }
                 this.compilingWord = wordName;
@@ -97,7 +97,7 @@ export class Fvm {
 
             if (token === ';') {
                 if (this.state !== types.ForthState.COMPILE) {
-                    this.dataStack = [];
+                    this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, token);
                 }
                 this.words[this.compilingWord] = function() {
@@ -110,10 +110,20 @@ export class Fvm {
                 continue;
             }
 
+            if (this.state === types.ForthState.COMPILE) {
+                const word = this.parseWord(token);
+                if (word instanceof words.InvalidWord) {
+                    this.reset();
+                    throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.rawText);
+                }
+                this.compilationBuffer.push(token);
+                continue;
+            }
+
             if (this.state === types.ForthState.INTERPRET) {
                 const word = this.parseWord(token);
                 if (word instanceof words.InvalidWord) {
-                    this.dataStack = [];
+                    this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.rawText);
                 }
 
@@ -179,7 +189,7 @@ export class Fvm {
                 return var1 * var2;
             case types.MathTypes.DIV:
                 if (var1 === 0) {
-                    this.dataStack = [];
+                    this.reset();
                     throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
                 }
                 return Math.floor(var2 / var1);
@@ -188,7 +198,7 @@ export class Fvm {
             case types.MathTypes.MODULUS:
                 return var2 % var1;
             default:
-                this.dataStack = [];
+                this.reset();
                 throw new errors.OperationError(errors.ErrorMessages.UNDEFINED_WORD);
         }
     }
@@ -222,7 +232,7 @@ export class Fvm {
             case '%':
                 return types.MathTypes.MODULUS;
             default:
-                this.dataStack = [];
+                this.reset();
                 throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD);
         }
     }
@@ -230,8 +240,7 @@ export class Fvm {
     attemptMathOperation(type) {
         // Need at least 2 operands to perform a math operation...duh...
         if (this.dataStack.length < 2) {
-            this.status = types.StatusTypes.ERROR;
-            this.dataStack = []; // clear the stack after error
+            this.reset();
             throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
         
@@ -250,8 +259,7 @@ export class Fvm {
 
     checkStackUnderflow(requiredStackLength) {
         if (this.dataStack.length < requiredStackLength) {
-            this.dataStack = [];
-            this.status = types.StatusTypes.ERROR;
+            this.reset();
             throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
     }
