@@ -5,13 +5,6 @@ export class Word {
     }
 }
 
-export class MathWord extends Word {
-    constructor(rawText, type) {
-        super(rawText);
-        this.type = type;
-    }
-}
-
 export class NumberWord extends Word {
     constructor(rawText, value) {
         super(rawText);
