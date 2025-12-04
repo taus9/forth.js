@@ -37,4 +37,5 @@ coverage/
 # Misc
 logs/
 *.log
-todos
+
+todo/
