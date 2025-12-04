@@ -23,9 +23,9 @@ export class Fvm {
       this.state = types.ForthState.INTERPRET;
     }
 
-    execute(text) {
-        this.output = '';
+    tokenize(text) {
         let i = 0;
+        const tokens = [];
 
         const skipWhitespace = () => {
             while (i < text.length && /\s/.test(text[i])) i++;
@@ -46,6 +46,7 @@ export class Fvm {
             return text.slice(start, i);
         };
 
+        // First pass: tokenize (skip comments)
         while (i < text.length) {
             skipWhitespace();
             if (i >= text.length) break;
@@ -56,27 +57,38 @@ export class Fvm {
             }
 
             const token = readToken();
-            const w = this.parseWord(token);
+            tokens.push(token);
+        }
+        return tokens;
+    }
+
+    execute(text) {
+        this.output = '';
+        const tokens = this.tokenize(text);
+
+        let tokenIndex = 0;
+        while (tokenIndex < tokens.length) {
+            const token = tokens[tokenIndex++];
 
             if (this.state === types.ForthState.INTERPRET) {
-                
-                if (w instanceof words.InvalidWord) {
+                const word = this.parseWord(token);
+                if (word instanceof words.InvalidWord) {
                     this.dataStack = [];
-                    throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, w.rawText);
+                    throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.rawText);
                 }
 
-                if (w instanceof words.NumberWord) {
-                    this.dataStack.push(w.value);
+                if (word instanceof words.NumberWord) {
+                    this.dataStack.push(word.value);
                     continue;
                 }
 
-                if (w instanceof words.MathWord) {
-                    this.attemptMathOperation(w.type);
+                if (word instanceof words.MathWord) {
+                    this.attemptMathOperation(word.type);
                     continue;
                 }
 
-                if (w instanceof words.Word) {
-                    w.callback.call(this);
+                if (word instanceof words.Word) {
+                    word.callback.call(this);
                 }
             }
         }
