@@ -7,7 +7,10 @@ export const ErrorTypes = {
 export const ErrorMessages = {
     UNDEFINED_WORD: 'Undefined word',
     STACK_UNDERFLOW: 'Stack underflow',
-    DIV_BY_ZERO: 'Divide by zero'
+    DIV_BY_ZERO: 'Divide by zero',
+    NESTED_DEFINITION: 'Nested definition',
+    NAME_EXPECTED: 'Word name expected',
+    INVALID_WORD_NAME: 'Invalid word name'
 }
 
 export class ParseError extends Error {
