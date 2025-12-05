@@ -10,9 +10,9 @@
 
 * Implements a **basic Forth virtual machine** with:
   * Stack operations: `dup`, `drop`, `swap`, `over`, `nip`, `tuck`, ect. Full list can be found [here](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack).
-  * Arithmetic operations: `+`, `-`, `*`, `/`, `**`, `%`
+  * Arithmetic operations: `+`, `-`, `*`, `/`, `MOD`, `/MOD`, `1+`, `1-`
   * Colon definitions: Define or redefine words with `: ... ;`
-  * Number literals and parsing
+  * 64-bit Cell width for the data stack
   * Comment handling
 
 * Robust error handling:
@@ -70,6 +70,7 @@ This approach prevents programs from accidentally working with very large expone
 
 * Implement **control flow words** (`IF`, `ELSE`, `THEN`, loops)
 * Support **return stack** for recursion and more advanced Forth features
+* Full ANS Forth compilence 
 
 ---
 
