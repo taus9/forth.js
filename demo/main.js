@@ -13,6 +13,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
 }
 
 const fvm = new forth.Fvm();
+
 const textbox = document.getElementById('textbox');
 const runTestButton = document.getElementById('run-tests-btn');
 const resetButton = document.getElementById('reset-btn');
@@ -52,7 +53,7 @@ const updateStackVisualization = () => {
         return;
     }
 
-    stackViz.innerHTML = stack.map(value => `<div class="stack-item">${value}</div>`).join('');
+    stackViz.innerHTML = stack.map(cell => `<div class="stack-item">${cell.toSigned()}</div>`).join('');
 };
 
 const clear = () => {
