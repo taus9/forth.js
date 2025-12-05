@@ -1,6 +1,6 @@
 "use strict";
 
-import { StackTestSuite } from '../tests/stack.test.js';
+import { WordsTestSuite } from '../tests/words.test.js';
 import { ErrorTestSuite } from '../tests/errors.test.js';
 import { ErrorTypes } from '../src/errors/errors.js';
 import * as forth from '../src/forth.js';
@@ -128,12 +128,12 @@ runTestButton.addEventListener('click', async () => {
         fvm.reset();
         clear();
         put("Running Forth.js test suite");
-        const ets = new ErrorTestSuite(put);
-        ets.run();
-        const sts = new StackTestSuite(put);
-        sts.run();
+        const wts = new WordsTestSuite(put);
+        wts.run();
         const cts = new CompileTestSuite(put);
         cts.run();
+        const ets = new ErrorTestSuite(put);
+        ets.run();
     } 
 });
 
