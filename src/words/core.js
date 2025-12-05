@@ -155,7 +155,7 @@ export const core = {
     '?DUP': function() { // tested
         this.checkStackUnderflow(1);
         const topNumber = this.dataStack[this.dataStack.length - 1];
-        if (topNumber !== 0) {
+        if (topNumber.toNumber() !== 0) {
             this.dataStack.push(topNumber);   
         }
     },

@@ -17,16 +17,16 @@ export const coreExt = {
     'PICK': function() { // tested
         this.checkStackUnderflow(1);
         const topNumber = this.dataStack.pop();
-        this.checkStackUnderflow(topNumber.toUnsigned());
-        const pickedNumber = this.dataStack[(this.dataStack.length - 1) - topNumber.toUnsigned()];
+        this.checkStackUnderflow(topNumber.toNumber());
+        const pickedNumber = this.dataStack[(this.dataStack.length - 1) - topNumber.toNumber()];
         this.dataStack.push(pickedNumber);
     },
     // https://forth-standard.org/standard/core/ROLL
     'ROLL': function() { // tested
         this.checkStackUnderflow(1);
         const rollAmount = this.dataStack.pop();
-        this.checkStackUnderflow(rollAmount.toUnsigned());
-        const targetIndex = this.dataStack.length - 1 - rollAmount.toUnsigned();
+        this.checkStackUnderflow(rollAmount.toNumber());
+        const targetIndex = this.dataStack.length - 1 - rollAmount.toNumber();
         const target = this.dataStack.splice(targetIndex, 1);
         this.dataStack.push(target[0]);
     },
