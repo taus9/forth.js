@@ -52,7 +52,7 @@ export class ErrorTestSuite {
 
   run() {
     this.put('');
-    this.put('========== Error Case Tests ==========');
+    this.put('========== Errors Test Suite ==========');
     this.put('');
 
     // --- Underflow tests ---

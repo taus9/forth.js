@@ -46,10 +46,11 @@ export class WordsTestSuite {
 
   run() {
     this.put('');
-    this.put('===Words test suite ===');
+    this.put('========== Words Test Suite ==========');
     this.put('');
 
     this.put('--- Core Words ---');
+    this.put('');
 
     this.test("* multiplies top two stack items", () => {
       const fvm = new Fvm();
