@@ -7,7 +7,6 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        // TODO: handle overflow and unsigned ints
         const n3 = new Cell(n1.toUnsigned() * n2.toUnsigned());
         this.dataStack.push(n3);
     },
@@ -16,7 +15,6 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        // TODO: handle overflow and unsigned ints
         const n3 = new Cell(n1.toUnsigned() + n2.toUnsigned());
         this.dataStack.push(n3);
     },
@@ -25,7 +23,6 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        // TODO: handle overflow and unsigned ints
         const n3 = new Cell(n1.toUnsigned() - n2.toUnsigned());
         this.dataStack.push(n3);
     },
