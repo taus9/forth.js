@@ -198,8 +198,4 @@ export class Fvm {
             throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
     }
-
-    stackToString() {
-        return this.dataStack.join(' ');
-    }
 }
