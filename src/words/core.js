@@ -1,3 +1,4 @@
+import { Cell } from '../types/cell.js';
 import * as errors from '../errors/errors.js';
 
 export const core = {
@@ -7,7 +8,7 @@ export const core = {
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
         // TODO: handle overflow and unsigned ints
-        const n3 = n1 * n2;
+        const n3 = new Cell(n1.toUnsigned() * n2.toUnsigned());
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/Plus
@@ -16,7 +17,7 @@ export const core = {
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
         // TODO: handle overflow and unsigned ints
-        const n3 = n1 + n2;
+        const n3 = new Cell(n1.toUnsigned() + n2.toUnsigned());
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/Minus
@@ -25,7 +26,7 @@ export const core = {
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
         // TODO: handle overflow and unsigned ints
-        const n3 = n1 - n2;
+        const n3 = new Cell(n1.toUnsigned() - n2.toUnsigned());
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/Div
@@ -33,12 +34,12 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        if (n2 === 0) {
+        if (n2.toUnsigned() === 0) {
             this.reset();
             throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
         }
         // TODO: handle overflow and unsigned ints
-        const n3 = Math.floor(n1 / n2);
+        const n3 = new Cell(Math.floor(n1.toUnsigned() / n2.toUnsigned()));
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/DivMOD
@@ -46,12 +47,12 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        if (n2 === 0) {
+        if (n2.toUnsigned() === 0) {
             this.reset();
             throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
         }
-        const n3 = n1 % n2;
-        const n4 = Math.floor(n1 / n2);
+        const n3 = new Cell(n1.toUnsigned() % n2.toUnsigned());
+        const n4 = new Cell(Math.floor(n1.toUnsigned() / n2.toUnsigned()));
         this.dataStack.push(n3);
         this.dataStack.push(n4);
     },
@@ -60,40 +61,40 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        if (n2 === 0) {
+        if (n2.toUnsigned() === 0) {
             this.reset();
             throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
         }
         // TODO: handle overflow and unsigned ints
-        const n3 = n1 % n2;
+        const n3 = new Cell(n1.toUnsigned() % n2.toUnsigned());
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/ABS
     'ABS': function() {
         this.checkStackUnderflow(1);
         const n = this.dataStack.pop();
-        const u = Math.abs(n);
+        const u = new Cell(Math.abs(n.toSigned()));
         this.dataStack.push(u);
     },
     // https://forth-standard.org/standard/core/OneMinus
     '1-': function() {
         this.checkStackUnderflow(1);
         const n1 = this.dataStack.pop();
-        const n2 = n1 - 1;
+        const n2 = new Cell(n1.toUnsigned() - 1);
         this.dataStack.push(n2);
     },
     // https://forth-standard.org/standard/core/OnePlus
     '1+': function() {
         this.checkStackUnderflow(1);
         const n1 = this.dataStack.pop();
-        const n2 = n1 + 1;
+        const n2 = new Cell(n1.toUnsigned() + 1);
         this.dataStack.push(n2);
     },
     // https://forth-standard.org/standard/core/NEGATE
     'NEGATE': function() {
         this.checkStackUnderflow(1);
         const n1 = this.dataStack.pop();
-        const n2 = -n1;
+        const n2 = new Cell(-n1.toSigned());
         this.dataStack.push(n2);
     },
     // https://forth-standard.org/standard/core/MIN
@@ -101,7 +102,7 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        const n3 = Math.min(n1, n2);
+        const n3 = new Cell(Math.min(n1.toUnsigned(), n2.toUnsigned()));
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/MAX
@@ -109,7 +110,7 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        const n3 = Math.max(n1, n2);
+        const n3 = new Cell(Math.max(n1.toUnsigned(), n2.toUnsigned()));
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/DROP
@@ -188,7 +189,7 @@ export const core = {
     '.': function() {
         this.checkStackUnderflow(1);
         const w1 = this.dataStack.pop();
-        this.output = `${w1}`;
+        this.output = `${w1.toSigned()}`;
     },
 
 }
