@@ -20,4 +20,9 @@ export class Cell {
     toUnsigned() {
         return this.value;
     }
+
+    toNumber() {
+        // Convert signed value to regular JavaScript number
+        return Number(this.toSigned());
+    }
 }

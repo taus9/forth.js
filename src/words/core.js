@@ -34,12 +34,15 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        if (n2.toUnsigned() === 0) {
+        if (n2.toNumber() === 0) {
             this.reset();
             throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
         }
-        // TODO: handle overflow and unsigned ints
-        const n3 = new Cell(Math.floor(n1.toUnsigned() / n2.toUnsigned()));
+        // Forth uses floored division (rounds toward negative infinity)
+        const a = n1.toNumber();
+        const b = n2.toNumber();
+        const quotient = Math.floor(a / b);
+        const n3 = new Cell(quotient);
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/DivMOD
@@ -47,27 +50,33 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        if (n2.toUnsigned() === 0) {
+        if (n2.toNumber() === 0) {
             this.reset();
             throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
         }
-        const n3 = new Cell(n1.toUnsigned() % n2.toUnsigned());
-        const n4 = new Cell(Math.floor(n1.toUnsigned() / n2.toUnsigned()));
-        this.dataStack.push(n3);
-        this.dataStack.push(n4);
+        // Forth uses floored division
+        const a = n1.toNumber();
+        const b = n2.toNumber();
+        const quotient = Math.floor(a / b);
+        const remainder = a - (quotient * b);
+        this.dataStack.push(new Cell(remainder));
+        this.dataStack.push(new Cell(quotient));
     },
     // https://forth-standard.org/standard/core/MOD
     'MOD': function() {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        if (n2.toUnsigned() === 0) {
+        if (n2.toNumber() === 0) {
             this.reset();
             throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
         }
-        // TODO: handle overflow and unsigned ints
-        const n3 = new Cell(n1.toUnsigned() % n2.toUnsigned());
-        this.dataStack.push(n3);
+        // Forth uses floored modulo (consistent with floored division)
+        const a = n1.toNumber();
+        const b = n2.toNumber();
+        const quotient = Math.floor(a / b);
+        const remainder = a - (quotient * b);
+        this.dataStack.push(new Cell(remainder));
     },
     // https://forth-standard.org/standard/core/ABS
     'ABS': function() {
