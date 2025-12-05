@@ -79,18 +79,32 @@ this.words = {...words.core, ...words.dataStack}
 
 Words from `words.dataStack` override any identically-named words from `words.core`. If you add a new word module, ensure it is exported from `forth/words/index.js` and merged in the desired order.
 
-### Integer Clamping
+### 64-bit Cells vs JavaScript Numbers
 
-Forth.js clamps arithmetic results that exceed safe integer bounds to `0`. This design choice reflects gForth behavior and prevents silent overflow to `Infinity`:
+Forth.js uses **64-bit cells** stored as JavaScript `BigInt` values to represent data on the stack, matching traditional Forth implementations. This differs from JavaScript's native 53-bit safe integer precision and has important implications:
 
-- Any operation result with absolute value > `Number.MAX_SAFE_INTEGER` (9007199254740991) is set to `0`
-- Normal results within the safe integer range pass through unchanged
+**Why Cells?**
+- ANS Forth specifies that all stack values are stored as fixed-width cells (32-bit or 64-bit)
+- Forth.js chooses 64-bit cells for broader numeric range while maintaining predictable overflow behavior
+- Using `BigInt` ensures consistent two's complement arithmetic and bit operations
 
-**Examples:**
-- `2 3 **` → `8` (normal)
-- `2 100 **` → `0` (exceeds safe bounds, clamped)
+**Key Differences from JavaScript Numbers:**
+- JavaScript numbers use IEEE 754 double-precision (53-bit integer precision)
+- Forth cells use full 64-bit unsigned integers internally with signed/unsigned interpretation
+- Operations exceeding 64-bit range wrap around (modular arithmetic) rather than becoming `Infinity`
 
-This approach prevents programs from accidentally working with very large exponents and keeps the VM semantics closer to traditional fixed-width Forth implementations.
+**Implementation Details:**
+```javascript
+// All stack values are Cell objects
+import { Cell } from './types/cell.js';
+
+const c = new Cell(42);
+c.toNumber()    // → 42 (convert to JavaScript number)
+c.toSigned()    // → 42n (as signed BigInt)
+c.toUnsigned()  // → 42n (as unsigned BigInt)
+```
+
+This design prioritizes Forth compatibility and predictable semantics over raw JavaScript performance.
 
 ### Potential Extensions
 
