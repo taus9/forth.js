@@ -2,15 +2,15 @@
 
 ![Tests](https://github.com/taus9/forth.js/actions/workflows/test.yml/badge.svg)
 
-**Forth.js** is a small, lightweight interpreter for the Forth programming language written in modern JavaScript and designed to be run in-browser. You can checkout the [live demo](https://taus9.github.io/forth.js/demo/). 
+**Forth.js** is a minimal interpreter for the Forth programming language written in modern JavaScript and designed to be run in-browser. You can checkout the [live demo](https://taus9.github.io/forth.js/demo/). 
 
 ---
 
 ## Features
 
 * Implements a **basic Forth virtual machine** with:
-  * Stack operations: `dup`, `drop`, `swap`, `over`, `nip`, `tuck`, ect. Full list can be found [here](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack).
-  * Arithmetic operations: `+`, `-`, `*`, `/`, `MOD`, `/MOD`, `1+`, `1-`
+  * Stack operations: `DUP`, `DROP`, `SWAP`, `OVER`, `NIP`, `TUCK`, ect. Full list can be found [here](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack).
+  * Arithmetic operations: `+`, `-`, `*`, `/`, `MOD`, `/MOD`, `1+`, `1-`, `ABS`, `MIN`, `MAX`, `NEGATE`
   * Colon definitions: Define or redefine words with `: ... ;`
   * 64-bit Cell width for the data stack
   * Comment handling
@@ -30,7 +30,7 @@
 
 ### Word Definition & `this` Binding
 
-Words are plain JavaScript functions stored in objects (see `forth/words/core.js` and `forth/words/dataStack.js`). When a word is executed, its callback is invoked with `this` bound to the `Fvm` instance:
+Words are plain JavaScript functions stored in objects (see `forth/words/core.js`, `forth/words/core-ext.js`, ect). When a word is executed, its callback is invoked with `this` bound to the `Fvm` instance:
 
 ```javascript
 // src/words/example.js
@@ -67,12 +67,12 @@ export class Fvm {
 
   // don't forget to add your words to resetWords()
   resetWords() {
-        this.words = {
+    this.words = {
       ...words.core, 
       ...words.coreExt, 
       ...words.misc,
       ...words.myWords
-      }
+    }
   }
 }
 ```
@@ -84,10 +84,10 @@ export class Fvm {
 The `Fvm` constructor merges words from multiple sources:
 
 ```javascript
-this.words = {...words.core, ...words.dataStack}
+this.words = {...words.core, ...words.coreExt, ...}
 ```
 
-Words from `words.dataStack` override any identically-named words from `words.core`. If you add a new word module, ensure it is exported from `forth/words/index.js` and merged in the desired order.
+Words from `words.core` override any identically-named words from `words.coreExt` and so on. If you add a new word module, ensure it is exported from `forth/words/index.js` and merged in the desired order.
 
 ### 64-bit Cells vs JavaScript Numbers
 
