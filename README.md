@@ -33,12 +33,38 @@
 Words are plain JavaScript functions stored in objects (see `forth/words/core.js` and `forth/words/dataStack.js`). When a word is executed, its callback is invoked with `this` bound to the `Fvm` instance:
 
 ```javascript
+// src/words/example.js
+import { Cell } from '../types/cell.js';
+
 // Inside a word callback, 'this' is the Fvm instance
-const myWord = {
+export const myWords = {
   myWordName: function() {
-    this.dataStack.push(42);  // Push to the VM's stack
+    const u = new Cell(42); // Only push Cell objects on to the dataStack
+    this.dataStack.push(u);  // Push to the VM's stack
   }
 };
+
+// src/words/index.js
+// Add file to index.js export 
+import { myWords } from './examples.js';
+
+export (
+  // ... ,
+  myWords
+)
+
+// src/forth.js
+export class Fvm {
+  constructor() {
+    // ...
+    this.words = {
+      ...words.core, 
+      ...words.coreExt, 
+      ...words.misc,
+      ...words.myWords
+      }
+  }
+}
 ```
 
 **Important:** Always use `this` to access the VM state (stack, status, etc.) rather than closing over a VM reference. This ensures consistency if the VM is reset or if multiple instances exist.
