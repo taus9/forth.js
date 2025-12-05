@@ -3,7 +3,7 @@ import * as errors from '../errors/errors.js';
 
 export const core = {
     // https://forth-standard.org/standard/core/Times
-    '*': function() {
+    '*': function() { // tested
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
@@ -11,7 +11,7 @@ export const core = {
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/Plus
-    '+': function() {
+    '+': function() { // tested
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
@@ -19,7 +19,7 @@ export const core = {
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/Minus
-    '-': function() {
+    '-': function() { // tested
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
@@ -27,7 +27,7 @@ export const core = {
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/Div
-    '/': function() {
+    '/': function() { // tested
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
@@ -43,7 +43,7 @@ export const core = {
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/DivMOD
-    '/MOD': function() {
+    '/MOD': function() { // tested
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
@@ -60,7 +60,7 @@ export const core = {
         this.dataStack.push(new Cell(quotient));
     },
     // https://forth-standard.org/standard/core/MOD
-    'MOD': function() {
+    'MOD': function() { // tested
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
@@ -76,35 +76,35 @@ export const core = {
         this.dataStack.push(new Cell(remainder));
     },
     // https://forth-standard.org/standard/core/ABS
-    'ABS': function() {
+    'ABS': function() { // tested
         this.checkStackUnderflow(1);
         const n = this.dataStack.pop();
         const u = new Cell(Math.abs(n.toSigned()));
         this.dataStack.push(u);
     },
     // https://forth-standard.org/standard/core/OneMinus
-    '1-': function() {
+    '1-': function() { // tested
         this.checkStackUnderflow(1);
         const n1 = this.dataStack.pop();
         const n2 = new Cell(n1.toUnsigned() - 1);
         this.dataStack.push(n2);
     },
     // https://forth-standard.org/standard/core/OnePlus
-    '1+': function() {
+    '1+': function() { // tested
         this.checkStackUnderflow(1);
         const n1 = this.dataStack.pop();
         const n2 = new Cell(n1.toUnsigned() + 1);
         this.dataStack.push(n2);
     },
     // https://forth-standard.org/standard/core/NEGATE
-    'NEGATE': function() {
+    'NEGATE': function() { // tested
         this.checkStackUnderflow(1);
         const n1 = this.dataStack.pop();
         const n2 = new Cell(-n1.toSigned());
         this.dataStack.push(n2);
     },
     // https://forth-standard.org/standard/core/MIN
-    'MIN': function() {
+    'MIN': function() { // tested
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
@@ -112,7 +112,7 @@ export const core = {
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/MAX
-    'MAX': function() {
+    'MAX': function() { // tested
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
