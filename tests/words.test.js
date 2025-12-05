@@ -345,7 +345,7 @@ export class WordsTestSuite {
 
     // Summary
     this.put('');
-    this.put(`Passed: ${this.passed}, Failed: ${this.failed}`);
+    this.put(`***** Passed: ${this.passed}, Failed: ${this.failed} *****`);
     return this.failed === 0;
   }
 }

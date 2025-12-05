@@ -292,12 +292,9 @@ export class ErrorTestSuite {
       }
     });
 
-    // --- Print summary ---
+    // Summary
     this.put('');
-    this.put(`========== Test Summary ==========`);
-    this.put(`Passed: ${this.passed}`);
-    this.put(`Failed: ${this.failed}`);
-    this.put(`Total:  ${this.passed + this.failed}\n`);
+    this.put(`***** Passed: ${this.passed}, Failed: ${this.failed} *****`);
     return this.failed === 0;
   }
 }
