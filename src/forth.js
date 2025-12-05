@@ -30,7 +30,11 @@ export class Fvm {
     }
 
     resetWords() {
-        this.words = {...words.core, ...words.dataStack};
+        this.words = {
+            ...words.core,
+            ...words.coreExt,
+            ...words.misc
+        };
     }
 
     tokenize(text) {
