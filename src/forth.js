@@ -3,6 +3,7 @@
 import * as types from './types/types.js';
 import * as errors from './errors/errors.js';
 import * as words from './words/index.js';
+import { Cell } from './types/cell.js';
 
 export class Fvm {
 
@@ -170,11 +171,10 @@ export class Fvm {
             !isNaN(Number(word))
         );
     }
-
+    
     parseWord(text) {
         // Forth words are case-insensitive
-        let word = text.trim().toUpperCase();
-        let val = Number(word);
+        const word = text.trim().toUpperCase();
         
         // Order is important here, in order to be able
         // to redefine words like "+", "dup", "123", etc.
@@ -183,8 +183,9 @@ export class Fvm {
             return new words.Word(word, this.words[word])
         }
 
+        const val = Number(word);
         if (!isNaN(val)) {
-            return new words.NumberWord(word, val)
+            return new words.NumberWord(word, new Cell(val))
         }
             
         return new words.InvalidWord(word);
