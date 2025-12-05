@@ -187,7 +187,8 @@ export class Fvm {
         if (!isNaN(val)) {
             return new words.NumberWord(word, new Cell(val))
         }
-            
+        
+        // This return should never execute
         return new words.InvalidWord(word);
     }
 
