@@ -37,9 +37,11 @@ export class CompileTestSuite {
   }
 
   expectStack(fvm, expected) {
-    const ok = fvm.dataStack.length === expected.length && 
-                fvm.dataStack.every((v,i)=>v===expected[i]);
-    if (!ok) throw new Error(`Expected stack [${expected}] got [${fvm.dataStack}]`);
+    // Compare Cell objects using toNumber()
+    const actualValues = fvm.dataStack.map(cell => cell.toNumber());
+    const ok = actualValues.length === expected.length && 
+               actualValues.every((v, i) => v === expected[i]);
+    if (!ok) throw new Error(`Expected stack [${expected}] got [${actualValues}]`);
   }
 
   run() {

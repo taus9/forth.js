@@ -6,6 +6,7 @@
 
 import { Fvm } from '../src/forth.js';
 import * as errors from '../src/errors/errors.js';
+import { Cell } from '../src/types/cell.js';
 
 export class ErrorTestSuite {
   constructor(put) {
@@ -139,7 +140,7 @@ export class ErrorTestSuite {
 
     this.test('Stack is cleared after undefined word error', () => {
       const fvm = new Fvm();
-      fvm.dataStack = [100, 200];
+      fvm.dataStack = [new Cell(100), new Cell(200)];
       try {
         fvm.execute('unknownword');
       } catch (err) {
@@ -165,7 +166,7 @@ export class ErrorTestSuite {
 
     this.test('Stack is cleared after division by zero', () => {
       const fvm = new Fvm();
-      fvm.dataStack = [10, 0];
+      fvm.dataStack = [new Cell(10), new Cell(0)];
       try {
         fvm.execute('/');
       } catch (err) {
@@ -179,16 +180,16 @@ export class ErrorTestSuite {
     this.test('Division with floored semantics: 7 2 / = 3', () => {
       const fvm = new Fvm();
       fvm.execute('7 2 /');
-      if (fvm.dataStack[0] !== 3) {
-        throw new Error(`Expected 3, got ${fvm.dataStack[0]}`);
+      if (fvm.dataStack[0].toNumber() !== 3) {
+        throw new Error(`Expected 3, got ${fvm.dataStack[0].toNumber()}`);
       }
     });
 
     this.test('Negative division with floored semantics: -7 2 / = -4', () => {
       const fvm = new Fvm();
       fvm.execute('-7 2 /');
-      if (fvm.dataStack[0] !== -4) {
-        throw new Error(`Expected -4, got ${fvm.dataStack[0]}`);
+      if (fvm.dataStack[0].toNumber() !== -4) {
+        throw new Error(`Expected -4, got ${fvm.dataStack[0].toNumber()}`);
       }
     });
 
@@ -199,16 +200,16 @@ export class ErrorTestSuite {
     this.test('Comment with space: ( this is a comment ) works', () => {
       const fvm = new Fvm();
       fvm.execute('5 ( this is a comment ) 3 +');
-      if (fvm.dataStack[0] !== 8) {
-        throw new Error(`Expected 8, got ${fvm.dataStack[0]}`);
+      if (fvm.dataStack[0].toNumber() !== 8) {
+        throw new Error(`Expected 8, got ${fvm.dataStack[0].toNumber()}`);
       }
     });
 
     this.test('Comment without closing paren (unterminated) consumed to EOF', () => {
       const fvm = new Fvm();
       fvm.execute('5 ( unterminated comment');
-      if (fvm.dataStack[0] !== 5) {
-        throw new Error(`Expected 5 on stack, got ${fvm.dataStack[0]}`);
+      if (fvm.dataStack[0].toNumber() !== 5) {
+        throw new Error(`Expected 5 on stack, got ${fvm.dataStack[0].toNumber()}`);
       }
     });
 
@@ -247,18 +248,17 @@ export class ErrorTestSuite {
     this.test('Modulus: 10 3 MOD = 1', () => {
       const fvm = new Fvm();
       fvm.execute('10 3 MOD');
-      if (fvm.dataStack[0] !== 1) {
-        throw new Error(`Expected 1, got ${fvm.dataStack[0]}`);
+      if (fvm.dataStack[0].toNumber() !== 1) {
+        throw new Error(`Expected 1, got ${fvm.dataStack[0].toNumber()}`);
       }
     });
 
-    this.test('Negative modulus: -10 3 MOD = -1 (JavaScript %)', () => {
+    this.test('Negative modulus: -10 3 MOD = 2', () => {
       const fvm = new Fvm();
       fvm.execute('-10 3 MOD');
-      // JavaScript % operator: -10 % 3 = -1 (sign matches dividend)
-      const result = fvm.dataStack[0];
-      if (result !== -1) {
-        throw new Error(`Expected -1, got ${result}`);
+      const result = fvm.dataStack[0].toNumber();
+      if (result !== 2) {
+        throw new Error(`Expected 2, got ${result}`);
       }
     });
 
@@ -275,8 +275,8 @@ export class ErrorTestSuite {
       }
       // After error, stack is cleared and state is reset
       fvm.execute('5 3 +');
-      if (fvm.dataStack[0] !== 8) {
-        throw new Error(`Expected 8 after error recovery, got ${fvm.dataStack[0]}`);
+      if (fvm.dataStack[0].toNumber() !== 8) {
+        throw new Error(`Expected 8 after error recovery, got ${fvm.dataStack[0].toNumber()}`);
       }
     });
 
