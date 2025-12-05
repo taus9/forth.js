@@ -17,7 +17,11 @@
 export const misc = {    
     // Tools Ext
     '.S': function() {
-        const stackString = this.stackToString();
+        const stackString = 
+            this.dataStack
+            .map(cell => cell.toSigned())
+            .join(' ');
+            
         const stackCount = this.dataStack.length;
         this.output = `<${stackCount}> ${stackString}`;
     },
