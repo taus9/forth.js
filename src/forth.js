@@ -4,6 +4,7 @@ import * as types from './types/types.js';
 import * as errors from './errors/errors.js';
 import * as words from './words/index.js';
 import { Cell } from './types/cell.js';
+import { Word, NumberWord, InvalidWord } from './types/words.js';
 
 export class Fvm {
 
@@ -122,7 +123,7 @@ export class Fvm {
 
             if (this.state === types.ForthState.COMPILE) {
                 const word = this.parseWord(token);
-                if (word instanceof words.InvalidWord) {
+                if (word instanceof InvalidWord) {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.rawText);
                 }
@@ -132,17 +133,17 @@ export class Fvm {
 
             if (this.state === types.ForthState.INTERPRET) {
                 const word = this.parseWord(token);
-                if (word instanceof words.InvalidWord) {
+                if (word instanceof InvalidWord) {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.rawText);
                 }
                 
-                if (word instanceof words.NumberWord) {
+                if (word instanceof NumberWord) {
                     this.dataStack.push(word.value);
                     continue;
                 }
                 
-                if (word instanceof words.Word) {
+                if (word instanceof Word) {
                     word.callback.call(this);
                     continue;
                 }
@@ -180,16 +181,16 @@ export class Fvm {
         // to redefine words like "+", "dup", "123", etc.
         if (Object.hasOwn(this.words, word)) {
             // say this three times fast...
-            return new words.Word(word, this.words[word])
+            return new Word(word, this.words[word])
         }
 
         const val = Number(word);
         if (!isNaN(val)) {
-            return new words.NumberWord(word, new Cell(val))
+            return new NumberWord(word, new Cell(val))
         }
         
         // This return should never execute
-        return new words.InvalidWord(word);
+        return new InvalidWord(word);
     }
 
     checkStackUnderflow(requiredStackLength) {
