@@ -64,6 +64,16 @@ export class Fvm {
       ...words.myWords
       }
   }
+
+  // don't forget to add your words to resetWords()
+  resetWords() {
+        this.words = {
+      ...words.core, 
+      ...words.coreExt, 
+      ...words.misc,
+      ...words.myWords
+      }
+  }
 }
 ```
 
