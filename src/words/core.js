@@ -79,21 +79,21 @@ export const core = {
     'ABS': function() { // tested
         this.checkStackUnderflow(1);
         const n = this.dataStack.pop();
-        const u = new Cell(Math.abs(n.toSigned()));
+        const u = new Cell(Math.abs(n.toNumber()));
         this.dataStack.push(u);
     },
     // https://forth-standard.org/standard/core/OneMinus
     '1-': function() { // tested
         this.checkStackUnderflow(1);
         const n1 = this.dataStack.pop();
-        const n2 = new Cell(n1.toUnsigned() - 1);
+        const n2 = new Cell(n1.toNumber() - 1);
         this.dataStack.push(n2);
     },
     // https://forth-standard.org/standard/core/OnePlus
     '1+': function() { // tested
         this.checkStackUnderflow(1);
         const n1 = this.dataStack.pop();
-        const n2 = new Cell(n1.toUnsigned() + 1);
+        const n2 = new Cell(n1.toNumber() + 1);
         this.dataStack.push(n2);
     },
     // https://forth-standard.org/standard/core/NEGATE
