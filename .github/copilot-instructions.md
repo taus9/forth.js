@@ -26,7 +26,11 @@ Help contributors and AI agents understand and modify this minimal Forth interpr
 **Type System:**
 - `src/types/types.js` - enums (ForthState, StatusTypes)
 - `src/types/cell.js` - 64-bit cell wrapper around BigInt
-- `src/types/words.js` - Word, NumberWord, InvalidWord classes
+- `src/types/words.js` - Word class hierarchy:
+  * `Word` - defined words with name and callback
+  * `NumberWord` - numeric literals with name and Cell value
+  * `CompileWord` - compilation tokens (':' and ';')
+  * `TextWord` - undefined words (parsed but not yet defined)
 
 **Error Handling:**
 - `src/errors/errors.js` - StackError, ParseError, OperationError
@@ -37,14 +41,19 @@ Help contributors and AI agents understand and modify this minimal Forth interpr
 ## Architecture Patterns
 
 ### Execution Flow
-```javascript
+```
 execute(text) {
-  1. tokenize(text) → array of strings
-  2. Loop through tokens:
-     - Special handling for ':' (start compilation)
-     - Special handling for ';' (finish compilation)
-     - INTERPRET mode: parse and execute word
-     - COMPILE mode: collect tokens into compilationBuffer
+  1. tokenize(text) → array of Word instances
+     - parseWord() returns typed Word objects:
+       * NumberWord - numeric literals with Cell value
+       * Word - defined words with callback function
+       * CompileWord - ':' and ';' tokens
+       * TextWord - undefined words (will error in INTERPRET)
+  2. Loop through Word instances:
+     - CompileWord ':' → start compilation
+     - CompileWord ';' → finish compilation, create new word
+     - INTERPRET mode: execute NumberWord/Word, error on TextWord
+     - COMPILE mode: collect Word instances into compilationBuffer
 }
 ```
 
@@ -53,10 +62,11 @@ execute(text) {
 : square dup * ;  ( define a word )
 5 square          ( use it: 25 )
 ```
-- `:` switches to COMPILE state, captures next token as word name
-- Tokens between `:` and `;` stored in `compilationBuffer`
-- `;` creates new word that re-executes the compiled tokens
+- `:` (CompileWord) switches to COMPILE state, captures next token as word name
+- Word instances between `:` and `;` stored in `compilationBuffer` array
+- `;` (CompileWord) creates new word function that re-executes the Word instances
 - Compiled words stored in `this.words` (can override built-ins)
+- User-defined words execute pre-parsed Word instances (no re-parsing overhead)
 
 ### Cell-Based Stack
 ```javascript
@@ -91,17 +101,17 @@ src/
 ├── types/
 │   ├── types.js      # Enums (ForthState, StatusTypes)
 │   ├── cell.js       # Cell class (64-bit BigInt wrapper)
-│   └── words.js      # Word class hierarchy
+│   └── words.js      # Word class hierarchy (Word, NumberWord, CompileWord, TextWord)
 ├── words/
-│   ├── core.js       # ANS Forth core words (+, -, *, /, MOD, etc.)
-│   ├── coreExt.js    # Core extension words
-│   ├── misc.js       # Utility words (., .s, stack ops)
+│   ├── core.js       # ANS Forth core words (+, -, *, /, MOD, ., etc.)
+│   ├── core-ext.js   # Core extension words
+│   ├── misc.js       # Utility words (.s, stack ops)
 │   └── index.js      # Exports all word modules
 └── errors/
     └── errors.js     # Error types and messages
 
 tests/
-├── stack.test.js     # Data stack word tests
+├── words.test.js     # Data stack word tests
 ├── errors.test.js    # Error handling tests
 ├── compile.test.js   # Colon definition tests
 └── run-node-tests.mjs # Test runner for npm test
@@ -110,6 +120,8 @@ demo/
 ├── index.html        # Browser UI
 ├── main.js           # UI logic, stack visualization
 └── style.css         # Terminal styling
+
+repl.js               # Node.js REPL for testing in terminal
 ```
 
 ---
@@ -161,7 +173,7 @@ if (condition) {
 npm test
 
 # Or run individual test files
-node tests/stack.test.js
+node tests/words.test.js
 node tests/errors.test.js
 node tests/compile.test.js
 ```
@@ -181,6 +193,20 @@ npx http-server
 - Real-time stack visualization
 - Test suite runner button
 - Dev mode indicator (shows on localhost)
+
+### Node.js
+```bash
+# Interactive REPL for testing Forth.js
+npm run repl
+# or
+node repl.js
+```
+
+**REPL Features:**
+- Interactive Forth prompt with syntax highlighting
+- Real-time stack visualization
+- REPL commands: `@help`, `@stack`, `@words`, `@reset`, `@exit`
+- Error handling with status indicators (ok, compiled, ?)
 
 ### CI/CD
 - GitHub Actions runs `npm test` on push/PR
@@ -259,17 +285,18 @@ this.expectError(
 ## State Machine Details
 
 ### INTERPRET Mode (default)
-- Parses each token
-- Numbers → push Cell to dataStack
-- Words → execute immediately
-- Invalid words → throw ParseError
+- Each token is already parsed into a Word instance
+- NumberWord → push Cell to dataStack
+- Word → execute callback immediately
+- TextWord → throw ParseError (undefined word)
+- CompileWord → handle ':' and ';' special cases
 
 ### COMPILE Mode (between `:` and `;`)
-- Triggered by `:` token
-- Captures next token as word name
-- Collects all subsequent tokens in `compilationBuffer`
-- `;` ends compilation, creates word function
-- Compiled word re-executes buffered tokens via `execute()`
+- Triggered by CompileWord(':')
+- Captures next Word instance's name as word name
+- Collects all subsequent Word instances in `compilationBuffer`
+- CompileWord(';') ends compilation, creates word function
+- Compiled word re-executes buffered Word instances via `execute()`
 
 ### Compilation Example
 ```forth
@@ -277,8 +304,9 @@ this.expectError(
 ```
 Results in:
 ```javascript
+// compilationBuffer contains: [NumberWord(2), Word('*')]
 this.words['DOUBLE'] = function() {
-  this.execute('2 *');  // Re-executes the definition
+  this.execute(compilationBuffer);  // Executes pre-parsed Word instances
 };
 ```
 
@@ -296,10 +324,11 @@ this.words['DOUBLE'] = function() {
 - **Cost:** Extra iteration over input
 - **Benefit:** Clean separation of lexing and execution
 
-### String-Based Compilation
-- **Current:** Store tokens as strings, re-parse on execution
-- **Alternative:** Store parsed Word objects (faster, more complex)
-- **Decision:** Simplicity first, optimize later if needed
+### Word Instance Compilation
+- **Current:** Store parsed Word instances, execute directly
+- **Benefit:** No re-parsing overhead when executing user-defined words
+- **Trade-off:** Slightly more complex parsing, but cleaner execution and better type safety
+- **Result:** User-defined words execute pre-parsed Word objects with their callbacks/values intact
 
 ---
 
