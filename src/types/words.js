@@ -1,19 +1,25 @@
 export class Word {
-    constructor(rawText, callback) {
-        this.rawText = rawText;
+    constructor(name, callback) {
+        this.name = name;
         this.callback = callback
     }
 }
 
-export class NumberWord extends Word {
-    constructor(rawText, value) {
-        super(rawText);
-        this.value = value;
+export class NumberWord {
+    constructor(name, cell) {
+        this.name = name;
+        this.cell = cell;
     }
 }
 
-export class InvalidWord extends Word {
-    constructor(rawText) {
-        super(rawText);
+export class CompileWord {
+    constructor(name) {
+        this.name = name;
+    }
+}
+
+export class TextWord {
+    constructor(name) {
+        this.name = name;
     }
 }

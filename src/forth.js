@@ -4,7 +4,7 @@ import * as types from './types/types.js';
 import * as errors from './errors/errors.js';
 import * as words from './words/index.js';
 import { Cell } from './types/cell.js';
-import { Word, NumberWord, InvalidWord } from './types/words.js';
+import { Word, NumberWord, CompileWord, TextWord } from './types/words.js';
 
 export class Fvm {
 
@@ -37,10 +37,11 @@ export class Fvm {
         };
     }
 
+    // Handles lexing and parsing
     tokenize(text) {
         let i = 0;
-        const tokens = [];
-
+        const parsedWords = [];
+        
         const skipWhitespace = () => {
             while (i < text.length && /\s/.test(text[i])) i++;
         };
@@ -60,7 +61,7 @@ export class Fvm {
             return text.slice(start, i);
         };
 
-        // First pass: tokenize (skip comments)
+        // First pass: tokenize and parse words (skip comments)
         while (i < text.length) {
             skipWhitespace();
             if (i >= text.length) break;
@@ -69,52 +70,58 @@ export class Fvm {
                 skipComment();
                 continue;
             }
-
+            
             const token = readToken().toUpperCase();
-            tokens.push(token);
+            const word = this.parseWord(token);
+
+            parsedWords.push(word);
         }
-        return tokens;
+
+        return parsedWords;
     }
 
     execute(text) {
         this.output = '';
-        const tokens = this.tokenize(text);
+        const words = this.tokenize(text);
 
-        let tokenIndex = 0;
-        while (tokenIndex < tokens.length) {
-            const token = tokens[tokenIndex++];
+        let wordIndex = 0;
+        while (wordIndex < words.length) {
+            const word = words[wordIndex++];
 
             // Start of a new word definition
-            if (token === ':') {
+            if (word instanceof CompileWord && word.name === ':') {
                 if (this.state === types.ForthState.COMPILE) {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.NESTED_DEFINITION);
                 }
-                if (tokenIndex >= tokens.length) {
+                if (wordIndex >= words.length) {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.NAME_EXPECTED);
                 }
-                const wordName = tokens[tokenIndex++];
+                
+                const wordName = words[wordIndex++].name;
+
                 if (!this.isValidWordName(wordName)) {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
                 }
-                this.compilingWord = wordName;
-                this.compilationBuffer = [];
+
+                this.compilingWord = wordName; // temporarily hold the word being defined
+                this.compilationBuffer = []; // array of Word instances
                 this.state = types.ForthState.COMPILE;
                 continue;
             }
 
-            if (token === ';') {
+            if (word instanceof CompileWord && word.name === ';') {
                 if (this.state !== types.ForthState.COMPILE) {
                     this.reset();
-                    throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, token);
+                    throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, word);
                 }
 
                 if (this.isWordRedefined(this.compilingWord)) {
                     this.output = `redefined ${this.compilingWord}`;
                 }
-                const code = this.compilationBuffer.join(' ');
+                const code = this.compilationBuffer;
                 this.words[this.compilingWord] = function() {
                    this.execute(code); 
                 }
@@ -126,24 +133,14 @@ export class Fvm {
             }
 
             if (this.state === types.ForthState.COMPILE) {
-                const word = this.parseWord(token);
-                if (word instanceof InvalidWord) {
-                    this.reset();
-                    throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.rawText);
-                }
-                this.compilationBuffer.push(token);
+                this.compilationBuffer.push(word);
                 continue;
             }
 
             if (this.state === types.ForthState.INTERPRET) {
-                const word = this.parseWord(token);
-                if (word instanceof InvalidWord) {
-                    this.reset();
-                    throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.rawText);
-                }
-                
+
                 if (word instanceof NumberWord) {
-                    this.dataStack.push(word.value);
+                    this.dataStack.push(word.cell);
                     continue;
                 }
                 
@@ -151,6 +148,9 @@ export class Fvm {
                     word.callback.call(this);
                     continue;
                 }
+
+                this.reset();
+                throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.name);
             }
         }
 
@@ -181,6 +181,10 @@ export class Fvm {
         // Forth words are case-insensitive
         const word = text.trim().toUpperCase();
         
+        if (word === ':' || word === ';') {
+            return new CompileWord(word);
+        }
+
         // Order is important here, in order to be able
         // to redefine words like "+", "dup", "123", etc.
         if (Object.hasOwn(this.words, word)) {
@@ -193,8 +197,7 @@ export class Fvm {
             return new NumberWord(word, new Cell(val))
         }
         
-        // This return should never execute
-        return new InvalidWord(word);
+        return new TextWord(word);
     }
 
     checkStackUnderflow(requiredStackLength) {
