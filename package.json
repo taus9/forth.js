@@ -20,5 +20,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/taus9/forth.js.git"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
   }
 }
