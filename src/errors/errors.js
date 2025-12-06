@@ -1,7 +1,8 @@
 export const ErrorTypes = {
     PARSE: 'ParseError',
     STACK: 'StackError',
-    OPERATION: 'OperationError'
+    OPERATION: 'OperationError',
+    INTERPRETER: 'InterpreterError'
 };
 
 export const ErrorMessages = {
@@ -11,7 +12,8 @@ export const ErrorMessages = {
     NESTED_DEFINITION: 'Nested definition',
     NAME_EXPECTED: 'Word name expected',
     INVALID_WORD_NAME: 'Invalid word name',
-    COMPILE_ONLY_WORD: 'Word only allowed in compile mode'
+    COMPILE_ONLY_WORD: 'Word only allowed in compile mode',
+    INVALID_CODE: 'Attempted to execute invalid code type'
 };
 
 export class ParseError extends Error {
@@ -35,3 +37,10 @@ export class OperationError extends Error {
         this.name = ErrorTypes.OPERATION;
     }
 }
+
+export class InterpreterError extends Error {
+    constructor(message) {
+        super(message);
+        this.name = ErrorTypes.INTERPRETER;
+    }
+}   

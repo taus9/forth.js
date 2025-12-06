@@ -80,9 +80,18 @@ export class Fvm {
         return parsedWords;
     }
 
-    execute(text) {
+    // Must pass string or array of Word instances
+    execute(code) {
         this.output = '';
-        const words = this.tokenize(text);
+        
+        let words;
+        if (typeof code === 'string') {
+            words = this.tokenize(code);
+        } else if (Array.isArray(code)) {
+            words = code;
+        } else {
+            throw new errors.InterpreterError(errors.ErrorMessages.INVALID_CODE);
+        }
 
         let wordIndex = 0;
         while (wordIndex < words.length) {
