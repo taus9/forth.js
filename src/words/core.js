@@ -395,5 +395,28 @@ export const core = {
     'DEPTH': function() {
         const n = new Cell(this.dataStack.length);
         this.dataStack.push(n);
+    },
+    // https://forth-standard.org/standard/core/VARIABLE
+    'VARIABLE': function () {
+        if (this.inputStreamIndex >= this.inputStream.length) {
+            this.reset();
+            throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
+        }
+        const varName = this.inputStream[this.inputStreamIndex++].name;
+
+        if (!this.isValidWordName(varName)) {
+            this.reset();
+            throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
+        }
+
+        if (this.isWordRedefined(varName)) {
+            this.output = `redefined ${varName}`;
+        }
+
+        const address = this.memory.allocate()
+    
+        this.words[varName] = function() {
+            this.dataStack.push(new Cell(address));
+        };
     }
 };
