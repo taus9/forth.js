@@ -92,7 +92,8 @@ export const core = {
     'ABS': function() { // tested
         this.checkStackUnderflow(1);
         const n = this.dataStack.pop();
-        const u = new Cell(Math.abs(n.toNumber()));
+        const abs = n.toSigned() < 0n ? -n.toSigned() : n.toSigned();
+        const u = new Cell(abs);
         this.dataStack.push(u);
     },
     // https://forth-standard.org/standard/core/OneMinus
