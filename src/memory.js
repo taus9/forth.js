@@ -4,20 +4,13 @@ export class ForthMemory {
     
     constructor() {
         this._map = new Map();
+        this._nextAddress = 1n; // start at 1, reserving 0 as invalid
     }
 
     allocate() {
-        let u;
-        while (true) {
-            const address = this._generateAddress();
-            u = BigInt.asUintN(64, BigInt(address));
-            if (this._map.has(u)) {
-                continue;
-            }
-            break;
-        }
-        this._map.set(u, new Cell(0));
-        return u;
+        const address = this._generateAddress();
+        this._map.set(address, new Cell(0));
+        return address;
     }
 
     fetch(address) {
@@ -50,6 +43,11 @@ export class ForthMemory {
     }
 
     _generateAddress() {
-        return Math.floor(Math.random() * Number.MAX_VALUE) + 1;
+        const address = this._nextAddress;
+        this._nextAddress = (this._nextAddress + 1n) & ((1n << 64n) - 1n);
+        if (this._nextAddress === 0n) {
+            this._nextAddress = 1n;
+        }
+        return address;
     } 
 }
