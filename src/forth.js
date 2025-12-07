@@ -3,6 +3,7 @@
 import * as types from './types/types.js';
 import * as errors from './errors/errors.js';
 import * as words from './words/index.js';
+import { ForthMemory } from './memory.js';
 import { Cell } from './types/cell.js';
 import { Word, NumberWord, CompileWord, TextWord } from './types/words.js';
 
@@ -17,6 +18,7 @@ export class Fvm {
         this.compilationBuffer = [];
         this.inputStream = [];
         this.inputStreamIndex = 0;
+        this.memory = new ForthMemory();
         // Always use 'this' inside word callbacks to access VM state (stack, status, etc).
         this.words = {...words.core, ...words.coreExt, ...words.misc}
     }
@@ -29,6 +31,7 @@ export class Fvm {
         this.compilationBuffer = [];
         this.inputStream = [];
         this.inputStreamIndex = 0;
+        this.memory = new ForthMemory();
         this.status = types.StatusTypes.OK;
         this.state = types.ForthState.INTERPRET;
     }
