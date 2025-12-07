@@ -115,7 +115,7 @@ export class Fvm {
 
                 if (!this.isValidWordName(wordName)) {
                     this.reset();
-                    throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
+                    throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
                 }
 
                 // TODO: A program shall not create definition names containing non-graphic characters. 
