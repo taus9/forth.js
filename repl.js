@@ -68,6 +68,21 @@ rl.prompt();
 rl.on('line', (line) => {
   const input = line.trim();
 
+  // Helper: remove the echoed "fvm> ... " line that readline printed.
+  // Works by moving the cursor up one line and clearing it.
+  const eraseEchoedInputLine = () => {
+    // Move cursor up 1 line
+    process.stdout.write('\x1b[1A');
+    // Clear entire line
+    process.stdout.write('\x1b[2K');
+  }
+
+  // If there's any non-empty input, readline has already echoed it.
+  // Erase that echo so we can print our own status lines below.
+  // For empty input we still want to remove the (empty) echoed prompt line,
+  // because you said you don't want the final echo after Enter.
+  eraseEchoedInputLine();
+
   // Handle REPL commands
   if (input.startsWith('@')) {
     switch (input) {
@@ -108,11 +123,11 @@ rl.on('line', (line) => {
     fvm.execute(input);
     
     // Move cursor up and append status to the command line
-    //readline.moveCursor(process.stdout, 0, -1);
-    //readline.cursorTo(process.stdout, input.length + 5); // 5 = "fvm> ".length
+    readline.moveCursor(process.stdout, 0, -1);
+    readline.cursorTo(process.stdout, input.length + 5); // 5 = "fvm> ".length
     
     const color = fvm.state === types.ForthState.INTERPRET ? colors.dim : colors.yellow;
-    console.log(`${color} ${fvm.status}${colors.reset}`);
+    console.log(` ${fvm.output}${color} ${fvm.status}${colors.reset}`);
     
     // Show stack state
     if (fvm.state === types.ForthState.INTERPRET) {
