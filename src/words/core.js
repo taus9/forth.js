@@ -100,14 +100,14 @@ export const core = {
     '1-': function() { // tested
         this.checkStackUnderflow(1);
         const n1 = this.dataStack.pop();
-        const n2 = new Cell(n1.toNumber() - 1);
+        const n2 = new Cell(n1.toUnsigned() - 1n);
         this.dataStack.push(n2);
     },
     // https://forth-standard.org/standard/core/OnePlus
     '1+': function() { // tested
         this.checkStackUnderflow(1);
         const n1 = this.dataStack.pop();
-        const n2 = new Cell(n1.toNumber() + 1);
+        const n2 = new Cell(n1.toUnsigned() + 1n);
         this.dataStack.push(n2);
     },
     // https://forth-standard.org/standard/core/NEGATE
