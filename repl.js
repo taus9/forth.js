@@ -105,23 +105,14 @@ rl.on('line', (line) => {
 
   // Execute Forth code
   try {
-    fvm.output = ''; // Clear previous output
     fvm.execute(input);
     
-    // Print any output from . word
-    if (fvm.output.trim().length > 0) {
-      console.log(fvm.output.trim());
-    }
-    
     // Move cursor up and append status to the command line
-    readline.moveCursor(process.stdout, 0, -1);
-    readline.cursorTo(process.stdout, input.length + 5); // 5 = "fvm> ".length
+    //readline.moveCursor(process.stdout, 0, -1);
+    //readline.cursorTo(process.stdout, input.length + 5); // 5 = "fvm> ".length
     
-    if (fvm.status === types.StatusTypes.COMPILED) {
-      console.log(`${colors.yellow} compiled${colors.reset}`);
-    } else {
-      console.log(`${colors.dim} ok${colors.reset}`);
-    }
+    const color = fvm.state === types.ForthState.INTERPRET ? colors.dim : colors.yellow;
+    console.log(`${color} ${fvm.status}${colors.reset}`);
     
     // Show stack state
     if (fvm.state === types.ForthState.INTERPRET) {
