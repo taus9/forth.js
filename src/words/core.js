@@ -122,7 +122,8 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        const n3 = new Cell(Math.min(n1.toNumber(), n2.toNumber()));
+        const min = n1.toSigned() < n2.toSigned() ? n1.toSigned() : n2.toSigned();
+        const n3 = new Cell(min);
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/MAX
@@ -130,7 +131,8 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        const n3 = new Cell(Math.max(n1.toNumber(), n2.toNumber()));
+        const max = n1.toSigned() > n2.toSigned() ? n1.toSigned() : n2.toSigned();
+        const n3 = new Cell(max);
         this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/DROP
