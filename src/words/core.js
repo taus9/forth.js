@@ -31,14 +31,18 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        if (n2.toNumber() === 0) {
+        const dividend = n1.toSigned();
+        const divisor = n2.toSigned();
+        if (divisor === 0n) {
             this.reset();
             throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
         }
-        // Forth uses floored division (rounds toward negative infinity)
-        const a = n1.toNumber();
-        const b = n2.toNumber();
-        const quotient = Math.floor(a / b);
+        // Forth uses floored division (rounds toward negative infinity) 
+        let quotient = dividend / divisor;
+        const remainder = dividend % divisor;
+        if (remainder !== 0n && ((remainder > 0n && divisor < 0n) || (remainder < 0n && divisor > 0n))) {
+            quotient -= 1n;
+        }
         const n3 = new Cell(quotient);
         this.dataStack.push(n3);
     },
@@ -47,33 +51,42 @@ export const core = {
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        if (n2.toNumber() === 0) {
+        const dividend = n1.toSigned();
+        const divisor = n2.toSigned();
+        if (divisor === 0n) {
             this.reset();
             throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
         }
-        // Forth uses floored division
-        const a = n1.toNumber();
-        const b = n2.toNumber();
-        const quotient = Math.floor(a / b);
-        const remainder = a - (quotient * b);
-        this.dataStack.push(new Cell(remainder));
-        this.dataStack.push(new Cell(quotient));
+        // Forth uses floored division (rounds toward negative infinity) 
+        let quotient = dividend / divisor;
+        let remainder = dividend % divisor;
+        if (remainder !== 0n && ((remainder > 0n && divisor < 0n) || (remainder < 0n && divisor > 0n))) {
+            quotient -= 1n;
+            remainder += divisor;
+        }
+        const n3 = new Cell(quotient);
+        const n4 = new Cell(remainder);
+        this.dataStack.push(n4);
+        this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/MOD
     'MOD': function() { // tested
         this.checkStackUnderflow(2);
         const n2 = this.dataStack.pop();
         const n1 = this.dataStack.pop();
-        if (n2.toNumber() === 0) {
+        const dividend = n1.toSigned();
+        const divisor = n2.toSigned();
+        if (divisor === 0n) {
             this.reset();
             throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
         }
-        // Forth uses floored modulo (consistent with floored division)
-        const a = n1.toNumber();
-        const b = n2.toNumber();
-        const quotient = Math.floor(a / b);
-        const remainder = a - (quotient * b);
-        this.dataStack.push(new Cell(remainder));
+        // Forth uses floored division (rounds toward negative infinity) 
+        let remainder = dividend % divisor;
+        if (remainder !== 0n && ((remainder > 0n && divisor < 0n) || (remainder < 0n && divisor > 0n))) {
+            remainder += divisor;
+        }
+        const n3 = new Cell(remainder);
+        this.dataStack.push(n3);
     },
     // https://forth-standard.org/standard/core/ABS
     'ABS': function() { // tested
