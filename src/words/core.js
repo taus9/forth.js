@@ -329,6 +329,71 @@ export const core = {
         this.checkStackUnderflow(1);
         const u1 = this.dataStack.pop();
         this.output = `${u1.toUnsigned()}`;
+    },
+    // https://forth-standard.org/standard/core/StoD
+    'S>D': function() {
+        this.checkStackUnderflow(1);
+        const n = this.dataStack.pop();
+        const signedValue = n.toSigned();
+        const lowPart = new Cell(signedValue & 0xFFFFFFFFFFFFFFFFn);
+        const highPart = new Cell((signedValue >> 64n) & 0xFFFFFFFFFFFFFFFFn);
+        this.dataStack.push(lowPart);
+        this.dataStack.push(highPart);
+    },
+    // https://forth-standard.org/standard/core/TimesDiv
+    '*/': function() {
+        // The Forth Standard says the the product of n1 and n2
+        // should be a 2-cell signed integer, which is then
+        // divided by n3. This may need to be implemented at some point.
+        // for full ANS Forth compliance.
+        this.checkStackUnderflow(3);
+        const n3 = this.dataStack.pop();
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        const product = n1.toSigned() * n2.toSigned();
+        if (n3.toSigned() === 0n) {
+            this.reset();
+            throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
+        }
+        // Forth uses floored division (rounds toward negative infinity) 
+        let quotient = product / n3.toSigned();
+        const remainder = product % n3.toSigned();
+        if (remainder !== 0n && ((remainder > 0n && n3.toSigned() < 0n) || (remainder < 0n && n3.toSigned() > 0n))) {
+            quotient -= 1n;
+        }
+        const n4 = new Cell(quotient);
+        this.dataStack.push(n4);
+    },
+    // https://forth-standard.org/standard/core/TimesDivMOD
+    '*/MOD': function() {
+        // The Forth Standard says the the product of n1 and n2
+        // should be a 2-cell signed integer, which is then
+        // divided by n3. This may need to be implemented at some point.
+        // for full ANS Forth compliance.
+        this.checkStackUnderflow(3);
+        const n3 = this.dataStack.pop();
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        const product = n1.toSigned() * n2.toSigned();
+        if (n3.toSigned() === 0n) {
+            this.reset();
+            throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
+        }
+        // Forth uses floored division (rounds toward negative infinity) 
+        let quotient = product / n3.toSigned();
+        let remainder = product % n3.toSigned();
+        if (remainder !== 0n && ((remainder > 0n && n3.toSigned() < 0n) || (remainder < 0n && n3.toSigned() > 0n))) {
+            quotient -= 1n;
+            remainder += n3.toSigned();
+        }
+        const n4 = new Cell(quotient);
+        const n5 = new Cell(remainder);
+        this.dataStack.push(n5);
+        this.dataStack.push(n4);
+    },
+    // https://forth-standard.org/standard/core/DEPTH
+    'DEPTH': function() {
+        const n = new Cell(this.dataStack.length);
+        this.dataStack.push(n);
     }
-
-}
+};
