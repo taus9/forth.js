@@ -192,10 +192,121 @@ export const core = {
         );
     },
     // https://forth-standard.org/standard/core/d
-    '.': function() {
+    '.': function() { // tested
         this.checkStackUnderflow(1);
         const w1 = this.dataStack.pop();
         this.output = `${w1.toSigned()}`;
+    },
+    // https://forth-standard.org/standard/core/Equal
+    '=': function() {
+        this.checkStackUnderflow(2);
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        const flag = (n1.toUnsigned() === n2.toUnsigned()) ? -1 : 0;
+        this.dataStack.push(new Cell(flag));
+    },
+    // https://forth-standard.org/standard/core/less
+    '<': function() {
+        this.checkStackUnderflow(2);
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        const flag = (n1.toSigned() < n2.toSigned()) ? -1 : 0;
+        this.dataStack.push(new Cell(flag));
+    },
+    // https://forth-standard.org/standard/core/more
+    '>': function() {
+        this.checkStackUnderflow(2);
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        const flag = (n1.toSigned() > n2.toSigned()) ? -1 : 0;
+        this.dataStack.push(new Cell(flag));
+    },
+    // https://forth-standard.org/standard/core/Uless
+    'U<': function() {
+        this.checkStackUnderflow(2);
+        const u2 = this.dataStack.pop();
+        const u1 = this.dataStack.pop();
+        const flag = (u1.toUnsigned() < u2.toUnsigned()) ? -1 : 0;
+        this.dataStack.push(new Cell(flag));
+    },
+    // https://forth-standard.org/standard/core/ZeroEqual
+    '0=': function() {
+        this.checkStackUnderflow(1);
+        const n = this.dataStack.pop();
+        const flag = (n.toUnsigned() === 0) ? -1 : 0;
+        this.dataStack.push(new Cell(flag));
+    },
+    // https://forth-standard.org/standard/core/Zeroless
+    '0<': function() {
+        this.checkStackUnderflow(1);
+        const n = this.dataStack.pop();
+        const flag = (n.toSigned() < 0) ? -1 : 0;
+        this.dataStack.push(new Cell(flag));
+    },
+    // https://forth-standard.org/standard/core/TwoTimes
+    '2*': function() {
+        this.checkStackUnderflow(1);
+        const x1 = this.dataStack.pop();
+        const x2 = new Cell(x1.toUnsigned() << 1n);
+        this.dataStack.push(x2);    
+    },
+    // https://forth-standard.org/standard/core/TwoDiv
+    '2/': function() {
+        this.checkStackUnderflow(1);
+        const x1 = this.dataStack.pop();
+        const x2 = new Cell(x1.toUnsigned() >> 1n);
+        this.dataStack.push(x2);    
+    },
+    // https://forth-standard.org/standard/core/AND
+    'AND': function() {
+        this.checkStackUnderflow(2);
+        const x2 = this.dataStack.pop();
+        const x1 = this.dataStack.pop();
+        const x3 = new Cell(x1.toUnsigned() & x2.toUnsigned());
+        this.dataStack.push(x3);
+    },
+    // https://forth-standard.org/standard/core/OR
+    'OR': function() {
+        this.checkStackUnderflow(2);
+        const x2 = this.dataStack.pop();
+        const x1 = this.dataStack.pop();
+        const x3 = new Cell(x1.toUnsigned() | x2.toUnsigned());
+        this.dataStack.push(x3);
+    },
+    // https://forth-standard.org/standard/core/XOR
+    'XOR': function() {
+        this.checkStackUnderflow(2);
+        const x2 = this.dataStack.pop();
+        const x1 = this.dataStack.pop();
+        const x3 = new Cell(x1.toUnsigned() ^ x2.toUnsigned());
+        this.dataStack.push(x3);
+    },
+    // https://forth-standard.org/standard/core/INVERT
+    'INVERT': function() {
+        this.checkStackUnderflow(1);
+        const x1 = this.dataStack.pop();
+        const x2 = new Cell(~x1.toUnsigned());
+        this.dataStack.push(x2);
+    },
+    // https://forth-standard.org/standard/core/LSHIFT
+    'LSHIFT': function() {
+        this.checkStackUnderflow(2);
+        const u = this.dataStack.pop();
+        const x1 = this.dataStack.pop();
+        // Wrap shift amount to 0-63 range (modulo 64)
+        const shiftAmount = u.toUnsigned() & 63n;
+        const x2 = new Cell(x1.toUnsigned() << shiftAmount);
+        this.dataStack.push(x2);
+    },
+    // https://forth-standard.org/standard/core/RSHIFT
+    'RSHIFT': function() {
+        this.checkStackUnderflow(2);
+        const u = this.dataStack.pop();
+        const x1 = this.dataStack.pop();
+        // Wrap shift amount to 0-63 range (modulo 64)
+        const shiftAmount = u.toUnsigned() & 63n;
+        const x2 = new Cell(x1.toUnsigned() >> shiftAmount);
+        this.dataStack.push(x2);
     },
 
 }

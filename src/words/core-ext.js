@@ -30,5 +30,21 @@ export const coreExt = {
         const target = this.dataStack.splice(targetIndex, 1);
         this.dataStack.push(target[0]);
     },
+    // https://forth-standard.org/standard/core/ne
+    '<>': function() {
+        this.checkStackUnderflow(2);
+        const n2 = this.dataStack.pop();
+        const n1 = this.dataStack.pop();
+        const flag = (n1.toUnsigned() !== n2.toUnsigned()) ? -1 : 0;
+        this.dataStack.push(new Cell(flag));
+    },
+    // https://forth-standard.org/standard/core/Umore
+    'U>': function() {
+        this.checkStackUnderflow(2);
+        const u2 = this.dataStack.pop();
+        const u1 = this.dataStack.pop();
+        const flag = (u1.toUnsigned() > u2.toUnsigned()) ? -1 : 0;
+        this.dataStack.push(new Cell(flag));
+    }
 
 }
