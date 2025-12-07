@@ -308,5 +308,11 @@ export const core = {
         const x2 = new Cell(x1.toUnsigned() >> shiftAmount);
         this.dataStack.push(x2);
     },
+    // https://forth-standard.org/standard/core/Ud
+    'U.': function() {
+        this.checkStackUnderflow(1);
+        const u1 = this.dataStack.pop();
+        this.output = `${u1.toUnsigned()}`;
+    }
 
 }
