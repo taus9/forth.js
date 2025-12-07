@@ -257,6 +257,185 @@ export class WordsTestSuite {
       this.expectStack(fvm, [3,4,1,2]);
     });
 
+    // =
+    this.test('= returns true flag when equal', () => {
+      const fvm = new Fvm();
+      fvm.execute('42 42 =');
+      this.expectStack(fvm, [-1]);
+    });
+
+    this.test('= returns false flag when not equal', () => {
+      const fvm = new Fvm();
+      fvm.execute('42 43 =');
+      this.expectStack(fvm, [0]);
+    });
+
+    // <
+    this.test('< returns true when n1 < n2', () => {
+      const fvm = new Fvm();
+      fvm.execute('5 10 <');
+      this.expectStack(fvm, [-1]);
+    });
+
+    this.test('< returns false when n1 >= n2', () => {
+      const fvm = new Fvm();
+      fvm.execute('10 5 <');
+      this.expectStack(fvm, [0]);
+    });
+
+    this.test('< handles negative numbers', () => {
+      const fvm = new Fvm();
+      fvm.execute('-5 0 <');
+      this.expectStack(fvm, [-1]);
+    });
+
+    // >
+    this.test('> returns true when n1 > n2', () => {
+      const fvm = new Fvm();
+      fvm.execute('10 5 >');
+      this.expectStack(fvm, [-1]);
+    });
+
+    this.test('> returns false when n1 <= n2', () => {
+      const fvm = new Fvm();
+      fvm.execute('5 10 >');
+      this.expectStack(fvm, [0]);
+    });
+
+    // U<
+    this.test('U< compares unsigned values', () => {
+      const fvm = new Fvm();
+      fvm.execute('5 10 U<');
+      this.expectStack(fvm, [-1]);
+    });
+
+    this.test('U< treats negative as large unsigned', () => {
+      const fvm = new Fvm();
+      fvm.execute('-1 10 U<');
+      this.expectStack(fvm, [0]); // -1 as unsigned is very large
+    });
+
+    // 0=
+    this.test('0= returns true for zero', () => {
+      const fvm = new Fvm();
+      fvm.execute('0 0=');
+      this.expectStack(fvm, [-1]);
+    });
+
+    this.test('0= returns false for non-zero', () => {
+      const fvm = new Fvm();
+      fvm.execute('42 0=');
+      this.expectStack(fvm, [0]);
+    });
+
+    // 0<
+    this.test('0< returns true for negative', () => {
+      const fvm = new Fvm();
+      fvm.execute('-5 0<');
+      this.expectStack(fvm, [-1]);
+    });
+
+    this.test('0< returns false for zero and positive', () => {
+      const fvm = new Fvm();
+      fvm.execute('0 0<');
+      this.expectStack(fvm, [0]);
+      fvm.execute('5 0<');
+      this.expectStack(fvm, [0, 0]);
+    });
+
+    // 2*
+    this.test('2* multiplies by 2 via left shift', () => {
+      const fvm = new Fvm();
+      fvm.execute('21 2*');
+      this.expectStack(fvm, [42]);
+    });
+
+    // 2/
+    this.test('2/ divides by 2 via right shift', () => {
+      const fvm = new Fvm();
+      fvm.execute('84 2/');
+      this.expectStack(fvm, [42]);
+    });
+
+    // AND
+    this.test('AND performs bitwise AND', () => {
+      const fvm = new Fvm();
+      fvm.execute('12 10 AND');
+      this.expectStack(fvm, [8]); // 1100 & 1010 = 1000
+    });
+
+    // OR
+    this.test('OR performs bitwise OR', () => {
+      const fvm = new Fvm();
+      fvm.execute('12 10 OR');
+      this.expectStack(fvm, [14]); // 1100 | 1010 = 1110
+    });
+
+    // XOR
+    this.test('XOR performs bitwise XOR', () => {
+      const fvm = new Fvm();
+      fvm.execute('12 10 XOR');
+      this.expectStack(fvm, [6]); // 1100 ^ 1010 = 0110
+    });
+
+    // INVERT
+    this.test('INVERT performs bitwise NOT', () => {
+      const fvm = new Fvm();
+      fvm.execute('0 INVERT');
+      this.expectStack(fvm, [-1]); // All bits set
+    });
+
+    this.test('INVERT -1 gives 0', () => {
+      const fvm = new Fvm();
+      fvm.execute('-1 INVERT');
+      this.expectStack(fvm, [0]);
+    });
+
+    // LSHIFT
+    this.test('LSHIFT shifts left by specified bits', () => {
+      const fvm = new Fvm();
+      fvm.execute('5 2 LSHIFT');
+      this.expectStack(fvm, [20]); // 0101 << 2 = 10100
+    });
+
+    this.test('LSHIFT wraps shift amount modulo 64', () => {
+      const fvm = new Fvm();
+      fvm.execute('3 64 LSHIFT');
+      this.expectStack(fvm, [3]); // 64 mod 64 = 0, no shift
+    });
+
+    this.test('LSHIFT with wrapped amount', () => {
+      const fvm = new Fvm();
+      fvm.execute('5 65 LSHIFT');
+      this.expectStack(fvm, [10]); // 65 mod 64 = 1, shift by 1
+    });
+
+    // RSHIFT
+    this.test('RSHIFT shifts right by specified bits', () => {
+      const fvm = new Fvm();
+      fvm.execute('20 2 RSHIFT');
+      this.expectStack(fvm, [5]); // 10100 >> 2 = 0101
+    });
+
+    this.test('RSHIFT wraps shift amount modulo 64', () => {
+      const fvm = new Fvm();
+      fvm.execute('3 64 RSHIFT');
+      this.expectStack(fvm, [3]); // 64 mod 64 = 0, no shift
+    });
+
+    // U.
+    this.test("U. outputs unsigned value", () => {
+      const fvm = new Fvm();
+      fvm.execute('42 U.');
+      if (fvm.output !== '42') throw new Error(`Expected output '42', got '${fvm.output}'`);
+    });
+
+    this.test("U. displays negative as large unsigned", () => {
+      const fvm = new Fvm();
+      fvm.execute('-1 U.');
+      if (fvm.output !== '18446744073709551615') throw new Error(`Expected output '18446744073709551615', got '${fvm.output}'`);
+    });
+
     this.put('');
     this.put('--- Core Ext Words ---');
     this.put('');
