@@ -15,6 +15,8 @@ export class Fvm {
         this.output = '';
         this.compilingWord = '';
         this.compilationBuffer = [];
+        this.inputStream = [];
+        this.inputStreamIndex = 0;
         // Always use 'this' inside word callbacks to access VM state (stack, status, etc).
         this.words = {...words.core, ...words.coreExt, ...words.misc}
     }
@@ -25,6 +27,8 @@ export class Fvm {
         this.dataStack = [];
         this.compilingWord = '';
         this.compilationBuffer = [];
+        this.inputStream = [];
+        this.inputStreamIndex = 0;
         this.status = types.StatusTypes.OK;
         this.state = types.ForthState.INTERPRET;
     }
@@ -84,18 +88,17 @@ export class Fvm {
     execute(code) {
         this.output = '';
         
-        let words;
         if (typeof code === 'string') {
-            words = this.tokenize(code);
+            this.inputStream = this.tokenize(code);
         } else if (Array.isArray(code)) {
-            words = code;
+            this.inputStream = code;
         } else {
             throw new errors.InterpreterError(errors.ErrorMessages.INVALID_CODE);
         }
 
-        let wordIndex = 0;
-        while (wordIndex < words.length) {
-            const word = words[wordIndex++];
+        this.inputStreamIndex = 0;
+        while (this.inputStreamIndex < this.inputStream.length) {
+            const word = this.inputStream[this.inputStreamIndex++];
 
             // Start of a new word definition
             if (word instanceof CompileWord && word.name === ':') {
@@ -103,18 +106,19 @@ export class Fvm {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.NESTED_DEFINITION);
                 }
-                if (wordIndex >= words.length) {
+                if (this.inputStreamIndex >= this.inputStream.length) {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.NAME_EXPECTED);
                 }
                 
-                const wordName = words[wordIndex++].name;
+                const wordName = this.inputStream[this.inputStreamIndex++].name;
 
                 if (!this.isValidWordName(wordName)) {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
                 }
 
+                // TODO: A program shall not create definition names containing non-graphic characters. 
                 this.compilingWord = wordName; // temporarily hold the word being defined
                 this.compilationBuffer = []; // array of Word instances
                 this.state = types.ForthState.COMPILE;
