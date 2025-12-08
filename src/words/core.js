@@ -553,7 +553,7 @@ export const core = {
         'entry': function () {
             if (this.state !== types.ForthState.COMPILE) {
                 this.errorReset();
-                throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, word);
+                throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, ';');
             }
             if (this.isWordRedefined(this.compilingWord)) {
                 this.output = `redefined ${this.compilingWord}`;
