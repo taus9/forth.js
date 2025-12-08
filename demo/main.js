@@ -140,8 +140,7 @@ runTestButton.addEventListener('click', async () => {
 resetButton.addEventListener('click', async () => {
     const confirmed = await confirmDialog("Are you sure you want to reset the FVM?");
     if (confirmed) {
-        fvm.reset();
-        fvm.resetWords();
+        fvm.resetFVM();
         clear();
         put("FVM has been reset");
     }    
