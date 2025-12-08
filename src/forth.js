@@ -10,13 +10,6 @@ import { Word, NumberWord, CompileWord, TextWord } from './types/words.js';
 export class Fvm {
 
     constructor() {
-        this.reset();
-        // Always use 'this' inside word callbacks to access VM state (stack, status, etc).
-        this.words = {...words.core, ...words.coreExt, ...words.misc}
-    }
-    
-
-    reset() {
         this.output = '';
         this.dataStack = [];
         this.compilingWord = '';
@@ -25,6 +18,36 @@ export class Fvm {
         this.memory = new ForthMemory();
         this.status = types.StatusTypes.OK;
         this.state = types.ForthState.INTERPRET;
+
+        // Always use 'this' inside word callbacks to access VM state (stack, status, etc).
+        this.words = {...words.core, ...words.coreExt, ...words.misc}
+    }
+    
+
+    errorReset() {
+        this.output = '';
+        this.dataStack = [];
+        this.compilingWord = '';
+        this.compilationBuffer = [];
+        this.executionStack = [];
+        this.status = types.StatusTypes.OK;
+        this.state = types.ForthState.INTERPRET;
+    }
+
+    resetFVM() {
+        this.output = '';
+        this.dataStack = [];
+        this.compilingWord = '';
+        this.compilationBuffer = [];
+        this.executionStack = [];
+        this.memory = new ForthMemory();
+        this.status = types.StatusTypes.OK;
+        this.state = types.ForthState.INTERPRET;
+        this.words = {
+            ...words.core,
+            ...words.coreExt,
+            ...words.misc
+        };
     }
 
     resetWords() {
@@ -85,24 +108,24 @@ export class Fvm {
         const words = Array.isArray(code) ? code : this.tokenize(code);
         const frame = {words, index: 0};
         this.executionStack.push(frame);
-        
+
         try {
             while (frame.index < frame.words.length) {
                 const word = frame.words[frame.index++];
 
                 if (word.name === ':') {
                     if (this.state === types.ForthState.COMPILE) {
-                        this.reset();
+                        this.errorReset();
                         throw new errors.ParseError(errors.ErrorMessages.NESTED_DEFINITION);
                     }
                     if (frame.index >= frame.words.length) {
-                        this.reset();
+                        this.errorReset();
                         throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
                     }
                     const wordName = words[frame.index++].name;
         
                     if (!this.isValidWordName(wordName)) {
-                        this.reset();
+                        this.errorReset();
                         throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
                     }
         
@@ -118,7 +141,7 @@ export class Fvm {
                 // ANS Forth compliant, but it works for now.
                 if (word.name === ';') {
                     if (this.state !== types.ForthState.COMPILE) {
-                        this.reset();
+                        this.errorReset();
                         throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, word);
                     }
 
@@ -153,7 +176,7 @@ export class Fvm {
                         continue;
                     }
 
-                    this.reset();
+                    this.errorReset();
                     throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.name);
                 }
             }
@@ -204,7 +227,7 @@ export class Fvm {
 
     checkStackUnderflow(requiredStackLength) {
         if (this.dataStack.length < requiredStackLength) {
-            this.reset();
+            this.errorReset();
             throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
     }
