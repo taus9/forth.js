@@ -91,36 +91,35 @@ export class Fvm {
     execute(code) {
         this.output = '';
         
+        let inputStream;
         if (typeof code === 'string') {
-            this.inputStream = this.tokenize(code);
+            inputStream = this.tokenize(code);
         } else if (Array.isArray(code)) {
-            this.inputStream = code;
+            inputStream = code;
         } else {
             throw new errors.InterpreterError(errors.ErrorMessages.INVALID_CODE);
         }
 
-        this.inputStreamIndex = 0;
-        while (this.inputStreamIndex < this.inputStream.length) {
-            const word = this.inputStream[this.inputStreamIndex++];
+        let inputStreamIndex = 0;
+        while (inputStreamIndex < inputStream.length) {
+            const word = inputStream[inputStreamIndex++];
 
-            // Start of a new word definition
-            if (word instanceof CompileWord && word.name === ':') {
+            if (word.name === ':') {
                 if (this.state === types.ForthState.COMPILE) {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.NESTED_DEFINITION);
                 }
-                if (this.inputStreamIndex >= this.inputStream.length) {
-                    this.reset();
-                    throw new errors.ParseError(errors.ErrorMessages.NAME_EXPECTED);
-                }
-                
-                const wordName = this.inputStream[this.inputStreamIndex++].name;
-
-                if (!this.isValidWordName(wordName)) {
+                if (inputStreamIndex >= inputStream.length) {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
                 }
-
+                const wordName = inputStream[inputStreamIndex++].name;
+        
+                if (!this.isValidWordName(wordName)) {
+                    this.reset();
+                    throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
+                }
+        
                 // TODO: A program shall not create definition names containing non-graphic characters. 
                 this.compilingWord = wordName; // temporarily hold the word being defined
                 this.compilationBuffer = []; // array of Word instances
@@ -128,7 +127,10 @@ export class Fvm {
                 continue;
             }
 
-            if (word instanceof CompileWord && word.name === ';') {
+            // the interpreter as it is has to treat
+            // the ; word as a special case. This is not
+            // ANS Forth compliant, but it works for now.
+            if (word.name === ';') {
                 if (this.state !== types.ForthState.COMPILE) {
                     this.reset();
                     throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, word);
@@ -139,7 +141,7 @@ export class Fvm {
                 }
                 const code = this.compilationBuffer;
                 this.words[this.compilingWord] = function() {
-                   this.execute(code); 
+                    this.execute(code); 
                 }
                 
                 this.compilingWord = '';
@@ -197,10 +199,6 @@ export class Fvm {
         // Forth words are case-insensitive
         const word = text.trim().toUpperCase();
         
-        if (word === ':' || word === ';') {
-            return new CompileWord(word);
-        }
-
         // Order is important here, in order to be able
         // to redefine words like "+", "dup", "123", etc.
         if (Object.hasOwn(this.words, word)) {

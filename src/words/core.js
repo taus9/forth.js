@@ -1,5 +1,6 @@
-import { Cell } from '../types/cell.js';
 import * as errors from '../errors/errors.js';
+import * as types from '../types/types.js';
+import { Cell } from '../types/cell.js';
 
 export const core = {
     // https://forth-standard.org/standard/core/Times
