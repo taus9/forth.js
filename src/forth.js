@@ -10,15 +10,7 @@ import { Word, NumberWord, CompileWord, TextWord } from './types/words.js';
 export class Fvm {
 
     constructor() {
-        this.dataStack = [];
-        this.status = types.StatusTypes.OK;
-        this.state = types.ForthState.INTERPRET;
-        this.output = '';
-        this.compilingWord = '';
-        this.compilationBuffer = [];
-        this.inputStream = [];
-        this.inputStreamIndex = 0;
-        this.memory = new ForthMemory();
+        this.reset();
         // Always use 'this' inside word callbacks to access VM state (stack, status, etc).
         this.words = {...words.core, ...words.coreExt, ...words.misc}
     }
@@ -29,8 +21,7 @@ export class Fvm {
         this.dataStack = [];
         this.compilingWord = '';
         this.compilationBuffer = [];
-        this.inputStream = [];
-        this.inputStreamIndex = 0;
+        this.executionStack = [];
         this.memory = new ForthMemory();
         this.status = types.StatusTypes.OK;
         this.state = types.ForthState.INTERPRET;
@@ -91,87 +82,83 @@ export class Fvm {
     execute(code) {
         this.output = '';
         
-        let inputStream;
-        if (typeof code === 'string') {
-            inputStream = this.tokenize(code);
-        } else if (Array.isArray(code)) {
-            inputStream = code;
-        } else {
-            throw new errors.InterpreterError(errors.ErrorMessages.INVALID_CODE);
-        }
+        const words = Array.isArray(code) ? code : this.tokenize(code);
+        const frame = {words, index: 0};
+        this.executionStack.push(frame);
+        try {
+            while (frame.index < frame.words.length) {
+                const word = frame.words[frame.index++];
 
-        let inputStreamIndex = 0;
-        while (inputStreamIndex < inputStream.length) {
-            const word = inputStream[inputStreamIndex++];
+                if (word.name === ':') {
+                    if (this.state === types.ForthState.COMPILE) {
+                        this.reset();
+                        throw new errors.ParseError(errors.ErrorMessages.NESTED_DEFINITION);
+                    }
+                    if (frame.index >= frame.words.length) {
+                        this.reset();
+                        throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
+                    }
+                    const wordName = words[frame.index++].name;
+        
+                    if (!this.isValidWordName(wordName)) {
+                        this.reset();
+                        throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
+                    }
+        
+                    // TODO: A program shall not create definition names containing non-graphic characters. 
+                    this.compilingWord = wordName; // temporarily hold the word being defined
+                    this.compilationBuffer = []; // array of Word instances
+                    this.state = types.ForthState.COMPILE;
+                    continue;
+                }
 
-            if (word.name === ':') {
+                // the interpreter as it is has to treat
+                // the ; word as a special case. This is not
+                // ANS Forth compliant, but it works for now.
+                if (word.name === ';') {
+                    if (this.state !== types.ForthState.COMPILE) {
+                        this.reset();
+                        throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, word);
+                    }
+
+                    if (this.isWordRedefined(this.compilingWord)) {
+                        this.output = `redefined ${this.compilingWord}`;
+                    }
+                    const code = this.compilationBuffer;
+                    this.words[this.compilingWord] = function() {
+                        this.execute(code); 
+                    }
+                
+                    this.compilingWord = '';
+                    this.compilationBuffer = [];
+                    this.state = types.ForthState.INTERPRET;
+                    continue;
+                }
+
                 if (this.state === types.ForthState.COMPILE) {
-                    this.reset();
-                    throw new errors.ParseError(errors.ErrorMessages.NESTED_DEFINITION);
-                }
-                if (inputStreamIndex >= inputStream.length) {
-                    this.reset();
-                    throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
-                }
-                const wordName = inputStream[inputStreamIndex++].name;
-        
-                if (!this.isValidWordName(wordName)) {
-                    this.reset();
-                    throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
-                }
-        
-                // TODO: A program shall not create definition names containing non-graphic characters. 
-                this.compilingWord = wordName; // temporarily hold the word being defined
-                this.compilationBuffer = []; // array of Word instances
-                this.state = types.ForthState.COMPILE;
-                continue;
-            }
-
-            // the interpreter as it is has to treat
-            // the ; word as a special case. This is not
-            // ANS Forth compliant, but it works for now.
-            if (word.name === ';') {
-                if (this.state !== types.ForthState.COMPILE) {
-                    this.reset();
-                    throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, word);
-                }
-
-                if (this.isWordRedefined(this.compilingWord)) {
-                    this.output = `redefined ${this.compilingWord}`;
-                }
-                const code = this.compilationBuffer;
-                this.words[this.compilingWord] = function() {
-                    this.execute(code); 
-                }
-                
-                this.compilingWord = '';
-                this.compilationBuffer = [];
-                this.state = types.ForthState.INTERPRET;
-                continue;
-            }
-
-            if (this.state === types.ForthState.COMPILE) {
-                this.compilationBuffer.push(word);
-                continue;
-            }
-
-            if (this.state === types.ForthState.INTERPRET) {
-
-                if (word instanceof NumberWord) {
-                    this.dataStack.push(word.cell);
-                    continue;
-                }
-                
-                if (word instanceof Word) {
-                    word.callback.call(this);
+                    this.compilationBuffer.push(word);
                     continue;
                 }
 
-                this.reset();
-                throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.name);
+                if (this.state === types.ForthState.INTERPRET) {
+
+                    if (word instanceof NumberWord) {
+                        this.dataStack.push(word.cell);
+                        continue;
+                    }
+                
+                    if (word instanceof Word) {
+                        word.callback.call(this);
+                        continue;
+                    }
+
+                    this.reset();
+                    throw new errors.ParseError(errors.ErrorMessages.UNDEFINED_WORD, word.name);
+                }
             }
+        } finally {
+            this.executionStack.pop();
         }
-
         if (this.state === types.ForthState.INTERPRET) {
             this.status = types.StatusTypes.OK;
         } else {
