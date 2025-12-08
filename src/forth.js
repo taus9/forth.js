@@ -50,14 +50,6 @@ export class Fvm {
         };
     }
 
-    resetWords() {
-        this.words = {
-            ...words.core,
-            ...words.coreExt,
-            ...words.misc
-        };
-    }
-
     // Handles lexing and parsing
     tokenize(text) {
         let i = 0;
