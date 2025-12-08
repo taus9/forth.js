@@ -283,7 +283,7 @@ export class ErrorTestSuite {
     this.test('Reset clears stack and state', () => {
       const fvm = new Fvm();
       fvm.execute('1 2 3');
-      fvm.reset();
+      fvm.resetFVM();
       if (fvm.dataStack.length !== 0) {
         throw new Error(`Stack not cleared by reset`);
       }

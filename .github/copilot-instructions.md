@@ -158,7 +158,7 @@ this.test('NEGATE flips sign', () => {
 ### Handle Errors
 ```javascript
 if (condition) {
-  this.reset();  // Clears stack
+  this.resetFVM();  // Clears stack
   throw new errors.OperationError(errors.ErrorMessages.SOME_ERROR);
 }
 ```
@@ -242,7 +242,7 @@ const floored = quotient < 0 && a % b !== 0 ? quotient - 1 : quotient;
 ```javascript
 // Pattern used throughout:
 if (error_condition) {
-  this.reset();  // Clears dataStack, compilationBuffer, resets state
+  this.resetFVM();  // Clears dataStack, compilationBuffer, resets state
   throw new errors.SomeError(message);
 }
 ```
