@@ -98,7 +98,7 @@ rl.on('line', (line) => {
         printStack();
         break;
       case '@reset':
-        fvm.errorReset();
+        fvm.resetFVM();
         console.log(`${colors.yellow}VM reset${colors.reset}`);
         break;
       case '@words':
