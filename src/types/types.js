@@ -13,4 +13,5 @@ export const FlagTypes = {
     NONE: null,
     IMMEDIATE: 'immediate',
     COMPILE_ONLY: 'compile-only',
+    DEFINING_WORD: 'defining-word'
 }

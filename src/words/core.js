@@ -525,7 +525,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/VARIABLE
     'VARIABLE': {
-        'flag': types.FlagTypes.NONE,
+        'flag': types.FlagTypes.DEFINING_WORD,
         'entry': function () {
             const frame = this.executionStack[this.executionStack.length - 1];
             if (frame.index >= frame.words.length) {
