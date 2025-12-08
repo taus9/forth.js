@@ -12,7 +12,7 @@ export const ErrorMessages = {
     NESTED_DEFINITION: 'Nested definition',
     INVALID_WORD_NAME: 'Invalid word name',
     ZERO_LENGTH_NAME: 'Attempt to use zero-length string as a name',
-    COMPILE_ONLY_WORD: 'Word only allowed in compile mode',
+    COMPILE_ONLY_WORD: 'Interpreting a compile-only word',
     INVALID_CODE: 'Attempted to execute invalid code type',
     INVALID_MEMORY_ACCESS: 'Invalid memory access'
 };
