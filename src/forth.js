@@ -141,9 +141,12 @@ export class Fvm {
                         this.output = `redefined ${this.compilingWord}`;
                     }
                     const code = this.compilationBuffer;
-                    this.words[this.compilingWord] = function() {
-                        this.execute(code); 
-                    }
+                    this.words[this.compilingWord] = {
+                        'flag': null,
+                        'entry': function() {
+                            this.execute(code);
+                        }
+                    };
                 
                     this.compilingWord = '';
                     this.compilationBuffer = [];
@@ -205,8 +208,8 @@ export class Fvm {
         // Order is important here, in order to be able
         // to redefine words like "+", "dup", "123", etc.
         if (Object.hasOwn(this.words, word)) {
-            // say this three times fast...
-            return new Word(word, this.words[word])
+            const {entry, flag} = this.words[word];
+            return new Word(word, entry, flag);
         }
 
         const val = Number(word);
