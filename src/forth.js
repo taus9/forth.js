@@ -155,6 +155,12 @@ export class Fvm {
                 }
 
                 if (this.state === types.ForthState.COMPILE) {
+                    
+                    if (word instanceof Word && word.flag === types.FlagTypes.DEFINING_WORD) {
+                        this.errorReset();
+                        throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME, word.name);
+                    }
+
                     this.compilationBuffer.push(word);
                     continue;
                 }
