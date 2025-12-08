@@ -85,6 +85,7 @@ export class Fvm {
         const words = Array.isArray(code) ? code : this.tokenize(code);
         const frame = {words, index: 0};
         this.executionStack.push(frame);
+        
         try {
             while (frame.index < frame.words.length) {
                 const word = frame.words[frame.index++];
@@ -159,11 +160,11 @@ export class Fvm {
         } finally {
             this.executionStack.pop();
         }
-        if (this.state === types.ForthState.INTERPRET) {
-            this.status = types.StatusTypes.OK;
-        } else {
-            this.status = types.StatusTypes.COMPILED;
-        }
+
+        this.status = 
+            this.state === types.ForthState.INTERPRET
+            ? types.StatusTypes.OK
+            : types.StatusTypes.COMPILED;
     }
 
     isValidWordName(name) {
