@@ -14,6 +14,8 @@
     ect.
 */
 
+import * as types from '../types/types.js';
+
 export const misc = {    
     // Tools Ext
     '.S': {   

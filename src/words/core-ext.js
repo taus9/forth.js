@@ -1,3 +1,5 @@
+import * as types from '../types/types.js';
+
 export const coreExt = {
     // https://forth-standard.org/standard/core/NIP
     'NIP': {
