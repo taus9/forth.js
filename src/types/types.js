@@ -10,8 +10,8 @@ export const ForthState = {
 }
 
 export const FlagTypes = {
-    NONE: null,
-    IMMEDIATE: 'immediate',
-    COMPILE_ONLY: 'compile-only',
-    DEFINING_WORD: 'defining-word'
+    NONE: 0,
+    IMMEDIATE: 1,
+    COMPILE_ONLY: 2,
+    DEFINING_WORD: 3
 }
