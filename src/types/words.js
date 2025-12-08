@@ -1,7 +1,8 @@
 export class Word {
-    constructor(name, callback) {
+    constructor(name, callback = null, flag = null) {
         this.name = name;
-        this.callback = callback
+        this.callback = callback;
+        this.flag = flag;
     }
 }
 
