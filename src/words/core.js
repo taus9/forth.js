@@ -399,14 +399,15 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/VARIABLE
     'VARIABLE': function () {
-        if (this.inputStreamIndex >= this.inputStream.length) {
-            this.reset();
+        const frame = this.executionStack[this.executionStack.length - 1];
+        if (frame.index >= frame.words.length) {
+            this.errorReset();
             throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
         }
-        const varName = this.inputStream[this.inputStreamIndex++].name;
+        const varName = frame.words[frame.index++].name;
 
         if (!this.isValidWordName(varName)) {
-            this.reset();
+            this.errorReset();
             throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
         }
 
@@ -419,5 +420,30 @@ export const core = {
         this.words[varName] = function() {
             this.dataStack.push(new Cell(address));
         };
+    },
+    // https://forth-standard.org/standard/core/Store
+    '!': function() {
+        this.checkStackUnderflow(2);
+        const addressCell = this.dataStack.pop();
+        const valueCell = this.dataStack.pop();
+        const address = addressCell.toUnsigned();
+        if (!this.memory.has(address)) {
+            this.resetFVM();
+            throw new errors.OperationError(errors.ErrorMessages.INVALID_MEMORY_ACCESS);
+        }
+        this.memory.store(address, valueCell);
+    },
+    // https://forth-standard.org/standard/core/Fetch
+    '@': function() {
+        this.checkStackUnderflow(1);
+        const addressCell = this.dataStack.pop();
+        const address = addressCell.toUnsigned();
+        if (!this.memory.has(address)) {
+            this.resetFVM();
+            throw new errors.OperationError(errors.ErrorMessages.INVALID_MEMORY_ACCESS);
+        }
+        const valueCell = this.memory.fetch(address);
+        this.dataStack.push(valueCell);
     }
+
 };
