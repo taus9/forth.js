@@ -142,7 +142,7 @@ export class Fvm {
                     }
                     const code = this.compilationBuffer;
                     this.words[this.compilingWord] = {
-                        'flag': null,
+                        'flag': types.FlagTypes.NONE,
                         'entry': function() {
                             this.execute(code);
                         }
