@@ -523,6 +523,53 @@ export const core = {
             this.dataStack.push(n);
         }
     },
+    // https://forth-standard.org/standard/core/Colon
+    ':': {
+        'flag': types.FlagTypes.DEFINING_WORD,
+        'entry': function () {
+            const frame = this.executionStack[this.executionStack.length - 1];
+            if (this.state === types.ForthState.COMPILE) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.NESTED_DEFINITION);
+            }
+            if (frame.index >= frame.words.length) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
+            }
+            const wordName = frame.words[frame.index++].name;
+            if (!this.isValidWordName(wordName)) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
+            }
+            // TODO: A program shall not create definition names containing non-graphic characters. 
+            this.compilingWord = wordName; // temporarily hold the word being defined
+            this.compilationBuffer = []; // array of Word instances
+            this.state = types.ForthState.COMPILE;
+        }
+    },
+    // https://forth-standard.org/standard/core/Semi
+    ';': {
+        'flag': types.FlagTypes.IMMEDIATE,
+        'entry': function () {
+            if (this.state !== types.ForthState.COMPILE) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, word);
+            }
+            if (this.isWordRedefined(this.compilingWord)) {
+                this.output = `redefined ${this.compilingWord}`;
+            }
+            const code = this.compilationBuffer;
+            this.words[this.compilingWord] = {
+                'flag': types.FlagTypes.NONE,
+                'entry': function() {
+                    this.execute(code);
+                }
+            };    
+            this.compilingWord = '';
+            this.compilationBuffer = [];
+            this.state = types.ForthState.INTERPRET;
+        }
+    },
     // https://forth-standard.org/standard/core/VARIABLE
     'VARIABLE': {
         'flag': types.FlagTypes.DEFINING_WORD,

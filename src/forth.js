@@ -105,60 +105,16 @@ export class Fvm {
             while (frame.index < frame.words.length) {
                 const word = frame.words[frame.index++];
 
-                if (word.name === ':') {
-                    if (this.state === types.ForthState.COMPILE) {
-                        this.errorReset();
-                        throw new errors.ParseError(errors.ErrorMessages.NESTED_DEFINITION);
-                    }
-                    if (frame.index >= frame.words.length) {
-                        this.errorReset();
-                        throw new errors.ParseError(errors.ErrorMessages.ZERO_LENGTH_NAME);
-                    }
-                    const wordName = words[frame.index++].name;
-        
-                    if (!this.isValidWordName(wordName)) {
-                        this.errorReset();
-                        throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME);
-                    }
-        
-                    // TODO: A program shall not create definition names containing non-graphic characters. 
-                    this.compilingWord = wordName; // temporarily hold the word being defined
-                    this.compilationBuffer = []; // array of Word instances
-                    this.state = types.ForthState.COMPILE;
-                    continue;
-                }
-
-                // the interpreter as it is has to treat
-                // the ; word as a special case. This is not
-                // ANS Forth compliant, but it works for now.
-                if (word.name === ';') {
-                    if (this.state !== types.ForthState.COMPILE) {
-                        this.errorReset();
-                        throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, word);
-                    }
-
-                    if (this.isWordRedefined(this.compilingWord)) {
-                        this.output = `redefined ${this.compilingWord}`;
-                    }
-                    const code = this.compilationBuffer;
-                    this.words[this.compilingWord] = {
-                        'flag': types.FlagTypes.NONE,
-                        'entry': function() {
-                            this.execute(code);
-                        }
-                    };
-                
-                    this.compilingWord = '';
-                    this.compilationBuffer = [];
-                    this.state = types.ForthState.INTERPRET;
-                    continue;
-                }
-
                 if (this.state === types.ForthState.COMPILE) {
                     
                     if (word instanceof Word && word.flag === types.FlagTypes.DEFINING_WORD) {
                         this.errorReset();
                         throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME, word.name);
+                    }
+
+                    if (word instanceof Word && word.flag === types.FlagTypes.IMMEDIATE) {
+                        word.callback.call(this);
+                        continue;
                     }
 
                     this.compilationBuffer.push(word);
