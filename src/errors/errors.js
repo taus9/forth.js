@@ -15,7 +15,8 @@ export const ErrorMessages = {
     COMPILE_ONLY_WORD: 'Interpreting a compile-only word',
     INVALID_CODE: 'Attempted to execute invalid code type',
     INVALID_MEMORY_ACCESS: 'Invalid memory access',
-    CONTROL_EXPECTED: 'Expected control flow stack item'
+    CONTROL_EXPECTED: 'Expected control flow stack item',
+    UNMATCHED_CONTROL_STRUCTURE: 'Unmatched control structure'
 };
 
 export class ParseError extends Error {

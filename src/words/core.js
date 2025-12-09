@@ -552,6 +552,12 @@ export const core = {
     ';': {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function () {
+            // theres an unclosed control structure
+            // IF/ELSE without a THEN 
+            if (this.controlStack.length > 0) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.UNMATCHED_CONTROL_STRUCTURE);
+            }
             if (this.isWordRedefined(this.compilingWord)) {
                 this.output = `redefined ${this.compilingWord}`;
             }
