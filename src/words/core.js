@@ -664,4 +664,20 @@ export const core = {
             });
         }
     },
+    // https://forth-standard.org/standard/core/THEN
+    'THEN': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const currentControl = this.controlStack.pop();
+            if (!currentControl) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
+            }
+            const skipDistance = this.compilationBuffer.length - currentControl.offset - 1;
+            this.compilationBuffer[currentControl.offset] = new NumberWord(
+                String(skipDistance),
+                new Cell(skipDistance)
+            );
+        }
+    },
 };
