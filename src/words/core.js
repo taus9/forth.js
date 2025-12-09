@@ -1,6 +1,7 @@
 import * as errors from '../errors/errors.js';
 import * as types from '../types/types.js';
 import { Cell } from '../types/cell.js';
+import { Word, NumberWord } from '../types/words.js';
 
 export const core = {
     // https://forth-standard.org/standard/core/Times
@@ -560,7 +561,9 @@ export const core = {
                 'entry': function() {
                     this.execute(code);
                 }
-            };    
+            };
+            console.log(`Defined word: ${this.compilingWord}`);
+            console.log(`${code.map(w => w.name).join(' ')}`);    
             this.compilingWord = '';
             this.compilationBuffer = [];
             this.state = types.ForthState.INTERPRET;
@@ -680,4 +683,12 @@ export const core = {
             );
         }
     },
+    '0BRANCH': {
+        'flags': [],
+        'entry': function() {}
+    },
+    'BRANCH': {
+        'flags': [],
+        'entry': function() {}
+    }
 };
