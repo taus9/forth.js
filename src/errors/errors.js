@@ -14,7 +14,8 @@ export const ErrorMessages = {
     ZERO_LENGTH_NAME: 'Attempt to use zero-length string as a name',
     COMPILE_ONLY_WORD: 'Interpreting a compile-only word',
     INVALID_CODE: 'Attempted to execute invalid code type',
-    INVALID_MEMORY_ACCESS: 'Invalid memory access'
+    INVALID_MEMORY_ACCESS: 'Invalid memory access',
+    CONTROL_EXPECTED: 'Expected control flow stack item'
 };
 
 export class ParseError extends Error {

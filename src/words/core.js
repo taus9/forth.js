@@ -639,4 +639,18 @@ export const core = {
             });
         }
     },
+    // https://forth-standard.org/standard/core/ELSE
+    'ELSE': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const currentControl = this.controlStack.pop();
+            if (!currentControl) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
+            }
+            const branch = new Word('BRANCH', this.words['BRANCH'].entry, []);
+            const offsetPlaceholder = new NumberWord('0', new Cell(0n));
+            
+        }
+    },
 };
