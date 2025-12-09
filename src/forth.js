@@ -12,9 +12,10 @@ export class Fvm {
     constructor() {
         this.output = '';
         this.dataStack = [];
+        this.executionStack = [];
+        this.controlStack = [];
         this.compilingWord = '';
         this.compilationBuffer = [];
-        this.executionStack = [];
         this.memory = new ForthMemory();
         this.status = types.StatusTypes.OK;
         this.state = types.ForthState.INTERPRET;
@@ -27,9 +28,10 @@ export class Fvm {
     errorReset() {
         this.output = '';
         this.dataStack = [];
+        this.executionStack = [];
+        this.controlStack = [];
         this.compilingWord = '';
         this.compilationBuffer = [];
-        this.executionStack = [];
         this.status = types.StatusTypes.OK;
         this.state = types.ForthState.INTERPRET;
     }
@@ -37,9 +39,10 @@ export class Fvm {
     resetFVM() {
         this.output = '';
         this.dataStack = [];
+        this.executionStack = [];
+        this.controlStack = [];
         this.compilingWord = '';
         this.compilationBuffer = [];
-        this.executionStack = [];
         this.memory = new ForthMemory();
         this.status = types.StatusTypes.OK;
         this.state = types.ForthState.INTERPRET;
