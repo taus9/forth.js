@@ -625,6 +625,18 @@ export const core = {
             const valueCell = this.memory.fetch(address);
             this.dataStack.push(valueCell);
         }
-    }
-
+    },
+    // https://forth-standard.org/standard/core/IF
+    'IF': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const zeroBranch = new Word('0BRANCH', this.words['0BRANCH'].entry, []);
+            const offsetPlaceholder = new NumberWord('0', new Cell(0n));
+            this.compilationBuffer.push(zeroBranch, offsetPlaceholder);
+            this.controlStack.push({
+                type: 'IF',
+                placeholderIndex: this.compilationBuffer.length - 1
+            });
+        }
+    },
 };
