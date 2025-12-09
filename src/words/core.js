@@ -635,7 +635,7 @@ export const core = {
             this.compilationBuffer.push(zeroBranch, offsetPlaceholder);
             this.controlStack.push({
                 type: 'IF',
-                placeholderIndex: this.compilationBuffer.length - 1
+                offset: this.compilationBuffer.length - 1
             });
         }
     },
@@ -650,7 +650,18 @@ export const core = {
             }
             const branch = new Word('BRANCH', this.words['BRANCH'].entry, []);
             const offsetPlaceholder = new NumberWord('0', new Cell(0n));
-            
+            this.compilationBuffer.push(branch, offsetPlaceholder);
+
+            const skipDistance = this.compilationBuffer.length - currentControl.offset - 1;
+            this.compilationBuffer[currentControl.offset] = new NumberWord(
+                String(skipDistance),
+                new Cell(skipDistance)
+            )
+
+            this.controlStack.push({
+                type: 'ELSE',
+                offset: this.compilationBuffer.length - 1
+            });
         }
     },
 };
