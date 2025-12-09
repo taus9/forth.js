@@ -656,7 +656,7 @@ export const core = {
             this.compilationBuffer[currentControl.offset] = new NumberWord(
                 String(skipDistance),
                 new Cell(skipDistance)
-            )
+            );
 
             this.controlStack.push({
                 type: 'ELSE',
