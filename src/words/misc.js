@@ -19,7 +19,7 @@ import * as types from '../types/types.js';
 export const misc = {    
     // Tools Ext
     '.S': {   
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() {
             const stackString = 
             this.dataStack
@@ -31,7 +31,7 @@ export const misc = {
     },
     // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
     '-ROT':{
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(3);
             const w3 = this.dataStack.pop();
@@ -43,7 +43,7 @@ export const misc = {
 
     // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
     '2NIP': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(4);
             const w4 = this.dataStack.pop();
@@ -55,7 +55,7 @@ export const misc = {
     },
     // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
     '2TUCK': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(4);
             const w4 = this.dataStack.pop();
@@ -69,7 +69,7 @@ export const misc = {
     },
     // https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack
     '2ROT': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(6);
             const w6 = this.dataStack.pop();

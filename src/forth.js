@@ -107,12 +107,14 @@ export class Fvm {
 
                 if (this.state === types.ForthState.COMPILE) {
                     
-                    if (word instanceof Word && word.flag === types.FlagTypes.DEFINING_WORD) {
+                    if (word instanceof Word 
+                        && word.flags.includes(types.FlagTypes.DEFINING_WORD)) {
                         this.errorReset();
                         throw new errors.ParseError(errors.ErrorMessages.INVALID_WORD_NAME, word.name);
                     }
 
-                    if (word instanceof Word && word.flag === types.FlagTypes.IMMEDIATE) {
+                    if (word instanceof Word 
+                        && word.flags.includes(types.FlagTypes.IMMEDIATE)) {
                         word.callback.call(this);
                         continue;
                     }
@@ -122,6 +124,12 @@ export class Fvm {
                 }
 
                 if (this.state === types.ForthState.INTERPRET) {
+
+                    if (word instanceof Word 
+                        && word.flags.includes(types.FlagTypes.COMPILE_ONLY)) {
+                        this.errorReset();
+                        throw new errors.InterpreterError(errors.ErrorMessages.COMPILE_ONLY_WORD);
+                    }
 
                     if (word instanceof NumberWord) {
                         this.dataStack.push(word.cell);
@@ -170,8 +178,8 @@ export class Fvm {
         // Order is important here, in order to be able
         // to redefine words like "+", "dup", "123", etc.
         if (Object.hasOwn(this.words, word)) {
-            const {entry, flag} = this.words[word];
-            return new Word(word, entry, flag);
+            const {entry, flags} = this.words[word];
+            return new Word(word, entry, flags);
         }
 
         const val = Number(word);

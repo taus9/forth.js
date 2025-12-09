@@ -3,7 +3,7 @@ import * as types from '../types/types.js';
 export const coreExt = {
     // https://forth-standard.org/standard/core/NIP
     'NIP': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const w2 = this.dataStack.pop();
@@ -13,7 +13,7 @@ export const coreExt = {
     },
     // https://forth-standard.org/standard/core/TUCK
     'TUCK': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const w2 = this.dataStack.pop();
@@ -23,7 +23,7 @@ export const coreExt = {
     },
     // https://forth-standard.org/standard/core/PICK
     'PICK': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const topNumber = this.dataStack.pop();
@@ -34,7 +34,7 @@ export const coreExt = {
     },
     // https://forth-standard.org/standard/core/ROLL
     'ROLL': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const rollAmount = this.dataStack.pop();
@@ -46,7 +46,7 @@ export const coreExt = {
     },
     // https://forth-standard.org/standard/core/ne
     '<>': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() {
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -57,7 +57,7 @@ export const coreExt = {
     },
     // https://forth-standard.org/standard/core/Umore
     'U>': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() {
             this.checkStackUnderflow(2);
             const u2 = this.dataStack.pop();

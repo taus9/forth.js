@@ -5,7 +5,7 @@ import { Cell } from '../types/cell.js';
 export const core = {
     // https://forth-standard.org/standard/core/Times
     '*': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -16,7 +16,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Plus
     '+': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -27,7 +27,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Minus
     '-': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -38,7 +38,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Div
     '/': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -61,7 +61,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/DivMOD
     '/MOD': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -87,7 +87,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/MOD
     'MOD': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -109,7 +109,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/ABS
     'ABS': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const n = this.dataStack.pop();
@@ -120,7 +120,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/OneMinus
     '1-': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const n1 = this.dataStack.pop();
@@ -130,7 +130,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/OnePlus
     '1+': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const n1 = this.dataStack.pop();
@@ -140,7 +140,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/NEGATE
     'NEGATE': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const n1 = this.dataStack.pop();
@@ -150,7 +150,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/MIN
     'MIN': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -162,7 +162,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/MAX
     'MAX': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -174,7 +174,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/DROP
     'DROP': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function(){ // tested
             this.checkStackUnderflow(1);
             this.dataStack.pop();
@@ -182,7 +182,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/DUP
     'DUP': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const w = this.dataStack[this.dataStack.length - 1];
@@ -191,7 +191,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/OVER
     'OVER': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const w1 = this.dataStack[this.dataStack.length - 2];
@@ -200,7 +200,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/SWAP
     'SWAP': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const w2 = this.dataStack.pop();
@@ -210,7 +210,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/ROT
     'ROT': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(3);
             const w3 = this.dataStack.pop();
@@ -221,7 +221,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/qDUP
     '?DUP': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const topNumber = this.dataStack[this.dataStack.length - 1];
@@ -232,7 +232,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/TwoDROP
     '2DROP': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             this.dataStack.pop(); // w2
@@ -241,7 +241,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/TwoDUP
     '2DUP': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { //tested
             this.checkStackUnderflow(2);
             const w2 = this.dataStack.pop();
@@ -251,7 +251,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/TwoOVER
     '2OVER': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(4);
             const len = this.dataStack.length
@@ -262,7 +262,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/TwoSWAP
     '2SWAP': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(4);
             const w4 = this.dataStack.pop();
@@ -276,7 +276,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/d
     '.': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const w1 = this.dataStack.pop();
@@ -285,7 +285,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Equal
     '=': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -296,7 +296,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/less
     '<': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -307,7 +307,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/more
     '>': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const n2 = this.dataStack.pop();
@@ -318,7 +318,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Uless
     'U<': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const u2 = this.dataStack.pop();
@@ -329,7 +329,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/ZeroEqual
     '0=': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const n = this.dataStack.pop();
@@ -339,7 +339,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Zeroless
     '0<': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const n = this.dataStack.pop();
@@ -349,7 +349,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/TwoTimes
     '2*': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const x1 = this.dataStack.pop();
@@ -359,7 +359,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/TwoDiv
     '2/': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const x1 = this.dataStack.pop();
@@ -369,7 +369,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/AND
     'AND': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const x2 = this.dataStack.pop();
@@ -380,7 +380,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/OR
     'OR': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const x2 = this.dataStack.pop();
@@ -391,7 +391,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/XOR
     'XOR': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const x2 = this.dataStack.pop();
@@ -402,7 +402,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/INVERT
     'INVERT': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const x1 = this.dataStack.pop();
@@ -412,7 +412,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/LSHIFT
     'LSHIFT': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const u = this.dataStack.pop();
@@ -425,7 +425,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/RSHIFT
     'RSHIFT': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(2);
             const u = this.dataStack.pop();
@@ -438,7 +438,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Ud
     'U.': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const u1 = this.dataStack.pop();
@@ -447,7 +447,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/StoD
     'S>D': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() {
             this.checkStackUnderflow(1);
             const n = this.dataStack.pop();
@@ -460,7 +460,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/TimesDiv
     '*/': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() {
             // The Forth Standard says the the product of n1 and n2
             // should be a 2-cell signed integer, which is then
@@ -487,7 +487,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/TimesDivMOD
     '*/MOD': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() {
             // The Forth Standard says the the product of n1 and n2
             // should be a 2-cell signed integer, which is then
@@ -517,7 +517,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/DEPTH
     'DEPTH': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() {
             const n = new Cell(this.dataStack.length);
             this.dataStack.push(n);
@@ -525,7 +525,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Colon
     ':': {
-        'flag': types.FlagTypes.DEFINING_WORD,
+        'flags': [types.FlagTypes.DEFINING_WORD],
         'entry': function () {
             const frame = this.executionStack[this.executionStack.length - 1];
             if (this.state === types.ForthState.COMPILE) {
@@ -549,18 +549,14 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Semi
     ';': {
-        'flag': types.FlagTypes.IMMEDIATE,
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function () {
-            if (this.state !== types.ForthState.COMPILE) {
-                this.errorReset();
-                throw new errors.ParseError(errors.ErrorMessages.COMPILE_ONLY_WORD, ';');
-            }
             if (this.isWordRedefined(this.compilingWord)) {
                 this.output = `redefined ${this.compilingWord}`;
             }
             const code = this.compilationBuffer;
             this.words[this.compilingWord] = {
-                'flag': types.FlagTypes.NONE,
+                'flags': [],
                 'entry': function() {
                     this.execute(code);
                 }
@@ -572,7 +568,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/VARIABLE
     'VARIABLE': {
-        'flag': types.FlagTypes.DEFINING_WORD,
+        'flags': [types.FlagTypes.DEFINING_WORD],
         'entry': function () {
             const frame = this.executionStack[this.executionStack.length - 1];
             if (frame.index >= frame.words.length) {
@@ -593,7 +589,7 @@ export const core = {
             const address = this.memory.allocate();
 
             this.words[varName] = {
-                'flag': types.FlagTypes.NONE,
+                'flags': [],
                 'entry': function() {
                     this.dataStack.push(new Cell(address));
                 }
@@ -602,7 +598,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Store
     '!': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() {
             this.checkStackUnderflow(2);
             const addressCell = this.dataStack.pop();
@@ -617,7 +613,7 @@ export const core = {
     },
     // https://forth-standard.org/standard/core/Fetch
     '@': {
-        'flag': types.FlagTypes.NONE,
+        'flags': [],
         'entry': function() {
             this.checkStackUnderflow(1);
             const addressCell = this.dataStack.pop();
