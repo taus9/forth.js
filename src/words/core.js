@@ -641,10 +641,10 @@ export const core = {
         'entry': function() {
             const zeroBranch = new Word('0BRANCH', this.words['0BRANCH'].entry, []);
             const offsetPlaceholder = new NumberWord('0', new Cell(0n));
-            this.compilationBuffer.push(zeroBranch, offsetPlaceholder);
+            this.compilationBuffer.push(offsetPlaceholder, zeroBranch);
             this.controlStack.push({
                 type: 'IF',
-                offset: this.compilationBuffer.length - 1
+                offset: this.compilationBuffer.length - 2
             });
         }
     },
@@ -659,7 +659,7 @@ export const core = {
             }
             const branch = new Word('BRANCH', this.words['BRANCH'].entry, []);
             const offsetPlaceholder = new NumberWord('0', new Cell(0n));
-            this.compilationBuffer.push(branch, offsetPlaceholder);
+            this.compilationBuffer.push(offsetPlaceholder, branch);
 
             const skipDistance = this.compilationBuffer.length - currentControl.offset - 1;
             this.compilationBuffer[currentControl.offset] = new NumberWord(
@@ -669,7 +669,7 @@ export const core = {
 
             this.controlStack.push({
                 type: 'ELSE',
-                offset: this.compilationBuffer.length - 1
+                offset: this.compilationBuffer.length - 2
             });
         }
     },
