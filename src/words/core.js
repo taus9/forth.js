@@ -567,9 +567,7 @@ export const core = {
                 'entry': function() {
                     this.execute(code);
                 }
-            };
-            console.log(`Defined word: ${this.compilingWord}`);
-            console.log(`${code.map(w => w.name).join(' ')}`);    
+            };  
             this.compilingWord = '';
             this.compilationBuffer = [];
             this.state = types.ForthState.INTERPRET;
@@ -661,7 +659,7 @@ export const core = {
             const offsetPlaceholder = new NumberWord('0', new Cell(0n));
             this.compilationBuffer.push(offsetPlaceholder, branch);
 
-            const skipDistance = this.compilationBuffer.length - currentControl.offset - 1;
+            const skipDistance = this.compilationBuffer.length - currentControl.offset - 2;
             this.compilationBuffer[currentControl.offset] = new NumberWord(
                 String(skipDistance),
                 new Cell(skipDistance)
@@ -682,6 +680,7 @@ export const core = {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
+            // As long as (skipDistance + frame index) > frame index, it will work
             const skipDistance = this.compilationBuffer.length - currentControl.offset - 1;
             this.compilationBuffer[currentControl.offset] = new NumberWord(
                 String(skipDistance),
@@ -691,10 +690,23 @@ export const core = {
     },
     '0BRANCH': {
         'flags': [],
-        'entry': function() {}
+        'entry': function() {
+            this.checkStackUnderflow(2);
+            const offset = this.dataStack.pop();
+            const flag = this.dataStack.pop();
+            const frame = this.executionStack[this.executionStack.length - 1];
+            if (flag.toUnsigned() === 0n) {
+                frame.index += Number(offset.toUnsigned());
+            }
+        }
     },
     'BRANCH': {
         'flags': [],
-        'entry': function() {}
+        'entry': function() {
+            this.checkStackUnderflow(1);
+            const offset = this.dataStack.pop();
+            const frame = this.executionStack[this.executionStack.length - 1];
+            frame.index += Number(offset.toUnsigned());
+        }
     }
 };
