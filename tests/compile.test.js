@@ -82,7 +82,7 @@ export class CompileTestSuite {
     // Error cases
     this.test('Error on ; without :', () => {
       const fvm = new Fvm();
-      this.expectError(() => fvm.execute('5 3 ;'), errors.ErrorTypes.PARSE);
+      this.expectError(() => fvm.execute('5 3 ;'), errors.ErrorTypes.INTERPRETER);
     });
 
     this.test('Error on : without name', () => {
