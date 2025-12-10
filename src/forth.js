@@ -14,6 +14,7 @@ export class Fvm {
         this.dataStack = [];
         this.executionStack = [];
         this.controlStack = [];
+        this.returnStack = [];
         this.compilingWord = '';
         this.compilationBuffer = [];
         this.memory = new ForthMemory();
@@ -30,6 +31,7 @@ export class Fvm {
         this.dataStack = [];
         this.executionStack = [];
         this.controlStack = [];
+        this.returnStack = [];
         this.compilingWord = '';
         this.compilationBuffer = [];
         this.status = types.StatusTypes.OK;
@@ -41,6 +43,7 @@ export class Fvm {
         this.dataStack = [];
         this.executionStack = [];
         this.controlStack = [];
+        this.returnStack = [];
         this.compilingWord = '';
         this.compilationBuffer = [];
         this.memory = new ForthMemory();
