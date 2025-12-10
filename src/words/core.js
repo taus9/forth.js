@@ -669,7 +669,9 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!currentControl) {
+            if (!currentControl 
+                || currentControl.type !== 'IF'
+                && currentControl.type !== 'ELSE') {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
@@ -694,7 +696,9 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!currentControl) {
+            if (!currentControl 
+                || (currentControl.type !== 'IF' 
+                && currentControl.type !== 'ELSE')) {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
