@@ -765,19 +765,21 @@ export const core = {
         'flags': [],
         'entry': function() {
             this.checkStackUnderflow(3);
-            const exitIndex = this.dataStack.pop();
-            const index = this.dataStack.pop();
-            const limit = this.dataStack.pop();
+            const exitIndexCell = this.dataStack.pop();
+            const startCell = this.dataStack.pop();
+            const limitCell = this.dataStack.pop();
             const frame = this.executionStack[this.executionStack.length - 1];
-            if (index.toSigned() >= limit.toSigned()) {
-                frame.index = exitIndex.toNumber();
+            const startValue = startCell.toSigned();
+            const limitValue = limitCell.toSigned();
+            if (startValue === limitValue) {
+                frame.index = exitIndexCell.toNumber();
                 return;
-            }            
+            }
             this.returnStack.push({
                 startIndex: frame.index,
-                exitIndex: exitIndex.toNumber(),
-                index: index.toSigned(),
-                limit: limit.toSigned()
+                exitIndex: exitIndexCell.toNumber(),
+                index: startValue,
+                limit: limitValue
             });
         }
     },

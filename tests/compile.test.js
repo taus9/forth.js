@@ -164,11 +164,53 @@ export class CompileTestSuite {
       this.expectStack(fvm, []);
     });
 
-    this.test('+LOOP allows variable step', () => {
+    this.test('+LOOP with unit step iterates correctly', () => {
       const fvm = new Fvm();
-      fvm.execute(': steps 0 0 DO I LOOP ;');
+      fvm.execute(': steps 5 0 DO I 1 +LOOP ;');
       fvm.execute('steps');
-      this.expectStack(fvm, [0]);
+      this.expectStack(fvm, [0, 1, 2, 3, 4]);
+    });
+
+    this.test('+LOOP with negative step iterates downward', () => {
+      const fvm = new Fvm();
+      fvm.execute(': back 0 5 DO I -2 +LOOP ;');
+      fvm.execute('back');
+      this.expectStack(fvm, [5, 3, 1]);
+    });
+
+    this.test('I pushes current loop index', () => {
+      const fvm = new Fvm();
+      fvm.execute(': use-i 3 0 DO I LOOP ;');
+      fvm.execute('use-i');
+      this.expectStack(fvm, [0, 1, 2]);
+    });
+
+    this.test('J pushes outer loop index', () => {
+      const fvm = new Fvm();
+      fvm.execute(': use-j 2 0 DO 3 0 DO J LOOP LOOP ;');
+      fvm.execute('use-j');
+      this.expectStack(fvm, [0, 0, 0, 1, 1, 1]);
+    });
+
+    this.test('LEAVE exits loop immediately', () => {
+      const fvm = new Fvm();
+      fvm.execute(': leave-test 5 0 DO 42 LEAVE 99 LOOP ;');
+      fvm.execute('leave-test');
+      this.expectStack(fvm, [42]);
+    });
+
+    this.test('EXIT leaves definition early', () => {
+      const fvm = new Fvm();
+      fvm.execute(': exit-test 1 EXIT 2 ;');
+      fvm.execute('exit-test');
+      this.expectStack(fvm, [1]);
+    });
+
+    this.test('UNLOOP removes loop frame before EXIT', () => {
+      const fvm = new Fvm();
+      fvm.execute(': unloop-test 5 0 DO 123 UNLOOP EXIT LOOP ;');
+      fvm.execute('unloop-test');
+      this.expectStack(fvm, [123]);
     });
 
     this.test('Redefine existing user word', () => {
