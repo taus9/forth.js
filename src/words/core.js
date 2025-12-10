@@ -768,11 +768,11 @@ export const core = {
             const exitIndex = this.dataStack.pop();
             const index = this.dataStack.pop();
             const limit = this.dataStack.pop();
-            if (index.toSigned() >= limit.toSigned()) {
-                this.errorReset();
-                throw new errors.OperationError(errors.ErrorMessages.INVALID_DO_LOOP_RANGE);
-            }
             const frame = this.executionStack[this.executionStack.length - 1];
+            if (index.toSigned() >= limit.toSigned()) {
+                frame.index = exitIndex.toNumber();
+                return;
+            }            
             this.returnStack.push({
                 startIndex: frame.index,
                 exitIndex: exitIndex.toNumber(),

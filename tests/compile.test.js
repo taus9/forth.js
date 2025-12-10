@@ -157,6 +157,20 @@ export class CompileTestSuite {
       this.expectStack(fvm, [2, 4]);
     });
 
+    this.test('DO LOOP skips when start equals limit', () => {
+      const fvm = new Fvm();
+      fvm.execute(': noop-loop 5 5 DO 999 LOOP ;');
+      fvm.execute('noop-loop');
+      this.expectStack(fvm, []);
+    });
+
+    this.test('+LOOP allows variable step', () => {
+      const fvm = new Fvm();
+      fvm.execute(': steps 0 0 DO I LOOP ;');
+      fvm.execute('steps');
+      this.expectStack(fvm, [0]);
+    });
+
     this.test('Redefine existing user word', () => {
       const fvm = new Fvm();
       fvm.execute(': foo 5 ;');

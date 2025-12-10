@@ -18,7 +18,6 @@ export const ErrorMessages = {
     CONTROL_EXPECTED: 'Expected control flow stack item',
     UNMATCHED_CONTROL_STRUCTURE: 'Unmatched control structure',
     RETURN_STACK_UNDERFLOW: 'Return stack underflow',
-    INVALID_DO_LOOP_RANGE: 'DO loop start index must be less than limit',
 };
 
 export class ParseError extends Error {
