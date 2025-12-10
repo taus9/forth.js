@@ -839,4 +839,19 @@ export const core = {
             frame.index = rs.exitIndex - 1;
         }
     },
+    // https://forth-standard.org/standard/core/EXIT
+    'EXIT': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const exitWord = new Word('(EXIT)', this.words['(EXIT)'].entry, []);
+            this.compilationBuffer.push(exitWord);
+        }
+    },
+    '(EXIT)': {
+        'flags': [],
+        'entry': function() {
+            const frame = this.executionStack[this.executionStack.length - 1];
+            frame.index = frame.words.length;
+        }
+    }
 };
