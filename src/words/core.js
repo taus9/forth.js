@@ -726,5 +726,13 @@ export const core = {
             const frame = this.executionStack[this.executionStack.length - 1];
             frame.index += Number(offset.toUnsigned());
         }
-    }
+    },
+    '(DO)': {
+        'flags': [],
+        'entry': function() {}
+    },
+    '(LOOP)': {
+        'flags': [],
+        'entry': function() {}
+    },
 };
