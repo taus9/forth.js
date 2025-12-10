@@ -1,3 +1,21 @@
+/* 
+  All functions must check for stack underflow before attempting the operation.
+  Forth words do not partially execute and then fail. They check the stack 
+  first, and if there aren’t enough items, they throw an error immediately.
+
+  Example:
+    the 'dup' word needs at least one item on the stack to properly perform it's
+    function, so you would call 'this.checkStackUnderflow(1)'. If the check
+    fails then an error is thrown in the Fvm class and execution is stopped.
+    
+    'rot' requires at least 3 items on the stack so you would call
+    'this.checkStackUnderflow(3)'.
+    
+    ect.
+
+   For now this is the helper function I plan on using. It just feels right. 
+*/
+
 import * as errors from '../errors/errors.js';
 import * as types from '../types/types.js';
 import { Cell } from '../types/cell.js';
