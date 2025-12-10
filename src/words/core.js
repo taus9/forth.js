@@ -754,10 +754,33 @@ export const core = {
     },
     '(DO)': {
         'flags': [],
-        'entry': function() {}
+        'entry': function() {
+            this.checkStackUnderflow(2);
+            const index = this.dataStack.pop();
+            const limit = this.dataStack.pop();
+            const frame = this.executionStack[this.executionStack.length - 1];
+            this.returnStack.push({
+                offset: frame.index,
+                index: index.toSigned(),
+                limit: limit.toSigned()
+            });
+        }
     },
     '(LOOP)': {
         'flags': [],
-        'entry': function() {}
+        'entry': function() {
+            const rs = this.returnStack[this.returnStack.length - 1];
+            if (!rs) {
+                this.resetFVM();
+                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            rs.index += 1n;
+            if (rs.index < rs.limit) {
+                const frame = this.executionStack[this.executionStack.length - 1];
+                frame.index = rs.offset;
+            } else {
+                this.returnStack.pop();
+            }
+        }
     },
 };
