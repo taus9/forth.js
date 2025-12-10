@@ -124,6 +124,39 @@ export class CompileTestSuite {
       this.expectStack(fvm, [18]);
     });
 
+    this.test('IF executes true branch and continues after THEN', () => {
+      const fvm = new Fvm();
+      fvm.execute(': cond IF 10 THEN 99 ;');
+      fvm.execute('-1 cond');
+      this.expectStack(fvm, [10, 99]);
+      fvm.resetFVM();
+      fvm.execute(': cond IF 10 THEN 99 ;');
+      fvm.execute('0 cond');
+      this.expectStack(fvm, [99]);
+    });
+
+    this.test('IF ELSE THEN executes correct branch', () => {
+      const fvm = new Fvm();
+      fvm.execute(': choose IF 10 ELSE 20 THEN 30 ;');
+      fvm.execute('-1 choose');
+      this.expectStack(fvm, [10, 30]);
+      fvm.resetFVM();
+      fvm.execute(': choose IF 10 ELSE 20 THEN 30 ;');
+      fvm.execute('0 choose');
+      this.expectStack(fvm, [20, 30]);
+    });
+
+    this.test('Multiple ELSE segments alternate branches', () => {
+      const fvm = new Fvm();
+      fvm.execute(': ladder IF 1 ELSE 2 ELSE 3 ELSE 4 THEN ;');
+      fvm.execute('-1 ladder');
+      this.expectStack(fvm, [1, 3]);
+      fvm.resetFVM();
+      fvm.execute(': ladder IF 1 ELSE 2 ELSE 3 ELSE 4 THEN ;');
+      fvm.execute('0 ladder');
+      this.expectStack(fvm, [2, 4]);
+    });
+
     this.test('Redefine existing user word', () => {
       const fvm = new Fvm();
       fvm.execute(': foo 5 ;');
