@@ -102,19 +102,35 @@ textbox.addEventListener('keyup', e => {
         try {
             fvm.execute(text);
         } 
-        catch (e) {
+        catch (err) {
             put(`${text}`);
-            if (e.name === ErrorTypes.STACK || e.name === ErrorTypes.OPERATION) {
-                put(`Error: ${e.message}`)
+            if (err.name === ErrorTypes.STACK || err.name === ErrorTypes.OPERATION) {
+                put(`Error: ${err.message}`)
                 return
             }
 
-            if (e.name === ErrorTypes.PARSE) {
-                put(`Parsing Error: ${e.message} - ${e.rawText}`);
+            if (err.name === ErrorTypes.PARSE) {
+                put(`Parsing Error: ${err.message} - ${err.rawText}`);
                 return
             }
-            
-            put(`JS Error: ${e.message}`);
+
+            if (err.name === ErrorTypes.INTERPRETER) {
+                put(`Interpreter Error: ${err.message}`);
+                return
+            }
+
+            console.error('Forth.js demo encountered a JavaScript error while executing input.', err);
+            const errorName = err?.name ?? 'Error';
+            const errorMessage = err?.message ?? String(err);
+            put(`JS Error: ${errorName}: ${errorMessage}`);
+            if (typeof err?.stack === 'string') {
+                err.stack
+                    .split('\n')
+                    .slice(1)
+                    .map(line => line.trim())
+                    .filter(Boolean)
+                    .forEach(line => put(line));
+            }
             return;
         }
 
@@ -125,7 +141,7 @@ textbox.addEventListener('keyup', e => {
 runTestButton.addEventListener('click', async () => {
     const confirmed = await confirmDialog("Running the test suite will reset the FVM.");
     if (confirmed) {
-        fvm.reset();
+        fvm.resetFVM();
         clear();
         put("Running Forth.js test suite");
         const wts = new WordsTestSuite(put);
