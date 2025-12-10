@@ -16,7 +16,8 @@ export const ErrorMessages = {
     INVALID_CODE: 'Attempted to execute invalid code type',
     INVALID_MEMORY_ACCESS: 'Invalid memory access',
     CONTROL_EXPECTED: 'Expected control flow stack item',
-    UNMATCHED_CONTROL_STRUCTURE: 'Unmatched control structure'
+    UNMATCHED_CONTROL_STRUCTURE: 'Unmatched control structure',
+    RETURN_STACK_UNDERFLOW: 'Return stack underflow'
 };
 
 export class ParseError extends Error {

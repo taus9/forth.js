@@ -751,7 +751,7 @@ export const core = {
             const loopWord = new Word('(LOOP)', this.words['(LOOP)'].entry, []);
             this.compilationBuffer.push(loopWord);
         }
-    },
+    },  
     '(DO)': {
         'flags': [],
         'entry': function() {
@@ -783,4 +783,28 @@ export const core = {
             }
         }
     },
+    // https://forth-standard.org/standard/core/I
+    'I': {
+        'flags': [],
+        'entry': function() {
+            const rs = this.returnStack[this.returnStack.length - 1];
+            if (!rs) {
+                this.resetFVM();
+                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            this.dataStack.push(new Cell(rs.index));
+        }
+    },
+    // https://forth-standard.org/standard/core/J
+    'J': {
+        'flags': [],
+        'entry': function() {
+            if (this.returnStack.length < 2) {
+                this.resetFVM();
+                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            const rs = this.returnStack[this.returnStack.length - 2];
+            this.dataStack.push(new Cell(rs.index));
+        }
+    }
 };
