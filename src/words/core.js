@@ -736,10 +736,11 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const doWord = new Word('(DO)', this.words['(DO)'].entry, []);
-            this.compilationBuffer.push(doWord);
+            const exitIndexPlaceholder = new NumberWord('0', new Cell(0n));
+            this.compilationBuffer.push(exitIndexPlaceholder, doWord);
             this.controlStack.push({
                 type: 'DO',
-                loopStart: this.compilationBuffer.length
+                placeholderIndex: this.compilationBuffer.length - 2
             });
         }
     },
@@ -753,18 +754,24 @@ export const core = {
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
             const loopWord = new Word('(LOOP)', this.words['(LOOP)'].entry, []);
+            const exitIndex = this.compilationBuffer.length + 1;
+            const exitIndexWord = new NumberWord(String(exitIndex), new Cell(exitIndex));
+
+            this.compilationBuffer[currentControl.placeholderIndex] = exitIndexWord;
             this.compilationBuffer.push(loopWord);
         }
     },  
     '(DO)': {
         'flags': [],
         'entry': function() {
-            this.checkStackUnderflow(2);
+            this.checkStackUnderflow(3);
+            const exitIndex = this.dataStack.pop();
             const index = this.dataStack.pop();
             const limit = this.dataStack.pop();
             const frame = this.executionStack[this.executionStack.length - 1];
             this.returnStack.push({
-                offset: frame.index,
+                startIndex: frame.index,
+                exitIndex: exitIndex.toNumber(),
                 index: index.toSigned(),
                 limit: limit.toSigned()
             });
@@ -781,7 +788,7 @@ export const core = {
             rs.index += 1n;
             if (rs.index < rs.limit) {
                 const frame = this.executionStack[this.executionStack.length - 1];
-                frame.index = rs.offset;
+                frame.index = rs.startIndex;
             } else {
                 this.returnStack.pop();
             }
@@ -811,9 +818,24 @@ export const core = {
             this.dataStack.push(new Cell(rs.index));
         }
     },
+    // https://forth-standard.org/standard/core/LEAVE
+    'LEAVE': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const leave = new Word('(LEAVE)', this.words['(LEAVE)'].entry, []);
+            this.compilationBuffer.push(leave);            
+        }
+    },
     '(LEAVE)': {
         'flags': [],
-        'entry': function() {}
-
+        'entry': function() {
+            const rs = this.returnStack.pop();
+            if (!rs) {
+                this.resetFVM();
+                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            const frame = this.executionStack[this.executionStack.length - 1];
+            frame.index = rs.exitIndex;
+        }
     },
 };
