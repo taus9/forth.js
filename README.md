@@ -12,6 +12,7 @@
   * Stack operations: `DUP`, `DROP`, `SWAP`, `OVER`, `NIP`, `TUCK`, ect. Full list can be found [here](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack).
   * Arithmetic operations: `+`, `-`, `*`, `/`, `MOD`, `/MOD`, `1+`, `1-`, `ABS`, `MIN`, `MAX`, `NEGATE`
   * Colon definitions: Define or redefine words with `: ... ;`
+  * Control flow (including nested statments): `IF`, `ELSE`, `THEN`
   * 64-bit Cell width for the data stack
   * Comment handling
 
@@ -19,6 +20,7 @@
   * `StackError`
   * `ParseError`
   * `OperationError`
+  * `InterpreterError`
 
 * Extensible design:
   * Core words are modular and easy to extend
@@ -118,7 +120,7 @@ This design prioritizes Forth compatibility and predictable semantics over raw J
 
 ### Potential Extensions
 
-* Implement **control flow words** (`IF`, `ELSE`, `THEN`, loops)
+* Implement **looping words** (`BEGIN`, `UNTIL`, `WHILE`, `REPEAT`, `DO`, `LOOP`)
 * Support **return stack** for recursion and more advanced Forth features
 * Full ANS Forth compilence 
 
