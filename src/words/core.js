@@ -680,8 +680,8 @@ export const core = {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
-            // As long as (skipDistance + frame index) > frame index, it will work
-            const skipDistance = this.compilationBuffer.length - currentControl.offset - 1;
+            
+            const skipDistance = this.compilationBuffer.length - currentControl.offset - 2;
             this.compilationBuffer[currentControl.offset] = new NumberWord(
                 String(skipDistance),
                 new Cell(skipDistance)
