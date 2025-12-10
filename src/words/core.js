@@ -914,5 +914,57 @@ export const core = {
                 frame.index = rs.startIndex;
             }
         }
-    }
+    },
+    // https://forth-standard.org/standard/core/BEGIN
+    'BEGIN': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const beginWord = new Word('(BEGIN)', this.words['(BEGIN)'].entry, []);
+            this.compilationBuffer.push(beginWord);
+            this.controlStack.push({
+                type: 'BEGIN',
+                index: this.compilationBuffer.length
+            });
+        }
+    },
+    '(BEGIN)': {
+        'flags': [],
+        'entry': function() {
+            const frame = this.executionStack[this.executionStack.length - 1];
+            this.returnStack.push({
+                startIndex: frame.index
+            });
+        }
+    },
+    // https://forth-standard.org/standard/core/UNTIL
+    'UNTIL': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const currentControl = this.controlStack.pop();
+            if (!currentControl || currentControl.type !== 'BEGIN') {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
+            }
+            const untilWord = new Word('(UNTIL)', this.words['(UNTIL)'].entry, []);
+            this.compilationBuffer.push(untilWord);
+        }
+    },
+    '(UNTIL)': {
+        'flags': [],
+        'entry': function() {
+            this.checkStackUnderflow(1);
+            const flag = this.dataStack.pop();
+            const rs = this.returnStack[this.returnStack.length - 1];
+            if (!rs) {
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            if (flag.toUnsigned() === 0n) {
+                const frame = this.executionStack[this.executionStack.length - 1];
+                frame.index = rs.startIndex;
+            } else {
+                this.returnStack.pop();
+            }
+        }
+    },
 };
