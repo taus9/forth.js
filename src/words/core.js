@@ -630,7 +630,7 @@ export const core = {
             const valueCell = this.dataStack.pop();
             const address = addressCell.toUnsigned();
             if (!this.memory.has(address)) {
-                this.resetFVM();
+                this.errorReset();
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_MEMORY_ACCESS);
             }
             this.memory.store(address, valueCell);
@@ -644,7 +644,7 @@ export const core = {
             const addressCell = this.dataStack.pop();
             const address = addressCell.toUnsigned();
             if (!this.memory.has(address)) {
-                this.resetFVM();
+                this.errorReset();
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_MEMORY_ACCESS);
             }
             const valueCell = this.memory.fetch(address);
@@ -768,6 +768,10 @@ export const core = {
             const exitIndex = this.dataStack.pop();
             const index = this.dataStack.pop();
             const limit = this.dataStack.pop();
+            if (index.toSigned() >= limit.toSigned()) {
+                this.errorReset();
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_DO_LOOP_RANGE);
+            }
             const frame = this.executionStack[this.executionStack.length - 1];
             this.returnStack.push({
                 startIndex: frame.index,
@@ -782,8 +786,8 @@ export const core = {
         'entry': function() {
             const rs = this.returnStack[this.returnStack.length - 1];
             if (!rs) {
-                this.resetFVM();
-                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
             rs.index += 1n;
             if (rs.index < rs.limit) {
@@ -800,8 +804,8 @@ export const core = {
         'entry': function() {
             const rs = this.returnStack[this.returnStack.length - 1];
             if (!rs) {
-                this.resetFVM();
-                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
             this.dataStack.push(new Cell(rs.index));
         }
@@ -811,8 +815,8 @@ export const core = {
         'flags': [],
         'entry': function() {
             if (this.returnStack.length < 2) {
-                this.resetFVM();
-                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
             const rs = this.returnStack[this.returnStack.length - 2];
             this.dataStack.push(new Cell(rs.index));
@@ -831,8 +835,8 @@ export const core = {
         'entry': function() {
             const rs = this.returnStack[this.returnStack.length - 1];
             if (!rs) {
-                this.resetFVM();
-                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
             const frame = this.executionStack[this.executionStack.length - 1];
             rs.index = rs.limit;
@@ -866,8 +870,8 @@ export const core = {
         'flags': [],
         'entry': function() {
             if (this.returnStack.length === 0) {
-                this.resetFVM();
-                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
             this.returnStack.pop();
         }
@@ -894,8 +898,8 @@ export const core = {
         'entry': function() {
             const rs = this.returnStack[this.returnStack.length - 1];
             if (!rs) {
-                this.resetFVM();
-                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
             this.checkStackUnderflow(1);
             const n = this.dataStack.pop();
