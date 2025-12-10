@@ -299,7 +299,7 @@ export const core = {
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const w1 = this.dataStack.pop();
-            this.output = `${w1.toSigned()}`;
+            this.output += `${w1.toSigned()} `;
         }
     },
     // https://forth-standard.org/standard/core/Equal
