@@ -853,5 +853,23 @@ export const core = {
             const frame = this.executionStack[this.executionStack.length - 1];
             frame.index = frame.words.length;
         }
+    },
+    // https://forth-standard.org/standard/core/UNLOOP
+    'UNLOOP': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const unloop = new Word('(UNLOOP)', this.words['(UNLOOP)'].entry, []);
+            this.compilationBuffer.push(unloop);
+        }
+    },
+    '(UNLOOP)': {
+        'flags': [],
+        'entry': function() {
+            if (this.returnStack.length === 0) {
+                this.resetFVM();
+                throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            this.returnStack.pop();
+        }
     }
 };
