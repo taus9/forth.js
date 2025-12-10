@@ -727,6 +727,18 @@ export const core = {
             frame.index += Number(offset.toUnsigned());
         }
     },
+    // https://forth-standard.org/standard/core/DO
+    'DO': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const doWord = new Word('(DO)', this.words['(DO)'].entry, []);
+            this.compilationBuffer.push(doWord);
+            this.controlStack.push({
+                type: 'DO',
+                loopStart: this.compilationBuffer.length
+            });
+        }
+    },
     '(DO)': {
         'flags': [],
         'entry': function() {}
