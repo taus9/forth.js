@@ -881,7 +881,7 @@ export const core = {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
-            const loopWord = new Word('(LOOP)', this.words['(LOOP)'].entry, []);
+            const loopWord = new Word('(+LOOP)', this.words['(+LOOP)'].entry, []);
             const exitIndex = this.compilationBuffer.length + 1;
             const exitIndexWord = new NumberWord(String(exitIndex), new Cell(exitIndex));
 
