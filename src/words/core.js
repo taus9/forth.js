@@ -829,13 +829,14 @@ export const core = {
     '(LEAVE)': {
         'flags': [],
         'entry': function() {
-            const rs = this.returnStack.pop();
+            const rs = this.returnStack[this.returnStack.length - 1];
             if (!rs) {
                 this.resetFVM();
                 throw new errors.ParseError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
             const frame = this.executionStack[this.executionStack.length - 1];
-            frame.index = rs.exitIndex;
+            rs.index = rs.limit;
+            frame.index = rs.exitIndex - 1;
         }
     },
 };
