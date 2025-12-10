@@ -739,6 +739,19 @@ export const core = {
             });
         }
     },
+    // https://forth-standard.org/standard/core/LOOP
+    'LOOP': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const currentControl = this.controlStack.pop();
+            if (!currentControl || currentControl.type !== 'DO') {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
+            }
+            const loopWord = new Word('(LOOP)', this.words['(LOOP)'].entry, []);
+            this.compilationBuffer.push(loopWord);
+        }
+    },
     '(DO)': {
         'flags': [],
         'entry': function() {}
