@@ -810,5 +810,10 @@ export const core = {
             const rs = this.returnStack[this.returnStack.length - 2];
             this.dataStack.push(new Cell(rs.index));
         }
-    }
+    },
+    '(LEAVE)': {
+        'flags': [],
+        'entry': function() {}
+
+    },
 };
