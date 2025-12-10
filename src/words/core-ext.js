@@ -1,5 +1,5 @@
-import * as types from '../types/types.js';
 import { Cell } from '../types/cell.js';
+import * as errors from '../errors/errors.js';
 
 export const coreExt = {
     // https://forth-standard.org/standard/core/NIP
@@ -26,11 +26,19 @@ export const coreExt = {
     'PICK': {
         'flags': [],
         'entry': function() { // tested
+            // testing on gForth PICK does something I don't understand yet
+            // it seems to allow negative numbers even though the standard
+            // shows only unsigned numbers: ( xu...x1 x0 u -- xu...x1 x0 xu )
+            // -1 PICK duplicates the top stack item            
             this.checkStackUnderflow(1);
-            const topNumber = this.dataStack.pop();
-            this.checkStackUnderflow(topNumber.toNumber());
-            const pickedNumber = this.dataStack[(this.dataStack.length - 1) - topNumber.toNumber()];
-            this.dataStack.push(pickedNumber);
+            const u = this.dataStack.pop();
+            this.checkStackUnderflow(u.toNumber() + 1);
+            if (u.toNumber() < 0) {
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
+            }
+            const xu = this.dataStack[(this.dataStack.length - 1) - u.toNumber()];
+            this.dataStack.push(xu);
         }
     },
     // https://forth-standard.org/standard/core/ROLL
@@ -38,9 +46,13 @@ export const coreExt = {
         'flags': [],
         'entry': function() { // tested
             this.checkStackUnderflow(1);
-            const rollAmount = this.dataStack.pop();
-            this.checkStackUnderflow(rollAmount.toNumber());
-            const targetIndex = this.dataStack.length - 1 - rollAmount.toNumber();
+            const u = this.dataStack.pop();
+            this.checkStackUnderflow(u.toNumber() + 1);
+            if (u.toNumber() < 0) {
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
+            }
+            const targetIndex = this.dataStack.length - 1 - u.toNumber();
             const target = this.dataStack.splice(targetIndex, 1);
             this.dataStack.push(target[0]);
         }
