@@ -1,4 +1,5 @@
 import * as types from '../types/types.js';
+import { Cell } from '../cells/cell.js';
 
 export const coreExt = {
     // https://forth-standard.org/standard/core/NIP
