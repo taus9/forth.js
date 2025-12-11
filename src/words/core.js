@@ -19,7 +19,7 @@
 import * as errors from '../errors/errors.js';
 import * as types from '../types/types.js';
 import { Cell } from '../types/cell.js';
-import { Word, NumberWord } from '../types/words.js';
+import { Word, NumberWord, StringWord } from '../types/words.js';
 import { DoControlContext, BeginControlContext, WhileControlContext } from '../types/context.js';
 import { DoRuntimeContext, BeginRuntimeContext } from '../types/context.js';
 import { IfControlContext, ElseControlContext } from '../types/context.js';
@@ -1088,6 +1088,31 @@ export const core = {
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
             }
             this.returnStack.pop();
+        }
+    },
+    // https://forth-standard.org/standard/core/Dotq
+    '."': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            // Get the next token which should be a StringWord
+            const frame = this.executionStack[this.executionStack.length - 1];
+            if (frame.index >= frame.words.length) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.UNTERMINATED_STRING);
+            }
+            
+            const stringWord = frame.words[frame.index++];
+            if (!(stringWord instanceof StringWord)) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.UNTERMINATED_STRING);
+            }
+            
+            // Capture the string in a closure
+            const str = stringWord.string;
+            const printWord = new Word('(.")', function() {
+                this.output += str;
+            }, []);
+            this.compilationBuffer.push(printWord);
         }
     },
 };

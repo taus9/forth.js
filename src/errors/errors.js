@@ -18,7 +18,8 @@ export const ErrorMessages = {
     CONTROL_EXPECTED: 'Expected control flow stack item',
     UNMATCHED_CONTROL_STRUCTURE: 'Unmatched control structure',
     RETURN_STACK_UNDERFLOW: 'Return stack underflow',
-    INVALID_CONTEXT: 'Invalid context on return stack'
+    INVALID_CONTEXT: 'Invalid context on return stack',
+    UNTERMINATED_STRING: 'Unterminated string literal'
 };
 
 export class ParseError extends Error {
