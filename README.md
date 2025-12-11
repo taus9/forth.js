@@ -12,6 +12,7 @@
   * Stack operations: `DUP`, `DROP`, `SWAP`, `OVER`, `NIP`, `TUCK`, ect. Full list can be found [here](https://www.complang.tuwien.ac.at/forth/gforth/Docs-html/Data-stack.html#Data-stack).
   * Arithmetic operations: `+`, `-`, `*`, `/`, `MOD`, `/MOD`, `1+`, `1-`, `ABS`, `MIN`, `MAX`, `NEGATE`
   * Colon definitions: Define or redefine words with `: ... ;`
+  * String output: `."` for printing string literals
   * Branching: `IF`, `ELSE`, `THEN`
   * Looping: `DO`, `LOOP`, `+LOOP`, `LEAVE`, `I`, `J`, `UNLOOP`, `WHILE`, `REPEAT`
   * 64-bit Cell width for the data stack
