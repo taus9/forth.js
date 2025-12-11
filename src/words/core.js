@@ -1078,9 +1078,14 @@ export const core = {
     '(UNLOOP)': {
         'flags': [],
         'entry': function() {
-            if (this.returnStack.length === 0) {
+            const rs = this.returnStack[this.returnStack.length - 1];
+            if (!rs) {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            if (!(rs instanceof DoRuntimeContext)) {
+                this.errorReset();
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
             }
             this.returnStack.pop();
         }
