@@ -65,7 +65,7 @@ export const core = {
             const dividend = n1.toSigned();
             const divisor = n2.toSigned();
             if (divisor === 0n) {
-                this.resetFVM();
+                this.errorReset()();
                 throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
             }
             // Forth uses floored division (rounds toward negative infinity) 
@@ -88,7 +88,7 @@ export const core = {
             const dividend = n1.toSigned();
             const divisor = n2.toSigned();
             if (divisor === 0n) {
-                this.resetFVM();
+                this.errorReset()();
                 throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
             }
             // Forth uses floored division (rounds toward negative infinity) 
@@ -114,7 +114,7 @@ export const core = {
             const dividend = n1.toSigned();
             const divisor = n2.toSigned();
             if (divisor === 0n) {
-                this.resetFVM();
+                this.errorReset()();
                 throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
             }
             // Forth uses floored division (rounds toward negative infinity) 
@@ -491,7 +491,7 @@ export const core = {
             const n1 = this.dataStack.pop();
             const product = n1.toSigned() * n2.toSigned();
             if (n3.toSigned() === 0n) {
-                this.resetFVM();
+                this.errorReset()();
                 throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
             }
             // Forth uses floored division (rounds toward negative infinity)
@@ -518,7 +518,7 @@ export const core = {
             const n1 = this.dataStack.pop();
             const product = n1.toSigned() * n2.toSigned();
             if (n3.toSigned() === 0n) {
-                this.resetFVM();
+                this.errorReset()();
                 throw new errors.OperationError(errors.ErrorMessages.DIV_BY_ZERO);
             }
             // Forth uses floored division (rounds toward negative infinity)
