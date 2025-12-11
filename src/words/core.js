@@ -1044,6 +1044,10 @@ export const core = {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
+            if (!(rs instanceof DoRuntimeContext)) {
+                this.errorReset();
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
+            }
             const frame = this.executionStack[this.executionStack.length - 1];
             rs.index = rs.limit;
             frame.index = rs.exitIndex - 1;
