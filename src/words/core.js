@@ -20,7 +20,7 @@ import * as errors from '../errors/errors.js';
 import * as types from '../types/types.js';
 import { Cell } from '../types/cell.js';
 import { Word, NumberWord } from '../types/words.js';
-import { DoControlContext, BeginControlContext, WhileControlContext } from '../types/controls.js';
+import { DoControlContext, BeginControlContext, WhileControlContext } from '../types/context.js';
 import { DoRuntimeContext, BeginRuntimeContext } from '../types/context.js';
 
 export const core = {
@@ -1049,8 +1049,7 @@ export const core = {
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
             }
             const frame = this.executionStack[this.executionStack.length - 1];
-            rs.index = rs.limit;
-            frame.index = rs.exitIndex - 1;
+            frame.index = rs.frameExitIndex;
         }
     },
     // https://forth-standard.org/standard/core/EXIT
