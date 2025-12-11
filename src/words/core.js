@@ -744,23 +744,6 @@ export const core = {
             });
         }
     },
-    // https://forth-standard.org/standard/core/LOOP
-    'LOOP': {
-        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
-        'entry': function() {
-            const currentControl = this.controlStack.pop();
-            if (!currentControl || currentControl.type !== 'DO') {
-                this.errorReset();
-                throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
-            }
-            const loopWord = new Word('(LOOP)', this.words['(LOOP)'].entry, []);
-            const exitIndex = this.compilationBuffer.length + 1;
-            const exitIndexWord = new NumberWord(String(exitIndex), new Cell(exitIndex));
-
-            this.compilationBuffer[currentControl.placeholderIndex] = exitIndexWord;
-            this.compilationBuffer.push(loopWord);
-        }
-    },  
     '(DO)': {
         'flags': [],
         'entry': function() {
@@ -783,6 +766,23 @@ export const core = {
             });
         }
     },
+    // https://forth-standard.org/standard/core/LOOP
+    'LOOP': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const currentControl = this.controlStack.pop();
+            if (!currentControl || currentControl.type !== 'DO') {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
+            }
+            const loopWord = new Word('(LOOP)', this.words['(LOOP)'].entry, []);
+            const exitIndex = this.compilationBuffer.length + 1;
+            const exitIndexWord = new NumberWord(String(exitIndex), new Cell(exitIndex));
+
+            this.compilationBuffer[currentControl.placeholderIndex] = exitIndexWord;
+            this.compilationBuffer.push(loopWord);
+        }
+    },  
     '(LOOP)': {
         'flags': [],
         'entry': function() {
