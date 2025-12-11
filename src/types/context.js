@@ -36,3 +36,15 @@ export class WhileControlContext {
         this.exitPlaceholderIndex = exitPlaceholderIndex;
     }
 }
+
+export class IfControlContext {
+    constructor(branchPlaceholderIndex){
+        this.branchPlaceholderIndex = branchPlaceholderIndex;
+    }
+}
+
+export class ElseControlContext {
+    constructor(branchPlaceholderIndex) {
+        this.branchPlaceholderIndex = branchPlaceholderIndex;
+    }
+}

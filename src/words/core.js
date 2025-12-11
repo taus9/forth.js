@@ -22,6 +22,7 @@ import { Cell } from '../types/cell.js';
 import { Word, NumberWord } from '../types/words.js';
 import { DoControlContext, BeginControlContext, WhileControlContext } from '../types/context.js';
 import { DoRuntimeContext, BeginRuntimeContext } from '../types/context.js';
+import { IfControlContext, ElseControlContext } from '../types/context.js';
 
 export const core = {
     // https://forth-standard.org/standard/core/Times
@@ -657,13 +658,10 @@ export const core = {
     'IF': {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
-            const zeroBranch = new Word('0BRANCH', this.words['0BRANCH'].entry, []);
-            const offsetPlaceholder = new NumberWord('0', new Cell(0n));
-            this.compilationBuffer.push(offsetPlaceholder, zeroBranch);
-            this.controlStack.push({
-                type: 'IF',
-                offset: this.compilationBuffer.length - 2
-            });
+            const zeroBranchWord = new Word('(0BRANCH)', this.words['(0BRANCH)'].entry, []);
+            const branchIndexCell = new NumberWord('0', new Cell(0n));
+            this.compilationBuffer.push(branchIndexCell, zeroBranchWord);
+            this.controlStack.push(new IfControlContext(this.compilationBuffer.length - 2));
         }
     },
     // https://forth-standard.org/standard/core/ELSE
@@ -671,26 +669,26 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!currentControl 
-                || currentControl.type !== 'IF'
-                && currentControl.type !== 'ELSE') {
+
+            if (!(currentControl instanceof IfControlContext) && 
+                !(currentControl instanceof ElseControlContext)) {
+
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
-            const branch = new Word('BRANCH', this.words['BRANCH'].entry, []);
-            const offsetPlaceholder = new NumberWord('0', new Cell(0n));
-            this.compilationBuffer.push(offsetPlaceholder, branch);
+            const branchWord = new Word('(BRANCH)', this.words['(BRANCH)'].entry, []);
+            const branchIndexWord = new NumberWord('0', new Cell(0n));
+            this.compilationBuffer.push(branchIndexWord, branchWord);
 
-            const skipDistance = this.compilationBuffer.length - currentControl.offset - 2;
-            this.compilationBuffer[currentControl.offset] = new NumberWord(
+            const skipDistance = 
+                this.compilationBuffer.length - currentControl.branchPlaceholderIndex - 2;
+            
+                this.compilationBuffer[currentControl.branchPlaceholderIndex] = new NumberWord(
                 String(skipDistance),
                 new Cell(skipDistance)
             );
 
-            this.controlStack.push({
-                type: 'ELSE',
-                offset: this.compilationBuffer.length - 2
-            });
+            this.controlStack.push(new ElseControlContext(this.compilationBuffer.length - 2));
         }
     },
     // https://forth-standard.org/standard/core/THEN
@@ -698,21 +696,23 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!currentControl 
-                || (currentControl.type !== 'IF' 
-                && currentControl.type !== 'ELSE')) {
+            if (!(currentControl instanceof IfControlContext) && 
+                !(currentControl instanceof ElseControlContext)) {
+
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
             
-            const skipDistance = this.compilationBuffer.length - currentControl.offset - 2;
-            this.compilationBuffer[currentControl.offset] = new NumberWord(
+            const skipDistance = 
+                this.compilationBuffer.length - currentControl.branchPlaceholderIndex - 2;
+            
+                this.compilationBuffer[currentControl.branchPlaceholderIndex] = new NumberWord(
                 String(skipDistance),
                 new Cell(skipDistance)
             );
         }
     },
-    '0BRANCH': {
+    '(0BRANCH)': {
         'flags': [],
         'entry': function() {
             this.checkStackUnderflow(2);
@@ -724,7 +724,7 @@ export const core = {
             }
         }
     },
-    'BRANCH': {
+    '(BRANCH)': {
         'flags': [],
         'entry': function() {
             this.checkStackUnderflow(1);
