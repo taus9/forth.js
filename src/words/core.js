@@ -1005,6 +1005,10 @@ export const core = {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
+            if (!(rs instanceof DoRuntimeContext)) {
+                this.errorReset();
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
+            }
             this.dataStack.push(new Cell(rs.index));
         }
     },
@@ -1017,6 +1021,10 @@ export const core = {
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
             const rs = this.returnStack[this.returnStack.length - 2];
+            if (!(rs instanceof DoRuntimeContext)) {
+                this.errorReset();
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
+            }
             this.dataStack.push(new Cell(rs.index));
         }
     },
