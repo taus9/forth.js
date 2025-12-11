@@ -20,8 +20,8 @@ import * as errors from '../errors/errors.js';
 import * as types from '../types/types.js';
 import { Cell } from '../types/cell.js';
 import { Word, NumberWord } from '../types/words.js';
-import { DoControl } from '../types/controls.js';
-import { DoLoopContext } from '../types/context.js';
+import { DoControl, BeginControl, WhileControl } from '../types/controls.js';
+import { DoLoopContext, BeginLoopContext } from '../types/context.js';
 
 export const core = {
     // https://forth-standard.org/standard/core/Times
@@ -873,20 +873,23 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const beginWord = new Word('(BEGIN)', this.words['(BEGIN)'].entry, []);
-            this.compilationBuffer.push(beginWord);
-            this.controlStack.push({
-                type: 'BEGIN',
-                index: this.compilationBuffer.length
-            });
+            const exitIndexCell = new NumberWord('0', new Cell(0n));
+            this.compilationBuffer.push(exitIndexCell, beginWord);
+            this.controlStack.push(new BeginControl(
+                this.compilationBuffer.length - 2 // exitPlaceholderIndex
+            ));
         }
     },
     '(BEGIN)': {
         'flags': [],
         'entry': function() {
+            this.checkStackUnderflow(1);
+            const exitIndexCell = this.dataStack.pop();
             const frame = this.executionStack[this.executionStack.length - 1];
-            this.returnStack.push({
-                startIndex: frame.index
-            });
+            this.returnStack.push(new BeginLoopContext(
+                frame.index,
+                exitIndexCell.toNumber()
+            ));
         }
     },
     // https://forth-standard.org/standard/core/UNTIL
@@ -894,7 +897,7 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!currentControl || currentControl.type !== 'BEGIN') {
+            if (!(currentControl instanceof BeginControl)) {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
@@ -912,12 +915,17 @@ export const core = {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
+            if (!(rs instanceof BeginLoopContext)) {
+                this.errorReset();
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
+            }
             if (flag.toUnsigned() === 0n) {
                 const frame = this.executionStack[this.executionStack.length - 1];
-                frame.index = rs.startIndex;
-            } else {
-                this.returnStack.pop();
+                frame.index = rs.frameStartIndex;
+                return;
             }
+                
+            this.returnStack.pop();
         }
     },
     // https://forth-standard.org/standard/core/WHILE
@@ -925,35 +933,33 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!currentControl || currentControl.type !== 'BEGIN') {
+            if (!(currentControl instanceof BeginControl)) {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
-            const zeroBranch = new Word('(WHILE)', this.words['(WHILE)'].entry, []);
-            const offsetPlaceholder = new NumberWord('0', new Cell(0n));
-            this.compilationBuffer.push(offsetPlaceholder, zeroBranch);
-            this.controlStack.push({
-                type: 'WHILE',
-                placeholderIndex: this.compilationBuffer.length - 2,
-                beginIndex: currentControl.index
-            });
+            const whileWord = new Word('(WHILE)', this.words['(WHILE)'].entry, []);
+            this.compilationBuffer.push(whileWord);
+            this.controlStack.push(new WhileControl(currentControl.exitPlaceholderIndex));
         }
     },
     '(WHILE)': {
         'flags': [],
         'entry': function() {
-            this.checkStackUnderflow(2);
-            const exitIndexCell = this.dataStack.pop();
+            this.checkStackUnderflow(1);
             const flag = this.dataStack.pop();
             const rs = this.returnStack[this.returnStack.length - 1];
             if (!rs) {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
+            if (!(rs instanceof BeginLoopContext)) {
+                this.errorReset();
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
+            }
             if (flag.toUnsigned() === 0n) {
                 this.returnStack.pop();
                 const frame = this.executionStack[this.executionStack.length - 1];
-                frame.index = exitIndexCell.toNumber();
+                frame.index = rs.frameExitIndex;
             }
         }
     },
@@ -962,7 +968,7 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!currentControl || currentControl.type !== 'WHILE') {
+            if (!(currentControl instanceof WhileControl)) {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
@@ -970,7 +976,7 @@ export const core = {
             const exitIndexWord = new NumberWord(String(exitIndex), new Cell(exitIndex));
             const repeatWord = new Word('(REPEAT)', this.words['(REPEAT)'].entry, []);
 
-            this.compilationBuffer[currentControl.placeholderIndex] = exitIndexWord;
+            this.compilationBuffer[currentControl.exitPlaceholderIndex] = exitIndexWord;
             this.compilationBuffer.push(repeatWord);
         }
     },
@@ -982,8 +988,12 @@ export const core = {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
+            if (!(rs instanceof BeginLoopContext)) {
+                this.errorReset();
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
+            }
             const frame = this.executionStack[this.executionStack.length - 1];
-            frame.index = rs.startIndex;
+            frame.index = rs.frameStartIndex;
         }
     },
     // https://forth-standard.org/standard/core/I

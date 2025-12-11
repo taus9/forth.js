@@ -6,3 +6,10 @@ export class DoLoopContext {
         this.frameExitIndex = frameExitIndex;
     }
 }
+
+export class BeginLoopContext {
+    constructor(frameStartIndex, frameExitIndex) {
+        this.frameStartIndex = frameStartIndex;
+        this.frameExitIndex = frameExitIndex;
+    }
+}
