@@ -20,6 +20,8 @@ import * as errors from '../errors/errors.js';
 import * as types from '../types/types.js';
 import { Cell } from '../types/cell.js';
 import { Word, NumberWord } from '../types/words.js';
+import { DoControl } from '../types/controls.js';
+import { DoLoopContext } from '../types/context.js';
 
 export const core = {
     // https://forth-standard.org/standard/core/Times
@@ -736,34 +738,47 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const doWord = new Word('(DO)', this.words['(DO)'].entry, []);
-            const exitIndexPlaceholder = new NumberWord('0', new Cell(0n));
-            this.compilationBuffer.push(exitIndexPlaceholder, doWord);
-            this.controlStack.push({
-                type: 'DO',
-                placeholderIndex: this.compilationBuffer.length - 2
-            });
+            const loopTypeCell = new NumberWord('0', new Cell(0n));
+            const exitIndexCell = new NumberWord('0', new Cell(0n));
+            
+            this.compilationBuffer.push(exitIndexCell, loopTypeCell, doWord);
+            
+            const doControl = new DoControl(
+                this.compilationBuffer.length - 2, // loopTypePlaceholderIndex
+                this.compilationBuffer.length - 3  // exitPlaceholderIndex
+            );
+
+            this.controlStack.push(doControl);
         }
     },
     '(DO)': {
         'flags': [],
         'entry': function() {
-            this.checkStackUnderflow(3);
+            // The (DO) runtime word only gets called once
+            // in the life time of the loop
+            this.checkStackUnderflow(4);
+
+            // TODO: Use loop type for future extensions
+            const loopTypeCell = this.dataStack.pop();
             const exitIndexCell = this.dataStack.pop();
             const startCell = this.dataStack.pop();
             const limitCell = this.dataStack.pop();
+            
             const frame = this.executionStack[this.executionStack.length - 1];
+            
             const startValue = startCell.toSigned();
             const limitValue = limitCell.toSigned();
             if (startValue === limitValue) {
                 frame.index = exitIndexCell.toNumber();
                 return;
             }
-            this.returnStack.push({
-                startIndex: frame.index,
-                exitIndex: exitIndexCell.toNumber(),
-                index: startValue,
-                limit: limitValue
-            });
+
+            this.returnStack.push(new DoLoopContext(
+                limitValue,
+                startValue,
+                frame.index,
+                exitIndexCell.toNumber()
+            ));
         }
     },
     // https://forth-standard.org/standard/core/LOOP
@@ -771,15 +786,17 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!currentControl || currentControl.type !== 'DO') {
+            if (!(currentControl instanceof DoControl)) {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
             const loopWord = new Word('(LOOP)', this.words['(LOOP)'].entry, []);
+            const loopTypeWord = new NumberWord(String(types.LoopTypes.LOOP), new Cell(types.LoopTypes.LOOP));
             const exitIndex = this.compilationBuffer.length + 1;
             const exitIndexWord = new NumberWord(String(exitIndex), new Cell(exitIndex));
-
-            this.compilationBuffer[currentControl.placeholderIndex] = exitIndexWord;
+            
+            this.compilationBuffer[currentControl.loopTypePlaceholderIndex] = loopTypeWord;
+            this.compilationBuffer[currentControl.exitPlaceholderIndex] = exitIndexWord;
             this.compilationBuffer.push(loopWord);
         }
     },  
@@ -791,13 +808,64 @@ export const core = {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
+            if (!(rs instanceof DoLoopContext)) {
+                this.errorReset();
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
+            }
+            
             rs.index += 1n;
             if (rs.index < rs.limit) {
                 const frame = this.executionStack[this.executionStack.length - 1];
-                frame.index = rs.startIndex;
-            } else {
-                this.returnStack.pop();
+                frame.index = rs.frameStartIndex;
+                return;
             }
+
+            this.returnStack.pop();
+        }
+    },
+    // https://forth-standard.org/standard/core/PlusLOOP
+    '+LOOP': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const currentControl = this.controlStack.pop();
+            if (!(currentControl instanceof DoControl)) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
+            }
+            const loopWord = new Word('(+LOOP)', this.words['(+LOOP)'].entry, []);
+            const loopTypeWord = new NumberWord(String(types.LoopTypes.PLUS_LOOP), new Cell(types.LoopTypes.PLUS_LOOP));
+            const exitIndex = this.compilationBuffer.length + 1;
+            const exitIndexWord = new NumberWord(String(exitIndex), new Cell(exitIndex));
+            
+            this.compilationBuffer[currentControl.loopTypePlaceholderIndex] = loopTypeWord;
+            this.compilationBuffer[currentControl.exitPlaceholderIndex] = exitIndexWord;
+            this.compilationBuffer.push(loopWord);
+        }
+    },
+    '(+LOOP)': {
+        'flags': [],
+        'entry': function() {
+            const rs = this.returnStack[this.returnStack.length - 1];
+            if (!rs) {
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            if (!(rs instanceof DoLoopContext)) {
+                this.errorReset();
+                throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
+            }
+            this.checkStackUnderflow(1);
+            const n = this.dataStack.pop();
+            const step = n.toSigned();
+            rs.index += step;
+            if (!((step > 0n && rs.index >= rs.limit) ||
+                (step < 0n && rs.index <= rs.limit))) {
+                const frame = this.executionStack[this.executionStack.length - 1];
+                frame.index = rs.frameStartIndex;
+                return;
+            }
+
+            this.returnStack.pop();
         }
     },
     // https://forth-standard.org/standard/core/I
@@ -876,43 +944,6 @@ export const core = {
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
             this.returnStack.pop();
-        }
-    },
-    // https://forth-standard.org/standard/core/PlusLOOP
-    '+LOOP': {
-        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
-        'entry': function() {
-            const currentControl = this.controlStack.pop();
-            if (!currentControl || currentControl.type !== 'DO') {
-                this.errorReset();
-                throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
-            }
-            const loopWord = new Word('(+LOOP)', this.words['(+LOOP)'].entry, []);
-            const exitIndex = this.compilationBuffer.length + 1;
-            const exitIndexWord = new NumberWord(String(exitIndex), new Cell(exitIndex));
-
-            this.compilationBuffer[currentControl.placeholderIndex] = exitIndexWord;
-            this.compilationBuffer.push(loopWord);
-        }
-    },
-    '(+LOOP)': {
-        'flags': [],
-        'entry': function() {
-            const rs = this.returnStack[this.returnStack.length - 1];
-            if (!rs) {
-                this.errorReset();
-                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
-            }
-            this.checkStackUnderflow(1);
-            const n = this.dataStack.pop();
-            rs.index += n.toSigned();
-            if ((n.toSigned() > 0n && rs.index >= rs.limit) ||
-                (n.toSigned() < 0n && rs.index <= rs.limit)) {
-                this.returnStack.pop();
-            } else {
-                const frame = this.executionStack[this.executionStack.length - 1];
-                frame.index = rs.startIndex;
-            }
         }
     },
     // https://forth-standard.org/standard/core/BEGIN
