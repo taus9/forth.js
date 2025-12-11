@@ -162,7 +162,7 @@ export class WordsTestSuite {
     this.test("'.' outputs top element to fvm.output", () => {
       const fvm = new Fvm();
       fvm.execute('42 .');
-      if (fvm.getOutput() !== '42') throw new Error(`Expected output '42', got '${fvm.getOutput()}'`);
+      if (fvm.getOutput() !== '42 ') throw new Error(`Expected output '42 ', got '${fvm.getOutput()}'`);
     });
 
     // DROP

@@ -5,7 +5,7 @@ import * as errors from './errors/errors.js';
 import * as words from './words/index.js';
 import { ForthMemory } from './memory.js';
 import { Cell } from './types/cell.js';
-import { Word, NumberWord, CompileWord, TextWord } from './types/words.js';
+import { Word, NumberWord, CompileWord, TextWord, StringWord } from './types/words.js';
 
 export class Fvm {
 
@@ -80,6 +80,22 @@ export class Fvm {
             return text.slice(start, i);
         };
 
+        const readString = () => {
+            i += 2; // skip '."'
+            const start = i;
+            while (i < text.length && text[i] !== '"') i++;
+            if (i >= text.length) {
+                throw new errors.ParseError(errors.ErrorMessages.UNTERMINATED_STRING);
+            }
+            const str = text.slice(start, i);
+            i++; // skip closing '"'
+            return str;
+        };
+
+        const isDotQuote = () => {
+            return i + 1 < text.length && text[i] === '.' && text[i + 1] === '"';
+        };
+
         // First pass: tokenize and parse words (skip comments)
         while (i < text.length) {
             skipWhitespace();
@@ -87,6 +103,14 @@ export class Fvm {
 
             if (isCommentStart()) {
                 skipComment();
+                continue;
+            }
+
+            if (isDotQuote()) {
+                const str = readString();
+                const dotQuoteWord = this.parseWord('."');
+                const stringWord = new StringWord(str);
+                parsedWords.push(dotQuoteWord, stringWord);
                 continue;
             }
             
@@ -204,6 +228,6 @@ export class Fvm {
     }
 
     getOutput() {
-        return this.output.trim();
+        return this.output;
     }
 }

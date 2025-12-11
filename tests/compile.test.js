@@ -237,6 +237,57 @@ export class CompileTestSuite {
       this.expectStack(fvm, [5, 10]);
     });
 
+    // ." string output tests
+    this.test('." outputs string in colon definition', () => {
+      const fvm = new Fvm();
+      fvm.execute(': greet ."Hello, World!" ;');
+      fvm.execute('greet');
+      if (fvm.getOutput() !== 'Hello, World!') {
+        throw new Error(`Expected output "Hello, World!" got "${fvm.getOutput()}"`);
+      }
+    });
+
+    this.test('." with empty string', () => {
+      const fvm = new Fvm();
+      fvm.execute(': empty ."" ;');
+      fvm.execute('empty');
+      if (fvm.getOutput() !== '') {
+        throw new Error(`Expected empty output got "${fvm.getOutput()}"`);
+      }
+    });
+
+    this.test('." with spaces', () => {
+      const fvm = new Fvm();
+      fvm.execute(': spaces ."   spaces   " ;');
+      fvm.execute('spaces');
+      if (fvm.getOutput() !== '   spaces   ') {
+        throw new Error(`Expected "   spaces   " got "${fvm.getOutput()}"`);
+      }
+    });
+
+    this.test('." combined with numbers', () => {
+      const fvm = new Fvm();
+      fvm.execute(': test 42 . ."is the answer" ;');
+      fvm.execute('test');
+      if (fvm.getOutput() !== '42 is the answer') {
+        throw new Error(`Expected "42 is the answer" got "${fvm.getOutput()}"`);
+      }
+    });
+
+    this.test('Multiple ." in one definition', () => {
+      const fvm = new Fvm();
+      fvm.execute(': multi ."Hello" ." " ."World" ;');
+      fvm.execute('multi');
+      if (fvm.getOutput() !== 'Hello World') {
+        throw new Error(`Expected "Hello World" got "${fvm.getOutput()}"`);
+      }
+    });
+
+    this.test('Error: ." without closing quote', () => {
+      const fvm = new Fvm();
+      this.expectError(() => fvm.execute(': bad ."unterminated ;'), errors.ErrorTypes.PARSE);
+    });
+
     // Summary
     this.put('');
     this.put(`***** Passed: ${this.passed}, Failed: ${this.failed} *****`);
