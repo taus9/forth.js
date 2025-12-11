@@ -213,6 +213,20 @@ export class CompileTestSuite {
       this.expectStack(fvm, [123]);
     });
 
+    this.test('BEGIN UNTIL repeats until condition true', () => {
+      const fvm = new Fvm();
+      fvm.execute(': begin-until 3 BEGIN DUP WHILE DUP 1- REPEAT DROP ;');
+      fvm.execute('begin-until');
+      this.expectStack(fvm, [3, 2, 1]);
+    });
+
+    this.test('BEGIN WHILE REPEAT handles conditional loop', () => {
+      const fvm = new Fvm();
+      fvm.execute(': begin-while-repeat 5 BEGIN DUP WHILE DUP 1- REPEAT DROP ;');
+      fvm.execute('begin-while-repeat');
+      this.expectStack(fvm, [5, 4, 3, 2, 1]);
+    });
+
     this.test('Redefine existing user word', () => {
       const fvm = new Fvm();
       fvm.execute(': foo 5 ;');

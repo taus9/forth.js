@@ -967,4 +967,70 @@ export const core = {
             }
         }
     },
+    // https://forth-standard.org/standard/core/WHILE
+    'WHILE': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const currentControl = this.controlStack.pop();
+            if (!currentControl || currentControl.type !== 'BEGIN') {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
+            }
+            const zeroBranch = new Word('(WHILE)', this.words['(WHILE)'].entry, []);
+            const offsetPlaceholder = new NumberWord('0', new Cell(0n));
+            this.compilationBuffer.push(offsetPlaceholder, zeroBranch);
+            this.controlStack.push({
+                type: 'WHILE',
+                placeholderIndex: this.compilationBuffer.length - 2,
+                beginIndex: currentControl.index
+            });
+        }
+    },
+    '(WHILE)': {
+        'flags': [],
+        'entry': function() {
+            this.checkStackUnderflow(2);
+            const exitIndexCell = this.dataStack.pop();
+            const flag = this.dataStack.pop();
+            const rs = this.returnStack[this.returnStack.length - 1];
+            if (!rs) {
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            if (flag.toUnsigned() === 0n) {
+                this.returnStack.pop();
+                const frame = this.executionStack[this.executionStack.length - 1];
+                frame.index = exitIndexCell.toNumber();
+            }
+        }
+    },
+    // https://forth-standard.org/standard/core/REPEAT
+    'REPEAT': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const currentControl = this.controlStack.pop();
+            if (!currentControl || currentControl.type !== 'WHILE') {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
+            }
+            const exitIndex = this.compilationBuffer.length + 1;
+            const exitIndexWord = new NumberWord(String(exitIndex), new Cell(exitIndex));
+            const repeatWord = new Word('(REPEAT)', this.words['(REPEAT)'].entry, []);
+
+            this.compilationBuffer[currentControl.placeholderIndex] = exitIndexWord;
+            this.compilationBuffer.push(repeatWord);
+        }
+    },
+    '(REPEAT)': {
+        'flags': [],
+        'entry': function() {
+            const rs = this.returnStack[this.returnStack.length - 1];
+            if (!rs) {
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            const frame = this.executionStack[this.executionStack.length - 1];
+            frame.index = rs.startIndex;
+        }
+    },
 };
