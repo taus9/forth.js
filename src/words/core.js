@@ -20,8 +20,8 @@ import * as errors from '../errors/errors.js';
 import * as types from '../types/types.js';
 import { Cell } from '../types/cell.js';
 import { Word, NumberWord } from '../types/words.js';
-import { DoControl, BeginControl, WhileControl } from '../types/controls.js';
-import { DoLoopContext, BeginLoopContext } from '../types/context.js';
+import { DoControlContext, BeginControlContext, WhileControlContext } from '../types/controls.js';
+import { DoRuntimeContext, BeginRuntimeContext } from '../types/context.js';
 
 export const core = {
     // https://forth-standard.org/standard/core/Times
@@ -743,7 +743,7 @@ export const core = {
             
             this.compilationBuffer.push(exitIndexCell, loopTypeCell, doWord);
             
-            const doControl = new DoControl(
+            const doControl = new DoControlContext(
                 this.compilationBuffer.length - 2, // loopTypePlaceholderIndex
                 this.compilationBuffer.length - 3  // exitPlaceholderIndex
             );
@@ -773,7 +773,7 @@ export const core = {
                 return;
             }
 
-            this.returnStack.push(new DoLoopContext(
+            this.returnStack.push(new DoRuntimeContext(
                 limitValue,
                 startValue,
                 frame.index,
@@ -786,7 +786,7 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!(currentControl instanceof DoControl)) {
+            if (!(currentControl instanceof DoControlContext)) {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
@@ -808,7 +808,7 @@ export const core = {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
-            if (!(rs instanceof DoLoopContext)) {
+            if (!(rs instanceof DoRuntimeContext)) {
                 this.errorReset();
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
             }
@@ -828,7 +828,7 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!(currentControl instanceof DoControl)) {
+            if (!(currentControl instanceof DoControlContext)) {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
@@ -850,7 +850,7 @@ export const core = {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
-            if (!(rs instanceof DoLoopContext)) {
+            if (!(rs instanceof DoRuntimeContext)) {
                 this.errorReset();
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
             }
@@ -875,7 +875,7 @@ export const core = {
             const beginWord = new Word('(BEGIN)', this.words['(BEGIN)'].entry, []);
             const exitIndexCell = new NumberWord('0', new Cell(0n));
             this.compilationBuffer.push(exitIndexCell, beginWord);
-            this.controlStack.push(new BeginControl(
+            this.controlStack.push(new BeginControlContext(
                 this.compilationBuffer.length - 2 // exitPlaceholderIndex
             ));
         }
@@ -886,7 +886,7 @@ export const core = {
             this.checkStackUnderflow(1);
             const exitIndexCell = this.dataStack.pop();
             const frame = this.executionStack[this.executionStack.length - 1];
-            this.returnStack.push(new BeginLoopContext(
+            this.returnStack.push(new BeginRuntimeContext(
                 frame.index,
                 exitIndexCell.toNumber()
             ));
@@ -897,7 +897,7 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!(currentControl instanceof BeginControl)) {
+            if (!(currentControl instanceof BeginControlContext)) {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
@@ -915,7 +915,7 @@ export const core = {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
-            if (!(rs instanceof BeginLoopContext)) {
+            if (!(rs instanceof BeginRuntimeContext)) {
                 this.errorReset();
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
             }
@@ -933,13 +933,13 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!(currentControl instanceof BeginControl)) {
+            if (!(currentControl instanceof BeginControlContext)) {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
             const whileWord = new Word('(WHILE)', this.words['(WHILE)'].entry, []);
             this.compilationBuffer.push(whileWord);
-            this.controlStack.push(new WhileControl(currentControl.exitPlaceholderIndex));
+            this.controlStack.push(new WhileControlContext(currentControl.exitPlaceholderIndex));
         }
     },
     '(WHILE)': {
@@ -952,7 +952,7 @@ export const core = {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
-            if (!(rs instanceof BeginLoopContext)) {
+            if (!(rs instanceof BeginRuntimeContext)) {
                 this.errorReset();
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
             }
@@ -968,7 +968,7 @@ export const core = {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
         'entry': function() {
             const currentControl = this.controlStack.pop();
-            if (!(currentControl instanceof WhileControl)) {
+            if (!(currentControl instanceof WhileControlContext)) {
                 this.errorReset();
                 throw new errors.ParseError(errors.ErrorMessages.CONTROL_EXPECTED);
             }
@@ -988,7 +988,7 @@ export const core = {
                 this.errorReset();
                 throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
             }
-            if (!(rs instanceof BeginLoopContext)) {
+            if (!(rs instanceof BeginRuntimeContext)) {
                 this.errorReset();
                 throw new errors.OperationError(errors.ErrorMessages.INVALID_CONTEXT);
             }
