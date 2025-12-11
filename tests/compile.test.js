@@ -215,7 +215,7 @@ export class CompileTestSuite {
 
     this.test('BEGIN UNTIL repeats until condition true', () => {
       const fvm = new Fvm();
-      fvm.execute(': begin-until 3 BEGIN DUP WHILE DUP 1- REPEAT DROP ;');
+      fvm.execute(': begin-until 3 BEGIN DUP 1- DUP 0= UNTIL DROP ;');
       fvm.execute('begin-until');
       this.expectStack(fvm, [3, 2, 1]);
     });
