@@ -24,3 +24,10 @@ export class TextWord {
         this.name = name;
     }
 }
+
+export class StringWord {
+    constructor(content) {
+        this.name = '."';
+        this.content = content;
+    }
+}

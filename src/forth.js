@@ -5,7 +5,7 @@ import * as errors from './errors/errors.js';
 import * as words from './words/index.js';
 import { ForthMemory } from './memory.js';
 import { Cell } from './types/cell.js';
-import { Word, NumberWord, CompileWord, TextWord } from './types/words.js';
+import { Word, NumberWord, CompileWord, TextWord, StringWord } from './types/words.js';
 
 export class Fvm {
 
@@ -80,6 +80,22 @@ export class Fvm {
             return text.slice(start, i);
         };
 
+        const readString = () => {
+            // We're at the position right after ." token
+            // In Forth, there's typically a space after ." which is skipped,
+            // then we read until the closing "
+            // However, if the first char is already ", treat it as empty string
+            if (i < text.length && text[i] === ' ') {
+                i++; // Skip one space delimiter after ."
+            }
+            const start = i;
+            // Read until closing "
+            while (i < text.length && text[i] !== '"') i++;
+            const content = text.slice(start, i);
+            if (i < text.length && text[i] === '"') i++; // skip closing "
+            return content;
+        };
+
         // First pass: tokenize and parse words (skip comments)
         while (i < text.length) {
             skipWhitespace();
@@ -91,6 +107,14 @@ export class Fvm {
             }
             
             const token = readToken().toUpperCase();
+            
+            // Handle ." specially - it needs to read until closing quote
+            if (token === '."') {
+                const stringContent = readString();
+                parsedWords.push(new StringWord(stringContent));
+                continue;
+            }
+            
             const word = this.parseWord(token);
 
             parsedWords.push(word);
@@ -125,6 +149,7 @@ export class Fvm {
                         continue;
                     }
 
+                    // StringWord gets compiled into the definition
                     this.compilationBuffer.push(word);
                     continue;
                 }
@@ -142,6 +167,11 @@ export class Fvm {
                         continue;
                     }
                 
+                    if (word instanceof StringWord) {
+                        this.output += word.content;
+                        continue;
+                    }
+
                     if (word instanceof Word) {
                         word.callback.call(this);
                         continue;
