@@ -13,7 +13,7 @@
   * Arithmetic operations: `+`, `-`, `*`, `/`, `MOD`, `/MOD`, `1+`, `1-`, `ABS`, `MIN`, `MAX`, `NEGATE`
   * Colon definitions: Define or redefine words with `: ... ;`
   * Branching: `IF`, `ELSE`, `THEN`
-  * Looping: `DO`, `LOOP`, `+LOOP`, `LEAVE`, `I`, `J`, `UNLOOP`
+  * Looping: `DO`, `LOOP`, `+LOOP`, `LEAVE`, `I`, `J`, `UNLOOP`, `WHILE`, `REPEAT`
   * 64-bit Cell width for the data stack
   * Comment handling
 
