@@ -15,3 +15,10 @@ export const FlagTypes = {
     COMPILE_ONLY: 2,
     DEFINING_WORD: 3
 }
+
+export const LoopTypes = {
+    LOOP: 1,
+    PLUS_LOOP: 2,
+    UNTIL: 3,
+    WHILE_REPEAT: 4
+}
