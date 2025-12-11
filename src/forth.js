@@ -202,4 +202,8 @@ export class Fvm {
             throw new errors.StackError(errors.ErrorMessages.STACK_UNDERFLOW);
         }
     }
+
+    getOutput() {
+        return this.output.trim();
+    }
 }

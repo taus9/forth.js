@@ -134,7 +134,7 @@ textbox.addEventListener('keyup', e => {
             return;
         }
 
-        put(`${text} ${fvm.output}  ${fvm.status}`);
+        put(`${text} ${fvm.getOutput()}  ${fvm.status}`);
     }
 });
 

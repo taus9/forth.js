@@ -127,7 +127,7 @@ rl.on('line', (line) => {
     readline.cursorTo(process.stdout, input.length + 5); // 5 = "fvm> ".length
     
     const color = fvm.state === types.ForthState.INTERPRET ? colors.dim : colors.yellow;
-    console.log(` ${fvm.output}${color} ${fvm.status}${colors.reset}`);
+    console.log(` ${fvm.getOutput()}${color} ${fvm.status}${colors.reset}`);
     
     // Show stack state
     if (fvm.state === types.ForthState.INTERPRET) {
