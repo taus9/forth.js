@@ -868,84 +868,6 @@ export const core = {
             this.returnStack.pop();
         }
     },
-    // https://forth-standard.org/standard/core/I
-    'I': {
-        'flags': [],
-        'entry': function() {
-            const rs = this.returnStack[this.returnStack.length - 1];
-            if (!rs) {
-                this.errorReset();
-                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
-            }
-            this.dataStack.push(new Cell(rs.index));
-        }
-    },
-    // https://forth-standard.org/standard/core/J
-    'J': {
-        'flags': [],
-        'entry': function() {
-            if (this.returnStack.length < 2) {
-                this.errorReset();
-                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
-            }
-            const rs = this.returnStack[this.returnStack.length - 2];
-            this.dataStack.push(new Cell(rs.index));
-        }
-    },
-    // https://forth-standard.org/standard/core/LEAVE
-    'LEAVE': {
-        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
-        'entry': function() {
-            const leave = new Word('(LEAVE)', this.words['(LEAVE)'].entry, []);
-            this.compilationBuffer.push(leave);            
-        }
-    },
-    '(LEAVE)': {
-        'flags': [],
-        'entry': function() {
-            const rs = this.returnStack[this.returnStack.length - 1];
-            if (!rs) {
-                this.errorReset();
-                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
-            }
-            const frame = this.executionStack[this.executionStack.length - 1];
-            rs.index = rs.limit;
-            frame.index = rs.exitIndex - 1;
-        }
-    },
-    // https://forth-standard.org/standard/core/EXIT
-    'EXIT': {
-        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
-        'entry': function() {
-            const exitWord = new Word('(EXIT)', this.words['(EXIT)'].entry, []);
-            this.compilationBuffer.push(exitWord);
-        }
-    },
-    '(EXIT)': {
-        'flags': [],
-        'entry': function() {
-            const frame = this.executionStack[this.executionStack.length - 1];
-            frame.index = frame.words.length;
-        }
-    },
-    // https://forth-standard.org/standard/core/UNLOOP
-    'UNLOOP': {
-        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
-        'entry': function() {
-            const unloop = new Word('(UNLOOP)', this.words['(UNLOOP)'].entry, []);
-            this.compilationBuffer.push(unloop);
-        }
-    },
-    '(UNLOOP)': {
-        'flags': [],
-        'entry': function() {
-            if (this.returnStack.length === 0) {
-                this.errorReset();
-                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
-            }
-            this.returnStack.pop();
-        }
-    },
     // https://forth-standard.org/standard/core/BEGIN
     'BEGIN': {
         'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
@@ -1062,6 +984,84 @@ export const core = {
             }
             const frame = this.executionStack[this.executionStack.length - 1];
             frame.index = rs.startIndex;
+        }
+    },
+    // https://forth-standard.org/standard/core/I
+    'I': {
+        'flags': [],
+        'entry': function() {
+            const rs = this.returnStack[this.returnStack.length - 1];
+            if (!rs) {
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            this.dataStack.push(new Cell(rs.index));
+        }
+    },
+    // https://forth-standard.org/standard/core/J
+    'J': {
+        'flags': [],
+        'entry': function() {
+            if (this.returnStack.length < 2) {
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            const rs = this.returnStack[this.returnStack.length - 2];
+            this.dataStack.push(new Cell(rs.index));
+        }
+    },
+    // https://forth-standard.org/standard/core/LEAVE
+    'LEAVE': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const leave = new Word('(LEAVE)', this.words['(LEAVE)'].entry, []);
+            this.compilationBuffer.push(leave);            
+        }
+    },
+    '(LEAVE)': {
+        'flags': [],
+        'entry': function() {
+            const rs = this.returnStack[this.returnStack.length - 1];
+            if (!rs) {
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            const frame = this.executionStack[this.executionStack.length - 1];
+            rs.index = rs.limit;
+            frame.index = rs.exitIndex - 1;
+        }
+    },
+    // https://forth-standard.org/standard/core/EXIT
+    'EXIT': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const exitWord = new Word('(EXIT)', this.words['(EXIT)'].entry, []);
+            this.compilationBuffer.push(exitWord);
+        }
+    },
+    '(EXIT)': {
+        'flags': [],
+        'entry': function() {
+            const frame = this.executionStack[this.executionStack.length - 1];
+            frame.index = frame.words.length;
+        }
+    },
+    // https://forth-standard.org/standard/core/UNLOOP
+    'UNLOOP': {
+        'flags': [types.FlagTypes.IMMEDIATE, types.FlagTypes.COMPILE_ONLY],
+        'entry': function() {
+            const unloop = new Word('(UNLOOP)', this.words['(UNLOOP)'].entry, []);
+            this.compilationBuffer.push(unloop);
+        }
+    },
+    '(UNLOOP)': {
+        'flags': [],
+        'entry': function() {
+            if (this.returnStack.length === 0) {
+                this.errorReset();
+                throw new errors.StackError(errors.ErrorMessages.RETURN_STACK_UNDERFLOW);
+            }
+            this.returnStack.pop();
         }
     },
 };
