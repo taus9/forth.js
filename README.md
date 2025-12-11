@@ -14,6 +14,7 @@
   * Colon definitions: Define or redefine words with `: ... ;`
   * Branching: `IF`, `ELSE`, `THEN`
   * Looping: `DO`, `LOOP`, `+LOOP`, `LEAVE`, `I`, `J`, `UNLOOP`, `WHILE`, `REPEAT`
+  * String output: `."` (dot-quote) for printing strings
   * 64-bit Cell width for the data stack
   * Comment handling
 
@@ -118,6 +119,30 @@ c.toUnsigned()  // → 42n (as unsigned BigInt)
 ```
 
 This design prioritizes Forth compatibility and predictable semantics over raw JavaScript performance.
+
+### String Output with `."` (Dot-Quote)
+
+The `."` word prints string literals to the console output. It follows ANS Forth standards for string handling:
+
+**Syntax:** `." text-until-quote"`
+
+**Examples:**
+```forth
+." Hello, World!"              ( prints: Hello, World! )
+
+: greet ." Hello, " ." Forth!" ;
+greet                          ( prints: Hello, Forth! )
+
+: show-result ." Answer: " . ;
+42 show-result                 ( prints: Answer: 42 )
+```
+
+**Behavior:**
+- In **interpret mode**: Immediately outputs the string
+- In **compile mode**: Compiles the string into the word definition
+- The space after `."` is treated as a delimiter and is skipped
+- String extends until the closing `"` character
+- Does not affect the data stack
 
 ### Potential Extensions
 

@@ -5,7 +5,8 @@ import { spawnSync } from 'child_process';
 const tests = [
 	'tests/words.test.js',
 	'tests/compile.test.js',
-	'tests/errors.test.js'
+	'tests/errors.test.js',
+	'tests/string.test.js'
 ];
 let failed = false;
 
