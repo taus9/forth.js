@@ -302,7 +302,7 @@ export const core = {
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const w1 = this.dataStack.pop();
-            this.output += `${w1.toSigned()} `;
+            this.output += `${w1.toSigned()}`;
         }
     },
     // https://forth-standard.org/standard/core/Equal
@@ -1114,5 +1114,41 @@ export const core = {
         'entry': function() {
             this.output += '\n';
         }
-    }
+    },
+    // https://forth-standard.org/standard/core/SPACE
+    'SPACE': {
+        'flags': [],
+        'entry': function() {
+            this.output += ' ';
+        }
+    },
+    // https://forth-standard.org/standard/core/SPACES
+    'SPACES': {
+        'flags': [],
+        'entry': function() {
+            this.checkStackUnderflow(1);
+            const n = this.dataStack.pop();
+            if (n.toSigned() > 0n) {
+                this.output += ' '.repeat(n.toNumber());
+            }
+        }
+    },
+    // https://forth-standard.org/standard/core/Sq
+    'S"': {
+        'flags': [],
+        'entry': function() {
+            const frame = this.executionStack[this.executionStack.length - 1];
+            if (frame.index >= frame.words.length) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.UNTERMINATED_STRING);
+            }
+            const stringWord = frame.words[frame.index++];
+            if (!(stringWord instanceof StringLiteralWord)) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.UNTERMINATED_STRING);
+            }
+            const strAddress = this.memory.allocateString(stringWord.value);
+            this.dataStack.push(new Cell(strAddress));
+        }
+    },
 };

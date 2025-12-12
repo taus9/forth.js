@@ -91,9 +91,9 @@ export class Fvm {
             }
             
 
-            const token = readToken();
+            const token = readToken().toUpperCase();
 
-            if (token === '."') {
+            if (token === '."' || token === 'S"') {
                 // Handle string literal until next "
                 let strLiteral = '';
                 i++ // skip space after ."
@@ -107,12 +107,13 @@ export class Fvm {
                     this.errorReset();
                     throw new errors.ParseError(errors.ErrorMessages.UNTERMINATED_STRING);
                 }
-                parsedWords.push(new Word('."', this.words['."'].entry, this.words['."'].flags));
+                
+                parsedWords.push(new Word(token, this.words[token].entry, this.words[token].flags));
                 parsedWords.push(new StringLiteralWord(strLiteral));
                 continue;
             }
 
-            const word = this.parseWord(token.toUpperCase());
+            const word = this.parseWord(token);
             parsedWords.push(word);
         }
 
@@ -224,6 +225,6 @@ export class Fvm {
     }
 
     getOutput() {
-        return this.output.replace(/[ \t]+$/,'');
+        return this.output;
     }
 }
