@@ -4,7 +4,38 @@ export class ForthMemory {
     
     constructor() {
         this._map = new Map();
+        this._stringTable = new Map();
         this._nextAddress = 1n; // start at 1, reserving 0 as invalid
+    }
+
+    allocateString(string) {
+        const address = this._generateAddress();
+        this._stringTable.set(address, string);
+        return address;
+    }
+
+    fetchString(address) {
+        const u = BigInt.asUintN(64, BigInt(address));
+        if (!this._stringTable.has(u)) {
+            throw new Error(`Invalid string memory access at address ${u.toString()}`);
+        }
+        return this._stringTable.get(u);
+    }
+
+    storeString(address, string) {
+        const u = BigInt.asUintN(64, BigInt(address));
+        if (!this._stringTable.has(u)) {
+            throw new Error(`Invalid string memory access at address ${u.toString()}`);
+        }
+        this._stringTable.set(u, string);
+    }
+
+    freeString(address) {
+        const u = BigInt.asUintN(64, BigInt(address));
+        if (!this._stringTable.has(u)) {
+            throw new Error(`Invalid string memory access at address ${u.toString()}`);
+        }
+        this._stringTable.delete(u);
     }
 
     allocate() {

@@ -1133,4 +1133,22 @@ export const core = {
             }
         }
     },
+    // https://forth-standard.org/standard/core/Sq
+    'S"': {
+        'flags': [],
+        'entry': function() {
+            const frame = this.executionStack[this.executionStack.length - 1];
+            if (frame.index >= frame.words.length) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.UNTERMINATED_STRING);
+            }
+            const stringWord = frame.words[frame.index++];
+            if (!(stringWord instanceof StringLiteralWord)) {
+                this.errorReset();
+                throw new errors.ParseError(errors.ErrorMessages.UNTERMINATED_STRING);
+            }
+            const strAddress = this.memory.allocateString(stringWord.value);
+            this.dataStack.push(new Cell(strAddress));
+        }
+    },
 };
