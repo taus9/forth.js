@@ -14,6 +14,7 @@
   * Colon definitions: Define or redefine words with `: ... ;`
   * Branching: `IF`, `ELSE`, `THEN`
   * Looping: `DO`, `LOOP`, `+LOOP`, `LEAVE`, `I`, `J`, `UNLOOP`, `WHILE`, `REPEAT`
+  * Strings and output: `."`, `S"`, `CR`, `SPACE`, `SPACES` 
   * 64-bit Cell width for the data stack
   * Comment handling
 
@@ -26,6 +27,14 @@
 * Extensible design:
   * Core words are modular and easy to extend
   * Supports easy addition of new Forth words
+
+---
+
+## Implemented Words
+
+- **Core (67):** `*`, `+`, `-`, `/`, `/MOD`, `MOD`, `ABS`, `1-`, `1+`, `NEGATE`, `MIN`, `MAX`, `DROP`, `DUP`, `OVER`, `SWAP`, `ROT`, `?DUP`, `2DROP`, `2DUP`, `2OVER`, `2SWAP`, `.`, `=`, `<`, `>`, `U<`, `0=`, `0<`, `2*`, `2/`, `AND`, `OR`, `XOR`, `INVERT`, `LSHIFT`, `RSHIFT`, `U.`, `S>D`, `*/`, `*/MOD`, `DEPTH`, `:`, `;`, `VARIABLE`, `!`, `@`, `IF`, `ELSE`, `THEN`, `DO`, `LOOP`, `+LOOP`, `BEGIN`, `UNTIL`, `WHILE`, `REPEAT`, `I`, `J`, `LEAVE`, `EXIT`, `UNLOOP`, `."`, `CR`, `SPACE`, `SPACES`, `S"`
+- **Core-Ext (6):** `NIP`, `TUCK`, `PICK`, `ROLL`, `<>`, `U>`
+- **Misc (5):** `.S`, `-ROT`, `2NIP`, `2TUCK`, `2ROT`
 
 ---
 
@@ -121,8 +130,6 @@ This design prioritizes Forth compatibility and predictable semantics over raw J
 
 ### Potential Extensions
 
-* Implement **looping words** (`BEGIN`, `UNTIL`, `WHILE`, `REPEAT`)
-* Support **return stack** for recursion and more advanced Forth features
 * Full ANS Forth compilence 
 
 ---
