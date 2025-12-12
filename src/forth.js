@@ -224,6 +224,6 @@ export class Fvm {
     }
 
     getOutput() {
-        return this.output.trim();
+        return this.output.replace(/[ \t]+$/,'');
     }
 }
