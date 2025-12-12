@@ -302,7 +302,7 @@ export const core = {
         'entry': function() { // tested
             this.checkStackUnderflow(1);
             const w1 = this.dataStack.pop();
-            this.output += `${w1.toSigned()} `;
+            this.output += `${w1.toSigned()}`;
         }
     },
     // https://forth-standard.org/standard/core/Equal
@@ -1114,5 +1114,23 @@ export const core = {
         'entry': function() {
             this.output += '\n';
         }
-    }
+    },
+    // https://forth-standard.org/standard/core/SPACE
+    'SPACE': {
+        'flags': [],
+        'entry': function() {
+            this.output += ' ';
+        }
+    },
+    // https://forth-standard.org/standard/core/SPACES
+    'SPACES': {
+        'flags': [],
+        'entry': function() {
+            this.checkStackUnderflow(1);
+            const n = this.dataStack.pop();
+            if (n.toSigned() > 0n) {
+                this.output += ' '.repeat(n.toNumber());
+            }
+        }
+    },
 };

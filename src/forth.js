@@ -224,6 +224,10 @@ export class Fvm {
     }
 
     getOutput() {
+<<<<<<< Updated upstream
         return this.output.trim();
+=======
+        return this.output;
+>>>>>>> Stashed changes
     }
 }
