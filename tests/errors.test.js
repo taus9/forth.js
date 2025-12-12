@@ -7,6 +7,7 @@
 import { Fvm } from '../src/forth.js';
 import * as errors from '../src/errors/errors.js';
 import { Cell } from '../src/types/cell.js';
+import { Word, NumberWord } from '../src/types/words.js';
 
 export class ErrorTestSuite {
   constructor(put) {
@@ -191,6 +192,93 @@ export class ErrorTestSuite {
       if (fvm.dataStack[0].toNumber() !== -4) {
         throw new Error(`Expected -4, got ${fvm.dataStack[0].toNumber()}`);
       }
+    });
+
+    // --- Control-flow context validation ---
+    this.put('');
+    this.put('--- Control Flow Context Guards ---');
+
+    const makeWord = (vm, name) => new Word(name, vm.words[name].entry, vm.words[name].flags);
+    const literal = (value) => new NumberWord(String(value), new Cell(value));
+
+    this.test('(LOOP) rejects Begin context', () => {
+      const fvm = new Fvm();
+      const code = [
+        literal(1),
+        makeWord(fvm, '(BEGIN)'),
+        makeWord(fvm, '(LOOP)')
+      ];
+      this.expectError(
+        () => fvm.execute(code),
+        errors.ErrorTypes.OPERATION,
+        errors.ErrorMessages.INVALID_CONTEXT
+      );
+    });
+
+    this.test('(+LOOP) rejects Begin context', () => {
+      const fvm = new Fvm();
+      const code = [
+        literal(1),
+        makeWord(fvm, '(BEGIN)'),
+        literal(1),
+        makeWord(fvm, '(+LOOP)')
+      ];
+      this.expectError(
+        () => fvm.execute(code),
+        errors.ErrorTypes.OPERATION,
+        errors.ErrorMessages.INVALID_CONTEXT
+      );
+    });
+
+    const createLoopVm = () => {
+      const vm = new Fvm();
+      const setup = [
+        literal(10),
+        literal(0),
+        literal(0),
+        literal(0),
+        makeWord(vm, '(DO)')
+      ];
+      vm.execute(setup);
+      return vm;
+    };
+
+    this.test('(UNTIL) rejects Do context', () => {
+      const fvm = createLoopVm();
+      const code = [
+        literal(0),
+        makeWord(fvm, '(UNTIL)')
+      ];
+      this.expectError(
+        () => fvm.execute(code),
+        errors.ErrorTypes.OPERATION,
+        errors.ErrorMessages.INVALID_CONTEXT
+      );
+    });
+
+    this.test('(WHILE) rejects Do context', () => {
+      const fvm = createLoopVm();
+      const code = [
+        literal(0),
+        makeWord(fvm, '(WHILE)')
+      ];
+      this.expectError(
+        () => fvm.execute(code),
+        errors.ErrorTypes.OPERATION,
+        errors.ErrorMessages.INVALID_CONTEXT
+      );
+    });
+
+    this.test('(REPEAT) rejects Do context', () => {
+      const fvm = createLoopVm();
+      const code = [
+        makeWord(fvm, '(REPEAT)')
+      ];
+      this.expectError(
+        () => fvm.execute(code),
+        errors.ErrorTypes.OPERATION,
+        errors.ErrorMessages.INVALID_CONTEXT
+      );
     });
 
     // --- Comment tests ---

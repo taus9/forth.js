@@ -165,6 +165,46 @@ export class WordsTestSuite {
       if (fvm.getOutput() !== '42') throw new Error(`Expected output '42', got '${fvm.getOutput()}'`);
     });
 
+    this.test('SPACE outputs a single space', () => {
+      const fvm = new Fvm();
+      fvm.execute('SPACE');
+      if (fvm.getOutput() !== ' ') {
+        throw new Error(`Expected single space, got '${fvm.getOutput()}'`);
+      }
+    });
+
+    this.test('SPACES repeats space N times', () => {
+      const fvm = new Fvm();
+      fvm.execute('5 SPACES');
+      if (fvm.getOutput() !== '     ') {
+        throw new Error(`Expected five spaces, got '${fvm.getOutput()}'`);
+      }
+    });
+
+    this.test('SPACES ignores non-positive counts', () => {
+      const fvm = new Fvm();
+      fvm.execute('-1 SPACES');
+      if (fvm.getOutput() !== '') {
+        throw new Error(`Expected empty output, got '${fvm.getOutput()}'`);
+      }
+      if (fvm.dataStack.length !== 0) {
+        throw new Error('Expected value to be consumed from the stack');
+      }
+    });
+
+    this.test('S" pushes address for literal string', () => {
+      const fvm = new Fvm();
+      fvm.execute('S" Hello"');
+      if (fvm.dataStack.length !== 1) {
+        throw new Error(`Expected stack depth 1, got ${fvm.dataStack.length}`);
+      }
+      const address = fvm.dataStack.pop().toUnsigned();
+      const stored = fvm.memory.fetchString(address);
+      if (stored !== 'Hello') {
+        throw new Error(`Expected stored string 'Hello', got '${stored}'`);
+      }
+    });
+
     // DROP
     this.test('DROP removes top element', () => {
       const fvm = new Fvm();
