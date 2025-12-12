@@ -5,7 +5,7 @@ import * as errors from './errors/errors.js';
 import * as words from './words/index.js';
 import { ForthMemory } from './memory.js';
 import { Cell } from './types/cell.js';
-import { Word, NumberWord, CompileWord, TextWord } from './types/words.js';
+import { Word, NumberWord, StringLiteralWord, TextWord } from './types/words.js';
 
 export class Fvm {
 
@@ -90,9 +90,29 @@ export class Fvm {
                 continue;
             }
             
-            const token = readToken().toUpperCase();
-            const word = this.parseWord(token);
 
+            const token = readToken();
+
+            if (token === '."') {
+                // Handle string literal until next "
+                let strLiteral = '';
+                i++ // skip space after ."
+                while (i < text.length && text[i] !== '"') {
+                    strLiteral += text[i];
+                    i++;
+                }
+                if (i < text.length && text[i] === '"') {
+                    i++; // skip closing "
+                } else {
+                    this.errorReset();
+                    throw new errors.ParseError(errors.ErrorMessages.UNTERMINATED_STRING);
+                }
+                parsedWords.push(new Word('."', this.words['."'].entry, this.words['."'].flags));
+                parsedWords.push(new StringLiteralWord(strLiteral));
+                continue;
+            }
+
+            const word = this.parseWord(token.toUpperCase());
             parsedWords.push(word);
         }
 

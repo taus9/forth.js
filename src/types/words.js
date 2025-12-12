@@ -19,6 +19,12 @@ export class CompileWord {
     }
 }
 
+export class StringLiteralWord {
+    constructor(value) {
+        this.value = value;
+    }
+}
+
 export class TextWord {
     constructor(name) {
         this.name = name;
